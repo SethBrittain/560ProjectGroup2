@@ -26,7 +26,8 @@
             ],
             "styles": [
               "src/custom-theme.scss",
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/tailwindcss/base.css"
             ],
             "scripts": []
           },
