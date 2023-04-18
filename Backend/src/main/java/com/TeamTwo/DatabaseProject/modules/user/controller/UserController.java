@@ -1,7 +1,10 @@
 package com.TeamTwo.DatabaseProject.modules.user.controller;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
@@ -17,10 +20,23 @@ public class UserController {
         database = udb;
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/api/hello")
     public String hello()
     {
         database.testQuery();
         return "hello world & inserted test";
     }
+
+	@GetMapping("/api/Example")
+	public ArrayList<String> CollinTest()
+	{
+		return database.CollinTestQuery();
+	}
+
+	@GetMapping("/api/{Organization}/{Group}/{Channel}/Messages")
+	public ArrayList<String> Messages(@PathVariable String org,
+		@PathVariable String group, @PathVariable String chan)
+	{
+		
+	}
 }
