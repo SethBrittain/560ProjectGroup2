@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
@@ -33,10 +34,17 @@ public class UserController {
 		return database.CollinTestQuery();
 	}
 
-	@GetMapping("/api/{Organization}/{Group}/{Channel}/Messages")
-	public ArrayList<String> Messages(@PathVariable String org,
-		@PathVariable String group, @PathVariable String chan)
+	@GetMapping("/api/Groups")
+	@ResponseBody
+	public ArrayList<String> GetAllGroupsInOrganization(@RequestParam String org)
 	{
-		
+		return database.GetGroups(org);
+	}
+
+	@GetMapping("/api/Channels")
+	@ResponseBody
+	public ArrayList<String> GetAllChannelsInGroup(@RequestParam String org, @RequestParam String group)
+	{
+		return database.GetChannels(group);
 	}
 }
