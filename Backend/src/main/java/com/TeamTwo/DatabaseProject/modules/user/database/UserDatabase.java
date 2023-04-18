@@ -1,6 +1,5 @@
 package com.TeamTwo.DatabaseProject.modules.user.database;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,9 +37,13 @@ public class UserDatabase
         }
     }
 
+	/**
+	 * Example of getting info from a database for reference
+	 * @return ArrayList<String> of the results of the query that was run
+	 */
 	public ArrayList<String> CollinTestQuery()
 	{
-		String queryString = """
+		String query = """
 			SELECT T.FirstName, T.Email
 			FROM
 			(
@@ -48,7 +51,7 @@ public class UserDatabase
 			) T(PersonId, FirstName, LastName, Email);
 		""";
 		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(queryString))
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{
 			ResultSet rs = stmt.executeQuery();
 			if (rs.isBeforeFirst()) results = new ArrayList<String>();
@@ -62,4 +65,30 @@ public class UserDatabase
 		}
 		return results;
 	}
+
+	/**
+	 * Gets all the group that are in an organization
+	 * @param org The organization to get groups of
+	 * @return ArrayList<String> of the groups in the given organization
+	 */
+	public ArrayList<String> GetGroups(String org)
+	{
+		String query = "EXEC Application.GetGroups " + org;
+		ArrayList<String> results = null;
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			if (rs.isBeforeFirst()) results = new ArrayList<String>();
+			while (rs.next())
+			{
+				results.add(rs.getString(1));
+				//TODO: add more info from query to results
+			}
+		}
+		catch (SQLException e) {
+			System.out.println(e.toString());
+		}
+		return results;
+	}
+
 }
