@@ -1,1 +1,13 @@
-<p>main-window works!</p>
+
+ <app-header></app-header>
+ <app-nav-menu></app-nav-menu>
+
+<!-- Router Content -->
+ <div class="sm:ml-64 h-screen">
+    <div class="pt-16 h-screen">
+        <router-outlet></router-outlet>
+        <app-chat></app-chat>
+        <app-search-results></app-search-results>
+    </div>
+ </div>
+ 
