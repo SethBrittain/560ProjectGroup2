@@ -67,13 +67,38 @@ public class UserDatabase
 	}
 
 	/**
-	 * Gets all the group that are in an organization
+	 * Gets all the group that are in the given organization
 	 * @param org The organization to get groups of
 	 * @return ArrayList<String> of the groups in the given organization
 	 */
 	public ArrayList<String> GetGroups(String org)
 	{
 		String query = "EXEC Application.GetGroups " + org;
+		ArrayList<String> results = null;
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			if (rs.isBeforeFirst()) results = new ArrayList<String>();
+			while (rs.next())
+			{
+				results.add(rs.getString(1));
+				//TODO: add more info from query to results
+			}
+		}
+		catch (SQLException e) {
+			System.out.println(e.toString());
+		}
+		return results;
+	}
+
+	/**
+	 * Gets all the channels in a given organization and group
+	 * @param org The organization to get the group and channels from
+	 * @param group The group to get channels from
+	 */
+	public ArrayList<String> GetChannels(String org, String group)
+	{
+		String query = "EXEC Application.GetChannels " + org + " " + group;
 		ArrayList<String> results = null;
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{

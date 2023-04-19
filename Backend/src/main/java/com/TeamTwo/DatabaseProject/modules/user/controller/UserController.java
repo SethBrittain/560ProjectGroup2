@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,6 +45,6 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<String> GetAllChannelsInGroup(@RequestParam String org, @RequestParam String group)
 	{
-		return database.GetChannels(group);
+		return database.GetChannels(org, group);
 	}
 }
