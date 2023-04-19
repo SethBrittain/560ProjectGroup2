@@ -1,34 +1,346 @@
 import time
 import pymssql
-import requests
+import random
 import json
+import lorem
 from random import randint
 
-h = {
-	"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/112.0",
-	"Accept": "*/*",
-	"Accept-Language": "en-US,en;q=0.5",
-	"Sec-Fetch-Dest": "empty",
-	"Sec-Fetch-Mode": "no-cors",
-	"Sec-Fetch-Site": "same-origin",
-	"Pragma": "no-cache",
-	"Cache-Control": "no-cache",
-	'Accept-Encoding': 'identity'
-}
+org_count = 5
+group_count = 5
+channel_count = 5
+user_count = 5
+message_count = 5432
+avg_memberships_per_user = 3
+
+final_query = ''
+
+def get_connection():
+	try:
+		config = {}
+		with open('dbconfig.txt', 'r', encoding='UTF-8') as config_file:
+			for line in config_file.readlines():
+				split = line.split(':')
+				config[split[0].strip()] = split[1].strip()
+		return pymssql.connect(server=config['server'], \
+            port='1433', \
+            user=config['username'], \
+            password=config['password'], \
+            database=config['database_name'])
+	except FileNotFoundError:
+		result = 'No database configuration file was found!\n\n'
+
+		result += 'You need a database configuration file in order to \n'
+		result += 'connect to your personal database so that you can \n'
+		result += 'sync your changes and track them in version control.\n\n'
+
+		result += 'This script will generate an sql file used to configure the \n'
+		result += 'database in the same way that the "Production" database is \n'
+		result += 'configured.\n\n'
+
+		result += 'For this to work, you need to create a file in the top-level \n'
+		result += 'directory named dbconfig.txt \n'
+		result += 'with this format:\n\n'
+	
+		result += 'server:server.address.com\n'
+		result += 'username:sbrittain\n'
+		result += 'password:Secr3tP4ssword!\n'
+		result += 'database_name:nameofdb'
+
+		print(result)
+		exit()
+
+def get_insert_query(table_name, column_names, data, count):
+	result = ''
+	cycles = count // 1000
+	remainder = count % 1000
+
+	queryBase = f"INSERT INTO Application.{table_name}("
+
+	# append column names
+	for idx, name in enumerate(column_names):
+		queryBase += name
+		if idx != len(column_names)-1:
+			queryBase += ','
+		else:
+			queryBase += ')\nVALUES '
+
+	# insert in batches of 1000
+	for i in range(cycles):
+		current = queryBase
+		for j in range(1000):
+			idx = (1000*i) + j
+			current += f'{data[idx]}'
+			if idx != len(data)-1:
+				current += ','
+		result += current + ';\n\n'
+	
+	# Insert remainder batch
+	current = queryBase
+	for i in range(remainder):
+		idx = cycles*1000+i
+		current += f'{data[idx]}'
+		if idx != len(data)-1:
+			current += ','
+	
+	result += current + ';\n\n'
+	return result
 
 def generate_orgs():
-	url = "https://www.mockaroo.com/rest/schemas/download"
-	data = {
-		"schema":{"name":"","num_rows":1,"file_format":"csv","line_ending":"unix","table_name":"MOCK_DATA","include_create_sql":False,"array":True,"include_nulls":True,"delimiter":",","quote_char":"\"","include_header":True,"bom":False,"xml_root_element":"dataset","xml_record_element":"record","append_dataset_id":"","columns_attributes":[{"null_percentage":"0","values":"","list_selection_style":"random","image_format":"png","avatar_height":50,"avatar_width":50,"character_sequence_format":"","countries":"","include_protocol":True,"include_host":True,"include_path":True,"include_query_string":True,"min_date":"04/19/2022","max_date":"04/19/2023","date_format":"%-m/%-d/%Y","image_width_min":100,"image_height_min":100,"image_width_max":250,"file_type":"common","file_name_format":"camel-caps","formula":"","min_items":"0","max_items":"5","min_words":10,"max_words":20,"min_sentences":1,"max_sentences":10,"min_paragraphs":1,"max_paragraphs":3,"style":"A-","min_money":0,"max_money":10,"money_symbol":"$","normal_dist_sd":1,"normal_dist_mean":0,"normal_dist_decimals":2,"min":1,"max":100,"decimal_places":0,"expression":"","sequence_start":1,"sequence_step":1,"sequence_repeat":1,"sequence_restart":"","sql_expression":"","only_us_places":False,"states":"","min_time":"12:00 AM","max_time":"11:59 PM","time_format":"%-l:%M %p","phone_format":"###-###-####","dist_probability":0.5,"dist_lambda":1,"name":"id","position":0,"data_type_id":140},{"null_percentage":"0","values":"","list_selection_style":"random","image_format":"png","avatar_height":50,"avatar_width":50,"character_sequence_format":"","countries":"","include_protocol":True,"include_host":True,"include_path":True,"include_query_string":True,"min_date":"04/19/2022","max_date":"04/19/2023","date_format":"%-m/%-d/%Y","image_width_min":100,"image_height_min":100,"image_width_max":250,"file_type":"common","file_name_format":"camel-caps","formula":"","min_items":"0","max_items":"5","min_words":10,"max_words":20,"min_sentences":1,"max_sentences":10,"min_paragraphs":1,"max_paragraphs":3,"style":"A-","min_money":0,"max_money":10,"money_symbol":"$","normal_dist_sd":1,"normal_dist_mean":0,"normal_dist_decimals":2,"min":1,"max":100,"decimal_places":0,"expression":"","sequence_start":1,"sequence_step":1,"sequence_repeat":1,"sequence_restart":"","sql_expression":"","only_us_places":False,"states":"","min_time":"12:00 AM","max_time":"11:59 PM","time_format":"%-l:%M %p","phone_format":"###-###-####","dist_probability":0.5,"dist_lambda":1,"name":"first_name","position":1,"data_type_id":159},{"null_percentage":"0","values":"","list_selection_style":"random","image_format":"png","avatar_height":50,"avatar_width":50,"character_sequence_format":"","countries":"","include_protocol":True,"include_host":True,"include_path":True,"include_query_string":True,"min_date":"04/19/2022","max_date":"04/19/2023","date_format":"%-m/%-d/%Y","image_width_min":100,"image_height_min":100,"image_width_max":250,"file_type":"common","file_name_format":"camel-caps","formula":"","min_items":"0","max_items":"5","min_words":10,"max_words":20,"min_sentences":1,"max_sentences":10,"min_paragraphs":1,"max_paragraphs":3,"style":"A-","min_money":0,"max_money":10,"money_symbol":"$","normal_dist_sd":1,"normal_dist_mean":0,"normal_dist_decimals":2,"min":1,"max":100,"decimal_places":0,"expression":"","sequence_start":1,"sequence_step":1,"sequence_repeat":1,"sequence_restart":"","sql_expression":"","only_us_places":False,"states":"","min_time":"12:00 AM","max_time":"11:59 PM","time_format":"%-l:%M %p","phone_format":"###-###-####","dist_probability":0.5,"dist_lambda":1,"name":"last_name","position":2,"data_type_id":161},{"null_percentage":"0","values":"","list_selection_style":"random","image_format":"png","avatar_height":50,"avatar_width":50,"character_sequence_format":"","countries":"","include_protocol":True,"include_host":True,"include_path":True,"include_query_string":True,"min_date":"04/19/2022","max_date":"04/19/2023","date_format":"%-m/%-d/%Y","image_width_min":100,"image_height_min":100,"image_width_max":250,"file_type":"common","file_name_format":"camel-caps","formula":"","min_items":"0","max_items":"5","min_words":10,"max_words":20,"min_sentences":1,"max_sentences":10,"min_paragraphs":1,"max_paragraphs":3,"style":"A-","min_money":0,"max_money":10,"money_symbol":"$","normal_dist_sd":1,"normal_dist_mean":0,"normal_dist_decimals":2,"min":1,"max":100,"decimal_places":0,"expression":"","sequence_start":1,"sequence_step":1,"sequence_repeat":1,"sequence_restart":"","sql_expression":"","only_us_places":False,"states":"","min_time":"12:00 AM","max_time":"11:59 PM","time_format":"%-l:%M %p","phone_format":"###-###-####","dist_probability":0.5,"dist_lambda":1,"name":"email","position":3,"data_type_id":144},{"null_percentage":"0","values":"","list_selection_style":"random","image_format":"png","avatar_height":50,"avatar_width":50,"character_sequence_format":"","countries":"","include_protocol":True,"include_host":True,"include_path":True,"include_query_string":True,"min_date":"04/19/2022","max_date":"04/19/2023","date_format":"%-m/%-d/%Y","image_width_min":100,"image_height_min":100,"image_width_max":250,"file_type":"common","file_name_format":"camel-caps","formula":"","min_items":"0","max_items":"5","min_words":10,"max_words":20,"min_sentences":1,"max_sentences":10,"min_paragraphs":1,"max_paragraphs":3,"style":"A-","min_money":0,"max_money":10,"money_symbol":"$","normal_dist_sd":1,"normal_dist_mean":0,"normal_dist_decimals":2,"min":1,"max":100,"decimal_places":0,"expression":"","sequence_start":1,"sequence_step":1,"sequence_repeat":1,"sequence_restart":"","sql_expression":"","only_us_places":False,"states":"","min_time":"12:00 AM","max_time":"11:59 PM","time_format":"%-l:%M %p","phone_format":"###-###-####","dist_probability":0.5,"dist_lambda":1,"name":"gender","position":4,"data_type_id":166},{"null_percentage":"0","values":"","list_selection_style":"random","image_format":"png","avatar_height":50,"avatar_width":50,"character_sequence_format":"","countries":"","include_protocol":True,"include_host":True,"include_path":True,"include_query_string":True,"min_date":"04/19/2022","max_date":"04/19/2023","date_format":"%-m/%-d/%Y","image_width_min":100,"image_height_min":100,"image_width_max":250,"file_type":"common","file_name_format":"camel-caps","formula":"","min_items":"0","max_items":"5","min_words":10,"max_words":20,"min_sentences":1,"max_sentences":10,"min_paragraphs":1,"max_paragraphs":3,"style":"A-","min_money":0,"max_money":10,"money_symbol":"$","normal_dist_sd":1,"normal_dist_mean":0,"normal_dist_decimals":2,"min":1,"max":100,"decimal_places":0,"expression":"","sequence_start":1,"sequence_step":1,"sequence_repeat":1,"sequence_restart":"","sql_expression":"","only_us_places":False,"states":"","min_time":"12:00 AM","max_time":"11:59 PM","time_format":"%-l:%M %p","phone_format":"###-###-####","dist_probability":0.5,"dist_lambda":1,"name":"ip_address","position":5,"data_type_id":145}]}
-	}
-	p = requests.post(url, headers=h, params={"preview": "True"}, json=data, cookies={"session_v2": "e4a1b212b1c6673b10f3855d1cbc575a"}, stream=True)
-	for line in iter(p.stdout.readline, b''):
-		print ('LINE:', line)
+	names = [
+		"Collins Inc",
+		"Sawayn-Blanda",
+		"Kuvalis Group",
+		"Schmidt Group",
+		"Hayes, Howell and Pagac",
+		"Koss, Smitham and Kertzmann",
+		"Gerlach-Jacobs",
+		"Rowe, Kulas and Bradtke",
+		"Cummerata Inc",
+		"Mann-Hudson",
+		"Kling Inc",
+		"Abernathy-Green",
+		"Gulgowski-Osinski",
+		"Wilkinson, Koss and Lemke",
+		"Ernser Group",
+		"Hoppe-Cruickshank",
+		"Murphy-Gottlieb",
+		"Davis-McDermott",
+		"Kuhn-Rutherford",
+		"Gerlach-Hills",
+		"Stiedemann-Ryan",
+		"Huels LLC"
+	]
+	values = []
+	for i in range(org_count):
+		name = random.choice(names)
+		values.append((name))
+	
+	return get_insert_query('Organizations', ('Name'), values, org_count)
 
 def generate_users():
-	pass
+	names = (
+		("Christiano","Popescu"),
+		("Cobbie","Mannock"),
+		("Simeon","Besson"),
+		("Winthrop","Raithmill"),
+		("Derril","Elloy"),
+		("Luelle","Wroughton"),
+		("Goraud","McBean"),
+		("Carolin","Whiting"),
+		("Ketty","Stainfield"),
+		("Osmond","Bouttell"),
+		("Edward","MacLoughlin"),
+		("Cassandry","McGrae"),
+		("Moishe","Guihen"),
+		("Mort","Armer"),
+		("Virgie","Thyng"),
+		("Moselle","William"),
+		("Ax","Kimm"),
+		("Quent","Hanigan"),
+		("Abbot","Scare"),
+		("Lib","Castillou"),
+		("Ronalda","Flewan")
+	)
+	titles = (
+		"Social Worker",
+		"Web Designer III",
+		"Senior Quality Engineer",
+		"Administrative Assistant II",
+		"Dental Hygienist",
+		"Recruiter",
+		"Pharmacist",
+		"Clinical Specialist",
+		"Director of Sales",
+		"Senior Editor",
+		"Senior Financial Analyst",
+		"Compensation Analyst",
+		"General Manager",
+		"VP Product Management",
+		"Administrative Assistant III",
+		"Financial Analyst",
+		"Environmental Specialist",
+		"Staff Scientist",
+		"Staff Scientist",
+		"Graphic Designer",
+		"Mechanical Systems Engineer",
+		"Software Test Engineer I",
+		"Food Chemist",
+		"Librarian",
+		"GIS Technical Architect",
+		"Administrative Officer",
+		"Senior Sales Associate",
+		"Office Assistant II",
+		"Graphic Designer",
+		"Legal Assistant",
+		"Community Outreach Specialist",
+		"Librarian",
+		"Account Coordinator",
+		"Chief Design Engineer",
+		"Financial Analyst",
+		"VP Quality Control",
+		"Quality Control Specialist",
+		"Nurse",
+		"Data Coordinator",
+		"Account Executive",
+		"Human Resources Assistant IV",
+		"Accounting Assistant II",
+		"Sales Associate",
+		"General Manager",
+		"Internal Auditor",
+		"Assistant Manager",
+		"Developer IV",
+		"Senior Cost Accountant",
+		"Chief Design Engineer",
+		"Actuary",
+		"Information Systems Manager",
+		"Developer II",
+		"Information Systems Manager",
+		"Nurse",
+		"Project Manager",
+		"Quality Engineer",
+		"Internal Auditor",
+		"Assistant Media Planner",
+		"Senior Editor",
+		"Business Systems Development Analyst",
+		"Paralegal",
+		"Recruiter",
+		"Mechanical Systems Engineer",
+		"VP Marketing",
+		"Recruiting Manager",
+		"Safety Technician II",
+		"Paralegal",
+		"Health Coach III",
+		"Administrative Assistant IV",
+		"Junior Executive",
+		"Physical Therapy Assistant",
+		"Junior Executive",
+		"Health Coach III",
+		"Account Executive",
+		"GIS Technical Architect",
+		"Actuary",
+		"Sales Associate",
+		"Product Engineer",
+		"Cost Accountant",
+		"Chief Design Engineer",
+		"Dental Hygienist",
+		"Software Consultant",
+		"Quality Engineer",
+		"Environmental Specialist",
+		"Financial Analyst",
+		"Nurse",
+		"Electrical Engineer",
+		"Legal Assistant",
+		"Nurse",
+		"Senior Developer",
+		"Office Assistant III",
+		"Data Coordinator",
+		"Accountant I",
+		"Recruiting Manager",
+		"Physical Therapy Assistant",
+		"Pharmacist",
+		"Research Nurse",
+		"Quality Control Specialist",
+		"General Manager",
+		"Computer Systems Analyst IV"
+	)
+	
+	values = []
+	for i in range(user_count):
+		first_name = random.choice(names)[0]
+		last_name = random.choice(names)[1]
+		username = f'{first_name[0]}{last_name}'.lower()
+		email = f'{username}@example.com'
+		password = hash(randint(1,99999999))
+		organizationId = randint(1,org_count+1)
+		role = 'User'
+		title = random.choice(titles)
+		avatar = f'https://robohash.org/{username}'
+		values.append((first_name,last_name,username,email,password,organizationId,role,title,avatar))
+	
+	return get_insert_query('Users', ('Username','Email','Password','OrganizationId','RoleName','FirstName','LastName','Title','Active','ProfilePhoto'), values, user_count)
+
+def generate_groups():
+	group_names = (
+		'Marketing',
+		'Sales',
+		'Design',
+		'Management',
+		'Human Resources',
+		'Engineering',
+		'Research and Development',
+		'Quality Assurance',
+		'Marketing',
+		'Sales',
+		'Design',
+		'Management',
+		'Human Resources',
+		'Engineering',
+		'Research and Development',
+		'Quality Assurance'
+	)
+
+	values = []
+	for i in range(group_count):
+		values.append((randint(1,org_count+1),random.choice(group_names)))
+	
+	return get_insert_query('Groups', ('Name','OrganizationId'), values, group_count)
+
+def generate_channels():
+	values = []
+	channel_names = (
+		'Announcements',
+		'General',
+		'Projects',
+		'Help',
+		'Issues'
+	)
+	for i in range(group_count):
+		for j in range(len(channel_names)):
+			values.append((channel_names[j], i+1))
+	
+	return get_insert_query('Channels', ('Name', 'GroupId'), values, channel_count)
+
+def generate_messages():
+	values = []
+	for i in range(message_count):
+		sender_id = randint(1,user_count+1)
+		message = lorem.sentence()
+		channel_id = randint(1,channel_count+1)
+		
+		values.append((sender_id, message, channel_id, None))
+	return get_insert_query('Messages', ('SenderId', 'Message', 'ChannelId', 'RecipientId'), values, message_count)
+
+
+def generate_memberships():
+	values = []
+	for i in range (avg_memberships_per_user*user_count):
+		group_id = randint(1,group_count+1)
+		user_id = randint(1,user_count+1)
+		org_id = randint(1,org_count+1)
+		values.append((group_id, user_id, org_id))
+	return get_insert_query('Memberships', ('GroupId', 'UserId', 'OrganizationId'), values, avg_memberships_per_user*user_count)
 
 def main():
-	generate_orgs()
+	query = ''
+	print("\ngenerate_orgs()")
+	query += generate_orgs()
+	print("\ngenerate_users()")
+	query += generate_users()
+	print("\ngenerate_groups()")
+	query += generate_groups()
+	print("\ngenerate_channels()")
+	query += generate_channels()
+	print("\ngenerate_messages()")
+	query += generate_messages()
+	print("\ngenerate_memberships()")
+	query += generate_memberships()
+	
+	with get_connection() as connection:
+		cur = connection.cursor()
+		try:
+			cur.execute(query)
+		except:
+			connection.rollback()
+			print(f'Error in executing query:\n{query}')
 
 main()
