@@ -1,7 +1,5 @@
-import time
-import pymssql
 import random
-import json
+import pymssql
 import lorem
 from random import randint
 
@@ -9,8 +7,9 @@ org_count = 5
 group_count = 5
 channel_count = 5
 user_count = 5
-message_count = 5432
+message_count = 500
 avg_memberships_per_user = 3
+batch_size = 20
 
 final_query = ''
 
@@ -51,8 +50,6 @@ def get_connection():
 
 def get_insert_query(table_name, column_names, data, count):
 	result = ''
-	cycles = count // 1000
-	remainder = count % 1000
 
 	queryBase = f"INSERT INTO Application.{table_name}("
 
@@ -63,26 +60,39 @@ def get_insert_query(table_name, column_names, data, count):
 			queryBase += ','
 		else:
 			queryBase += ')\nVALUES '
+	
+	cur = queryBase
+	for i in range(data):
+		if i % batch_size == :
+
 
 	# insert in batches of 1000
 	for i in range(cycles):
 		current = queryBase
-		for j in range(1000):
-			idx = (1000*i) + j
-			current += f'{data[idx]}'
+		for j in range(batch_size):
+			idx = (batch_size*i) + j
+			if len(data[idx]) == 1:
+				current += f"('{data[idx][0]}')"
+			else:
+				current += f'{data[idx]}'
 			if idx != len(data)-1:
 				current += ','
-		result += current + ';\n\n'
+		result += current + ';\n|\n'
 	
 	# Insert remainder batch
 	current = queryBase
 	for i in range(remainder):
-		idx = cycles*1000+i
-		current += f'{data[idx]}'
+		idx = cycles*batch_size+i
+		if len(data[idx]) == 1:
+			current += f"('{data[idx][0]}')"
+		else:
+			current += f'{data[idx]}'
 		if idx != len(data)-1:
 			current += ','
 	
-	result += current + ';\n\n'
+	result += current + ';\n|\n'
+	print(result)
+	print(data)
 	return result
 
 def generate_orgs():
@@ -113,9 +123,8 @@ def generate_orgs():
 	values = []
 	for i in range(org_count):
 		name = random.choice(names)
-		values.append((name))
-	
-	return get_insert_query('Organizations', ('Name'), values, org_count)
+		values.append((name,))
+	return get_insert_query('Organizations', {'Name'}, values, org_count)
 
 def generate_users():
 	names = (
@@ -322,25 +331,19 @@ def generate_memberships():
 
 def main():
 	query = ''
-	print("\ngenerate_orgs()")
 	query += generate_orgs()
-	print("\ngenerate_users()")
 	query += generate_users()
-	print("\ngenerate_groups()")
 	query += generate_groups()
-	print("\ngenerate_channels()")
 	query += generate_channels()
-	print("\ngenerate_messages()")
 	query += generate_messages()
-	print("\ngenerate_memberships()")
 	query += generate_memberships()
 	
+	queries = query.split('|')
+	#for a in queries:
+	#	print(a)
+	'''
 	with get_connection() as connection:
 		cur = connection.cursor()
-		try:
-			cur.execute(query)
-		except:
-			connection.rollback()
-			print(f'Error in executing query:\n{query}')
-
+		cur.execute(query)
+	'''
 main()
