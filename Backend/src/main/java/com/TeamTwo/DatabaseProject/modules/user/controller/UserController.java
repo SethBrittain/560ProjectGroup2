@@ -35,9 +35,9 @@ public class UserController {
 	 */
 	@GetMapping("/api/OrganizationsData")
 	@ResponseBody
-	public ArrayList<String> GetOrgsData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
+	public ArrayList<String> GetOrganizationsData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
 	{
-		return database.GetOrgsData(startDate, endDate);
+		return database.GetOrganizationsData(startDate, endDate);
 	}
 
 	/**

@@ -1,9 +1,6 @@
-USE cis560_SP23_T1
-GO
-
 
 /* Aggregating Query 1 */ 
-CREATE PROCEDURE Application.GetOrganizationData
+CREATE OR ALTER PROCEDURE Application.GetOrganizationData
 @FirstDate DATETIME,
 @LastDate DATETIME
 AS
@@ -15,10 +12,8 @@ WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
-
-
 /* General Query 1: Fetch all messages for a channel */
-CREATE PROCEDURE Application.GetAllChannelMessages
+CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
 SELECT M.Message
@@ -28,9 +23,8 @@ WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO
 
-
 /* General Query 2: Fetch all messages between given sender and recipient */
-CREATE PROCEDURE Application.GetAllMessagesBetweenUsers 
+CREATE OR ALTER PROCEDURE Application.GetAllMessagesBetweenUsers 
 @UserAId INT,
 @UserBId INT
 AS
@@ -40,7 +34,7 @@ AS
 GO
 
 /* General Query 3: Show all messages that match a substring within a given channel over a specified date range. */
-CREATE PROCEDURE Application.GetAllMessagesMatchingSubstring   
+CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring   
 @Substring NVARCHAR(255),
 @ChannelId INT
 AS
@@ -52,7 +46,7 @@ AS
 GO
 
 /* General Query 4: Get all channels in a group */
-CREATE PROCEDURE Application.GetAllChannelsInGroup
+CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
 @GroupId INT
 AS
 SELECT C.ChannelId, C.Name
@@ -73,7 +67,7 @@ GO */
 
 
 /* General Query 6: Get all users in Organization */
-CREATE PROCEDURE Application.GetAllUsersInOrganization
+CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
 SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
@@ -83,20 +77,10 @@ WHERE O.OrganizationId = @OrganizationId
 GO
 
 /* General Query 7: Get users info via username */ 
-CREATE PROCEDURE Application.GetUserInfo
+CREATE OR ALTER PROCEDURE Application.GetUserInfo
 @Username NVARCHAR(32)
 AS
 SELECT U.UserName, U.FirstName, U.LastName, U.Email, U.Password, U.OrganizationId
 FROM Application.Users U
 WHERE U.Username = @Username
 GO
-
-
-
- 
-
-
- 
-
-
-
