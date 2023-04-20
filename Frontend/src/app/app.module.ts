@@ -20,6 +20,8 @@ import { DmListComponent } from './base-components/dm-list/dm-list.component';
 import { ChannelListItemComponent } from './base-components/channel-list-item/channel-list-item.component';
 import { DmListItemComponent } from './base-components/dm-list-item/dm-list-item.component';
 import { SearchResultsHeaderComponent } from './base-components/search-results-header/search-results-header.component';
+import { ProfileComponent } from './base-components/profile/profile.component';
+import { SearchComponent } from './base-components/search/search.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,8 @@ import { SearchResultsHeaderComponent } from './base-components/search-results-h
     ChannelListItemComponent,
     DmListItemComponent,
     SearchResultsHeaderComponent,
+    ProfileComponent,
+    SearchComponent,
   ],
   imports: [
     BrowserModule,
