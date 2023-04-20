@@ -1,6 +1,3 @@
-USE slhaynes4542
-GO
-
 
 /* Aggregating Query 1 */ 
 CREATE PROCEDURE Application.GetOrganizationData

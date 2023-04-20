@@ -24,6 +24,39 @@ public class UserDatabase
     }
 
 	/**
+	 * Helper method to send a query to the database and parse the results for the given query
+	 * @param columns The number of columns the query will return
+	 * @param query The query to send to the database
+	 * @return An ArrayList with the results of the query: "No Data" is in the first index if the results were empty
+	 */
+	private ArrayList<String> sendQuery(int columns, String query)
+	{
+		ArrayList<String> results = new ArrayList<String>();
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			if (rs.isBeforeFirst())
+			{
+				results = new ArrayList<String>();
+				results.add("No Error");
+			}
+			else results.add("Empty");
+			while (rs.next())
+			{
+				for (int i = 1; i <= columns; i++)
+					results.add(rs.getString(i));
+			}
+		}	
+		catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+			results.add("Error");
+			results.add(error);
+		}
+		return results;
+	}
+
+	/**
 	 * Example of getting info from a database for reference
 	 * @return ArrayList with: FirstName, Email
 	 */
@@ -36,27 +69,7 @@ public class UserDatabase
 				VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu')
 			) T(PersonId, FirstName, LastName, Email);
 		""";
-		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(query))
-		{
-			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst())
-			{
-				results = new ArrayList<String>();
-				results.add("true");
-			}
-			while (rs.next())
-			{
-				results.add(rs.getString(1));
-				results.add(rs.getString(2));
-			}
-		}	catch (SQLException e) {
-			String state = e.getSQLState();
-			System.out.println(e.toString());
-			results.add("false");
-			results.add(state);
-		}
-		return results;
+		return sendQuery(2, query);
 	}
 
 	/**
@@ -65,60 +78,19 @@ public class UserDatabase
 	 */
 	public ArrayList<String> GetOrgsData(DateTimeOffset start, DateTimeOffset end)
 	{
-		String query = "EXEC Application.GetOrganizationData";
-		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(query))
-		{
-			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst())
-			{
-				results = new ArrayList<String>();
-				results.add("Good");
-			}
-			while (rs.next())
-			{
-				results.add(rs.getString(1));
-				results.add(rs.getString(2));
-				results.add(rs.getString(3));
-			}
-		}
-		catch (SQLException e) {
-			String state = e.getSQLState();
-			System.out.println(e.toString());
-			results = new ArrayList<String>();
-			results.add("Error");
-			results.add(state);
-		}
-		return results;
+		String query = "EXEC Application.GetOrganizationData " + start + " " + end;
+		return sendQuery(3, query);
 	}
 
 	/**
 	 * Gets all the messages from the given channel
 	 * @param ChannelId The ID number of the channel to get messages from
-	 * @return ArrayList - Message
+	 * @return ArrayList - Message, null if no results
 	 */
 	public ArrayList<String> GetChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
-		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(query))
-		{
-			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst()) results = new ArrayList<String>();
-			results.add("Good");
-			while (rs.next())
-			{
-				results.add(rs.getString(1));
-			}
-		}
-		catch (SQLException e) {
-			String state = e.getSQLState();
-			System.out.println(e.toString());
-			results = new ArrayList<String>();
-			results.add("Error");
-			results.add(state);
-		}
-		return results;
+		return sendQuery(1, query);
 	}
 
 	/**
@@ -129,76 +101,8 @@ public class UserDatabase
 	 */
 	public ArrayList<String> GetDirectMessages(int userA, int userB)
 	{
-		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userIDA + " " + userIDB;
-		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(query))
-		{
-			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst()) results = new ArrayList<String>();
-			results.add("Good");
-			while (rs.next())
-			{
-				results.add(rs.getString(1));
-			}
-		}
-		catch (SQLException e) {
-			String state = e.getSQLState();
-			System.out.println(e.toString());
-			results = new ArrayList<String>();
-			results.add("Error");
-			results.add(state);
-		}
-		return results;
-	}
-
-	/**
-	 * Gets all the group that are in the given organization
-	 * @param org The organization to get groups of
-	 * @return ArrayList<String> of the groups in the given organization
-	 */
-	public ArrayList<String> GetGroups(String org)
-	{
-		String query = "EXEC Application.GetGroups " + org;
-		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(query))
-		{
-			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst()) results = new ArrayList<String>();
-			while (rs.next())
-			{
-				results.add(rs.getString(1));
-				//TODO: add more info from query to results
-			}
-		}
-		catch (SQLException e) {
-			System.out.println(e.toString());
-		}
-		return results;
-	}
-
-	/**
-	 * Gets all the channels in a given organization and group
-	 * @param org The organization to get the group and channels from
-	 * @param group The group to get channels from
-	 */
-	public ArrayList<String> GetChannels(String org, String group)
-	{
-		String query = "EXEC Application.GetChannels " + org + " " + group;
-		ArrayList<String> results = null;
-		try (PreparedStatement stmt = this.database.prepareStatement(query))
-		{
-			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst()) results = new ArrayList<String>();
-			while (rs.next())
-			{
-				results.add(rs.getString(1));
-				//TODO: add more info from query to results
-			}
-		}
-		catch (SQLException e) {
-			System.out.println(e.toString());
-		}
-		return results;
+		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userA + " " + userB;
+		return sendQuery(1, query);
 	}
 
 }

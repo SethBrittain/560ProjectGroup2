@@ -24,7 +24,7 @@ public class UserController {
     }
 
 	@GetMapping("/api/Example")
-	public ArrayList<String> CollinTest()
+	public ArrayList<String> TestQuery()
 	{
 		return database.TestQuery();
 	}
@@ -63,20 +63,5 @@ public class UserController {
 	public ArrayList<String> GetDirectMessages(@RequestParam int userA, @RequestParam int userB)
 	{
 		return database.GetDirectMessages(userA, userB);
-	}
-
-
-	@GetMapping("/api/Groups")
-	@ResponseBody
-	public ArrayList<String> GetAllGroupsInOrganization(@RequestParam String org)
-	{
-		return database.GetGroups(org);
-	}
-
-	@GetMapping("/api/Channels")
-	@ResponseBody
-	public ArrayList<String> GetAllChannelsInGroup(@RequestParam String org, @RequestParam String group)
-	{
-		return database.GetChannels(org, group);
 	}
 }
