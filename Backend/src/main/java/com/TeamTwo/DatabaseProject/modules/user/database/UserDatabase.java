@@ -29,17 +29,14 @@ public class UserDatabase
 	 * @param query The query to send to the database
 	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results were empty
 	 */
-	private ArrayList<String> sendQuery(int columns, String query)
+	private ArrayList<String> sendQuery(String query)
 	{
 		ArrayList<String> results = new ArrayList<String>();
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{
 			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst())
-			{
-				results = new ArrayList<String>();
-				results.add("No Error");
-			}
+			int columns = rs.getMetaData().getColumnCount();
+			if (rs.isBeforeFirst()) results.add("Success");
 			else results.add("Empty");
 			while (rs.next())
 			{
@@ -69,17 +66,17 @@ public class UserDatabase
 				VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu')
 			) T(PersonId, FirstName, LastName, Email);
 		""";
-		return sendQuery(2, query);
+		return sendQuery(query);
 	}
 
 	/**
 	 * Gets data about all organizations in the database, counts messages for MessageCount from start to end
 	 * @return ArrayList - String OrgName, int ActiveUserCount, int MessageCount
 	 */
-	public ArrayList<String> GetOrgsData(DateTimeOffset start, DateTimeOffset end)
+	public ArrayList<String> GetOrganizationsData(DateTimeOffset start, DateTimeOffset end)
 	{
 		String query = "EXEC Application.GetOrganizationData " + start + " " + end;
-		return sendQuery(3, query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -90,7 +87,7 @@ public class UserDatabase
 	public ArrayList<String> GetChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
-		return sendQuery(1, query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -102,7 +99,7 @@ public class UserDatabase
 	public ArrayList<String> GetDirectMessages(int userA, int userB)
 	{
 		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userA + " " + userB;
-		return sendQuery(1, query);
+		return sendQuery(query);
 	}
 
 	
