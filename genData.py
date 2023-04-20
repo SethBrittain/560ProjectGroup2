@@ -4,14 +4,13 @@ import lorem
 from random import randint
 
 org_count = 5
-group_count = 5
-channel_count = 5
-user_count = 5
-message_count = 500
-avg_memberships_per_user = 3
-batch_size = 20
+group_count = 5*5
+channel_count = 5*5
+user_count = 150
+message_count = 1567
+avg_memberships_per_user = 4
+batch_size = 1000
 
-final_query = ''
 
 def get_connection():
 	try:
@@ -51,48 +50,24 @@ def get_connection():
 def get_insert_query(table_name, column_names, data, count):
 	result = ''
 
-	queryBase = f"INSERT INTO Application.{table_name}("
+	formatted_columns_names = '('
+	for idx,col in enumerate(column_names):
+		formatted_columns_names += col + ')' if idx == len(column_names)-1 else col + ','
+	queryBase = f'INSERT INTO Application.{table_name}{formatted_columns_names} VALUES '
 
-	# append column names
-	for idx, name in enumerate(column_names):
-		queryBase += name
-		if idx != len(column_names)-1:
-			queryBase += ','
-		else:
-			queryBase += ')\nVALUES '
-	
 	cur = queryBase
-	for i in range(data):
-		if i % batch_size == :
-
-
-	# insert in batches of 1000
-	for i in range(cycles):
-		current = queryBase
-		for j in range(batch_size):
-			idx = (batch_size*i) + j
-			if len(data[idx]) == 1:
-				current += f"('{data[idx][0]}')"
-			else:
-				current += f'{data[idx]}'
-			if idx != len(data)-1:
-				current += ','
-		result += current + ';\n|\n'
-	
-	# Insert remainder batch
-	current = queryBase
-	for i in range(remainder):
-		idx = cycles*batch_size+i
-		if len(data[idx]) == 1:
-			current += f"('{data[idx][0]}')"
+	for i in range(len(data)):
+		if (len(data[i]) == 1):
+			cur += f'\n(\'{data[i][0]}\')'
 		else:
-			current += f'{data[idx]}'
-		if idx != len(data)-1:
-			current += ','
+			cur += f'\n{data[i]}'
+		if i % batch_size == batch_size - 1 or i == len(data) - 1:
+			cur += ';\n|\n'
+			result += cur
+			cur = queryBase
+		else:
+			cur+=','
 	
-	result += current + ';\n|\n'
-	print(result)
-	print(data)
 	return result
 
 def generate_orgs():
@@ -123,7 +98,7 @@ def generate_orgs():
 	values = []
 	for i in range(org_count):
 		name = random.choice(names)
-		values.append((name,))
+		values.append((name+str(i),))
 	return get_insert_query('Organizations', {'Name'}, values, org_count)
 
 def generate_users():
@@ -257,16 +232,16 @@ def generate_users():
 	for i in range(user_count):
 		first_name = random.choice(names)[0]
 		last_name = random.choice(names)[1]
-		username = f'{first_name[0]}{last_name}'.lower()
+		username = f'{first_name[0]}{last_name}'.lower() + str(i)
 		email = f'{username}@example.com'
-		password = hash(randint(1,99999999))
+		password = str(hash(randint(1,99999999)))
 		organizationId = randint(1,org_count+1)
 		role = 'User'
 		title = random.choice(titles)
 		avatar = f'https://robohash.org/{username}'
 		values.append((first_name,last_name,username,email,password,organizationId,role,title,avatar))
 	
-	return get_insert_query('Users', ('Username','Email','Password','OrganizationId','RoleName','FirstName','LastName','Title','Active','ProfilePhoto'), values, user_count)
+	return get_insert_query('Users', ('FirstName','LastName','Username','Email','Password','OrganizationId','RoleName','Title','ProfilePhoto'), values, user_count)
 
 def generate_groups():
 	group_names = (
@@ -290,9 +265,9 @@ def generate_groups():
 
 	values = []
 	for i in range(group_count):
-		values.append((randint(1,org_count+1),random.choice(group_names)))
+		values.append((randint(1,org_count),random.choice(group_names)+str(i)))
 	
-	return get_insert_query('Groups', ('Name','OrganizationId'), values, group_count)
+	return get_insert_query('Groups', ('OrganizationId','Name'), values, group_count)
 
 def generate_channels():
 	values = []
@@ -305,7 +280,7 @@ def generate_channels():
 	)
 	for i in range(group_count):
 		for j in range(len(channel_names)):
-			values.append((channel_names[j], i+1))
+			values.append((channel_names[j]+str(i)+str(j), i+1))
 	
 	return get_insert_query('Channels', ('Name', 'GroupId'), values, channel_count)
 
@@ -316,8 +291,8 @@ def generate_messages():
 		message = lorem.sentence()
 		channel_id = randint(1,channel_count+1)
 		
-		values.append((sender_id, message, channel_id, None))
-	return get_insert_query('Messages', ('SenderId', 'Message', 'ChannelId', 'RecipientId'), values, message_count)
+		values.append((sender_id, message, channel_id))
+	return get_insert_query('Messages', ('SenderId', 'Message', 'ChannelId'), values, message_count)
 
 
 def generate_memberships():
@@ -326,24 +301,38 @@ def generate_memberships():
 		group_id = randint(1,group_count+1)
 		user_id = randint(1,user_count+1)
 		org_id = randint(1,org_count+1)
-		values.append((group_id, user_id, org_id))
+		if (group_id, user_id, org_id) not in values:
+			values.append((group_id, user_id, org_id))
 	return get_insert_query('Memberships', ('GroupId', 'UserId', 'OrganizationId'), values, avg_memberships_per_user*user_count)
 
 def main():
+	
 	query = ''
+	query += "INSERT INTO Application.Roles VALUES ('User')"
 	query += generate_orgs()
-	query += generate_users()
 	query += generate_groups()
+	query += generate_users()
+	query += generate_memberships()
 	query += generate_channels()
 	query += generate_messages()
-	query += generate_memberships()
-	
 	queries = query.split('|')
-	#for a in queries:
-	#	print(a)
-	'''
+	
 	with get_connection() as connection:
-		cur = connection.cursor()
-		cur.execute(query)
-	'''
+		c = connection.cursor()
+		c.callproc('sp_MSforeachtable', ('ALTER TABLE ? NOCHECK CONSTRAINT ALL',))
+		c.callproc('sp_MSforeachtable', ('DELETE FROM ?',))
+		try:
+			cur = connection.cursor()
+			connection.commit()
+			for q in queries:
+				print(q)
+				cur.execute(q)
+				connection.commit()
+		except Exception as e:
+			raise e
+		finally:
+			c.callproc('sp_MSforeachtable', ('ALTER TABLE ? CHECK CONSTRAINT ALL ',))
+			connection.close()
+
+
 main()
