@@ -3,12 +3,13 @@ package com.TeamTwo.DatabaseProject.modules.user.database;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.PreparedStatement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import microsoft.sql.DateTimeOffset;
 
 @Service
 public class UserDatabase 
@@ -22,46 +23,130 @@ public class UserDatabase
         this.database = db;
     }
 
-    public void testQuery()
-    {
-        String queryString = """
-            INSERT INTO 
-            test(first_name, last_name) 
-            VALUES('seth', 'Brittain')
-        """;
-        try (Statement stmt = this.database.createStatement())
-        {
-            stmt.executeUpdate(queryString);
-        } catch (SQLException e) {
-            System.out.println(e.toString());
-        }
-    }
-
 	/**
 	 * Example of getting info from a database for reference
-	 * @return ArrayList<String> of the results of the query that was run
+	 * @return ArrayList with: FirstName, Email
 	 */
-	public ArrayList<String> CollinTestQuery()
+	public ArrayList<String> TestQuery()
 	{
 		String query = """
 			SELECT T.FirstName, T.Email
 			FROM
 			(
-				VALUES (1, N'Collin', N'Hammond', N'cohammo@ksu.edu')
+				VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu')
 			) T(PersonId, FirstName, LastName, Email);
 		""";
 		ArrayList<String> results = null;
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{
 			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst()) results = new ArrayList<String>();
+			if (rs.isBeforeFirst())
+			{
+				results = new ArrayList<String>();
+				results.add("true");
+			}
 			while (rs.next())
 			{
 				results.add(rs.getString(1));
 				results.add(rs.getString(2));
 			}
 		}	catch (SQLException e) {
+			String state = e.getSQLState();
 			System.out.println(e.toString());
+			results.add("false");
+			results.add(state);
+		}
+		return results;
+	}
+
+	/**
+	 * Gets data about all organizations in the database, counts messages for MessageCount from start to end
+	 * @return ArrayList - String OrgName, int ActiveUserCount, int MessageCount
+	 */
+	public ArrayList<String> GetOrgsData(DateTimeOffset start, DateTimeOffset end)
+	{
+		String query = "EXEC Application.GetOrganizationData";
+		ArrayList<String> results = null;
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			if (rs.isBeforeFirst())
+			{
+				results = new ArrayList<String>();
+				results.add("Good");
+			}
+			while (rs.next())
+			{
+				results.add(rs.getString(1));
+				results.add(rs.getString(2));
+				results.add(rs.getString(3));
+			}
+		}
+		catch (SQLException e) {
+			String state = e.getSQLState();
+			System.out.println(e.toString());
+			results = new ArrayList<String>();
+			results.add("Error");
+			results.add(state);
+		}
+		return results;
+	}
+
+	/**
+	 * Gets all the messages from the given channel
+	 * @param ChannelId The ID number of the channel to get messages from
+	 * @return ArrayList - Message
+	 */
+	public ArrayList<String> GetChannelMessages(int ChannelId)
+	{
+		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
+		ArrayList<String> results = null;
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			if (rs.isBeforeFirst()) results = new ArrayList<String>();
+			results.add("Good");
+			while (rs.next())
+			{
+				results.add(rs.getString(1));
+			}
+		}
+		catch (SQLException e) {
+			String state = e.getSQLState();
+			System.out.println(e.toString());
+			results = new ArrayList<String>();
+			results.add("Error");
+			results.add(state);
+		}
+		return results;
+	}
+
+	/**
+	 * Gets all direct messages between the two users with the given userIDs
+	 * @param userA The ID of the first user
+	 * @param userB The ID of the second user
+	 * @return ArrayList - Message
+	 */
+	public ArrayList<String> GetDirectMessages(int userA, int userB)
+	{
+		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userIDA + " " + userIDB;
+		ArrayList<String> results = null;
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			if (rs.isBeforeFirst()) results = new ArrayList<String>();
+			results.add("Good");
+			while (rs.next())
+			{
+				results.add(rs.getString(1));
+			}
+		}
+		catch (SQLException e) {
+			String state = e.getSQLState();
+			System.out.println(e.toString());
+			results = new ArrayList<String>();
+			results.add("Error");
+			results.add(state);
 		}
 		return results;
 	}
