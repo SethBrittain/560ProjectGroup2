@@ -27,7 +27,7 @@ public class UserDatabase
 	 * Helper method to send a query to the database and parse the results for the given query
 	 * @param columns The number of columns the query will return
 	 * @param query The query to send to the database
-	 * @return An ArrayList with the results of the query: "No Data" is in the first index if the results were empty
+	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results were empty
 	 */
 	private ArrayList<String> sendQuery(int columns, String query)
 	{
