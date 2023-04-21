@@ -24,13 +24,13 @@ AS
 SELECT M.Message, M.SenderId /* update to include the name of the user who send the message */ 
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
-WHERE C.ChannelId = @ChannelId
+WHERE C.ChannelId = 7
 ORDER BY M.CreatedOn ASC; 
 GO
 
 
 /* General Query 2: Fetch all messages between given sender and recipient */
-CREATE PROCEDURE Application.GetAllMessagesBetweenUsers 
+CREATE PROCEDURE Application.GetDirectMessages
 @UserAId INT,
 @UserBId INT
 AS
@@ -80,7 +80,7 @@ AS
 SELECT U.UserId, U.FirstName, U.LastName, U.Username
 FROM Application.Organizations O 
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
-WHERE O.OrganizationId = @OrganizationId
+WHERE O.OrganizationId = @OrganizationId;
 GO
 
 /* General Query 7: Get users info via username */ 
@@ -95,7 +95,14 @@ GO
 
 
  
+SELECT *
+FROM Application.Users;
 
+SELECT *
+FROM Application.Organizations;
+
+SELECT *
+FROM Application.Channels;
 
  
 
