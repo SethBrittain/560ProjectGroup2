@@ -21,20 +21,20 @@ GO
 CREATE PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
-SELECT M.Message
+SELECT M.Message, M.SenderId /* update to include the name of the user who send the message */ 
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
-WHERE C.ChannelId = @ChannelId
+WHERE C.ChannelId = 7
 ORDER BY M.CreatedOn ASC; 
 GO
 
 
 /* General Query 2: Fetch all messages between given sender and recipient */
-CREATE PROCEDURE Application.GetAllMessagesBetweenUsers 
+CREATE PROCEDURE Application.GetDirectMessages
 @UserAId INT,
 @UserBId INT
 AS
- SELECT M.Message
+ SELECT M.Message, M.SenderId
  FROM Application.Messages M
  WHERE M.SenderId = @UserAId AND M.RecipientId = @UserBId OR M.SenderId = @UserBId AND M.RecipientId = @UserAId; 
 GO
@@ -51,14 +51,15 @@ AS
  AND M.Message LIKE '%' + @Substring + '%'   
 GO
 
-/* General Query 4: Get all channels in a group */
-CREATE PROCEDURE Application.GetAllChannelsInGroup
-@GroupId INT
+/* General Query 4: Get all channels in a Organization */
+CREATE PROCEDURE Application.GetAllChannelsInOrganization
+@OrganizationId INT
 AS
 SELECT C.ChannelId, C.Name
-FROM Application.Groups G
+FROM Application.Organizations O
+INNER JOIN Application.Groups G ON G.OrganizationId = O.OrganizationId
 INNER JOIN Application.Channels C ON C.GroupId = G.GroupId
-WHERE G.GroupId = @GroupId
+WHERE O.OrganizationId = @OrganizationId
 GO
 /* General Query 5: Get all groups user is in (NOT USED) */ 
  /* CREATE PROCEDURE Application.GetAllGroupsUserIsIn
@@ -76,17 +77,17 @@ GO */
 CREATE PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
-SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
+SELECT U.UserId, U.FirstName, U.LastName, U.Username
 FROM Application.Organizations O 
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
-WHERE O.OrganizationId = @OrganizationId
+WHERE O.OrganizationId = @OrganizationId;
 GO
 
 /* General Query 7: Get users info via username */ 
 CREATE PROCEDURE Application.GetUserInfo
 @Username NVARCHAR(32)
 AS
-SELECT U.UserName, U.FirstName, U.LastName, U.Email, U.Password, U.OrganizationId
+SELECT U.UserName, U.FirstName, U.LastName, U.Password, U.OrganizationId
 FROM Application.Users U
 WHERE U.Username = @Username
 GO
@@ -94,7 +95,14 @@ GO
 
 
  
+SELECT *
+FROM Application.Users;
 
+SELECT *
+FROM Application.Organizations;
+
+SELECT *
+FROM Application.Channels;
 
  
 
