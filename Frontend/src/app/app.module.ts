@@ -22,6 +22,9 @@ import { DmListItemComponent } from './base-components/dm-list-item/dm-list-item
 import { SearchResultsHeaderComponent } from './base-components/search-results-header/search-results-header.component';
 import { ProfileComponent } from './base-components/profile/profile.component';
 import { SearchComponent } from './base-components/search/search.component';
+import { ApiService } from './services/api-service.service';
+import { GlobalConstants } from './global.config';
+//import { AuthModule } from '@auth0/auth0-angular';
 
 @NgModule({
   declarations: [
@@ -48,9 +51,18 @@ import { SearchComponent } from './base-components/search/search.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatIconModule
+    MatIconModule,
+    /*AuthModule.forRoot({
+      domain: "localhost",
+      clientId: GlobalConstants.ClientID,
+      authorizationParams: {
+        redirect_uri: window.location.origin
+      }
+    }),*/
   ],
-  providers: [],
+  providers: [
+    ApiService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
