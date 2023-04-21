@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ChannelListComponent } from './channel-list.component';
 
 describe('ChannelListComponent', () => {

@@ -1,10 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.css']
 })
-export class MessageComponent {
+export class MessageComponent implements OnInit {
+
+  @Input() firstName: string = '';
+  @Input() lastName: string = '';
+  @Input() date: string = '';
+  @Input() message: string = '';
+  @Input() image: string = '';
+
+  constructor(){}
+
+  ngOnInit(): void {
+      
+  }
 
 }
