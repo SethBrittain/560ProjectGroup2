@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Axios, AxiosError, AxiosPromise, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios' ;
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ApiService {
-	private static apiUrl : string = 'localhost:8080/api/';
-	private ax : Axios;
+  constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }
 
-    constructor() { this.ax = new Axios(); }
-
-	public test(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError<any>)=>void){
-		this.ax.get(endpoint).then(callback).catch(onError);
-	}
+  public test(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void)
+  {
+    axios.get(endpoint).then(callback).catch(onError);
+  }
 }

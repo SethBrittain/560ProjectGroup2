@@ -10,7 +10,7 @@ export class MessageInputComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
-    
+
   }
 
   test() : void {
