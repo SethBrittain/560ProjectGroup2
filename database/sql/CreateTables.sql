@@ -104,6 +104,8 @@ CREATE TABLE Application.Messages
 )
 GO
 
+ALTER TABLE Application.User 
+
 /* Grant Permissions */
 
 GRANT INSERT ON SCHEMA :: Application TO sbrittain;  
@@ -114,6 +116,10 @@ GRANT SELECT ON SCHEMA :: Application TO hcossins;
 
 GRANT INSERT ON SCHEMA :: Application TO cohammo;  
 GRANT SELECT ON SCHEMA :: Application TO cohammo; 
+
+GRANT UPDATE ON SCHEMA :: Application TO sbrittain;
+GRANT ALTER ON SCHEMA :: Application TO sbrittain;
+
 
 ALTER TABLE Application.Messages ADD CONSTRAINT [check_only_one_recipient] CHECK(
         Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
