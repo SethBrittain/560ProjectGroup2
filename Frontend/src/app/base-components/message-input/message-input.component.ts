@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AxiosError, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { ApiService } from 'src/app/services/api-service.service';
 @Component({
   selector: 'app-message-input',
@@ -11,6 +10,10 @@ export class MessageInputComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
-    this.api.test("Example").then((response : object) => { console.log(response); });
+    
+  }
+
+  test() : void {
+    this.api.test("/Example", (response)=>{console.log(response.data);}, (error)=>{console.log(error.message);});
   }
 }
