@@ -24,7 +24,7 @@ AS
 SELECT M.Message, M.SenderId /* update to include the name of the user who send the message */ 
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
-WHERE C.ChannelId = 7
+WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO
 
@@ -103,6 +103,9 @@ FROM Application.Organizations;
 
 SELECT *
 FROM Application.Channels;
+
+SELECT *
+FROM Application.Messages;
 
  
 
