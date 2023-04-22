@@ -82,17 +82,32 @@ public class UserController {
 
 	@GetMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
-	public ArrayList<String> GetAllUsersInOrganization(@RequestParam organizationId)
+	public ArrayList<String> GetAllUsersInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllUsersInOrganization(organizationId);
 	}
 
 	@GetMapping("/api/GetUserInfo")
 	@ResponseBody
-	public ArrayList<String> GetUserInfo(@RequestParam String username)
+	public ArrayList<String> GetUserInfo(@RequestParam String email)
 	{
 		return database.GetUserInfo(username); 
 	}
+
+	@PutMapping("/api/InsertMessageIntoChannel")
+	@ResponseBody
+	public ArrayList<String> InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
+
+		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+	}
+
+	@PutMapping("/api/InsertDirectMessage")
+	@ResponseBody
+	public ArrayList<String> InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
+
+		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+	}
+
 
 
 }
