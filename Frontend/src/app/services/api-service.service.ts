@@ -8,8 +8,14 @@ import axios from 'axios' ;
 export class ApiService {
   constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }
 
-  public test(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void)
+  public get(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
   {
-    axios.get(endpoint).then(callback).catch(onError);
+    axios.get(endpoint, data).then(callback).catch(onError);
   }
+
+  public put(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
+  {
+    axios.put(endpoint, data).then(callback).catch(onError);
+  }
+  
 }
