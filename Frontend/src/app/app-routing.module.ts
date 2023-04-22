@@ -9,8 +9,7 @@ import { ChatComponent } from './group-components/chat/chat.component';
 // more documentation can be found here: https://angular.io/tutorial/tour-of-heroes/toh-pt5
 const routes: Routes = [
   { path: '', component: LogInComponent },
-  { path: 'client', component: MainWindowComponent },
-  { path: 'client/', component: ChatComponent },
+  { path: 'app', component: MainWindowComponent },
 ];
 
 @NgModule({
