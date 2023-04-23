@@ -11,7 +11,8 @@ import { EmptyStateComponent } from './group-components/empty-state/empty-state.
 // Add routes here in the form of { path: 'pagepath', component: PageComponent } 
 // more documentation can be found here: https://angular.io/tutorial/tour-of-heroes/toh-pt5
 const routes: Routes = [
-  { path: '', component: LogInComponent },
+  { path: '', redirectTo:'login',pathMatch:'full' },
+  { path: 'login', component: LogInComponent },
   { path: 'app', component: MainWindowComponent, 
   children: [
     { path:'', component: EmptyStateComponent },
