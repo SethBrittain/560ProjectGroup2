@@ -82,7 +82,7 @@ public class UserController {
 
 	@GetMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
-	public ArrayList<String> GetAllUsersInOrganization(@RequestParam organizationId)
+	public ArrayList<String> GetAllUsersInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllUsersInOrganization(organizationId);
 	}
