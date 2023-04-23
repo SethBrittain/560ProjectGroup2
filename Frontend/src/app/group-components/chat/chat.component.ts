@@ -11,6 +11,7 @@ import { ParamMap } from '@angular/router'
 export class ChatComponent implements OnInit {
 
   title:string = '';
+  channelId: any = '';
   messages:any[] = [
     {id:123, name:'Channel1'},
     {id:124, name:'Channel2'},
@@ -25,6 +26,8 @@ export class ChatComponent implements OnInit {
       let id = this.route.snapshot.paramMap.get('id');
       let type = this.route.snapshot.paramMap.get('type');
       this.title = type +' ' + id;
+      this.channelId = id;
+
 
       if (type == 'channel'){
         //messages = this.api.GetAllChannelMessages(id);
