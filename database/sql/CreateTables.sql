@@ -5,11 +5,11 @@ GO
 DROP TABLE IF EXISTS Application.Messages;
 DROP TABLE IF EXISTS Application.Channels;
 DROP TABLE IF EXISTS Application.Memberships;
-DROP FUNCTION IF EXISTS Application.CheckOrganizations
 DROP TABLE IF EXISTS Application.Groups;
 DROP TABLE IF EXISTS Application.Users;
 DROP TABLE IF EXISTS Application.Roles;
 DROP TABLE IF EXISTS Application.Organizations;
+DROP FUNCTION IF EXISTS Application.CheckOrganizations
 GO
 
 CREATE OR ALTER FUNCTION Application.CheckOrganizations(@UserId INT, @GroupId INT)
@@ -112,9 +112,8 @@ ALTER TABLE Application.Users
 ALTER COLUMN ProfilePhoto NVARCHAR(max);
 
 /* Grant Permissions */
+
 /*
 GRANT CONTROL ON SCHEMA :: Application TO hcossins;
-GRANT CONTROL ON SCHEMA :: Application TO sbrittain;*/
-
-/*ALTER TABLE Application.Messages ADD CONSTRAINT [check_only_one_recipient] CHECK(
-        Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)*/
+GRANT CONTROL ON SCHEMA :: Application TO sbrittain;
+GRANT CONTROL ON SCHEMA :: Application TO slhaynes4542;*/
