@@ -1,5 +1,5 @@
 <li class="my-2">
-   <a href="#" class="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 dark:text-white group">
+   <a [routerLink]="['/-', type, userId]" class="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 dark:text-white group">
       <img class="w-6 h-6 rounded-full bg-indigo-500" src="{{ image }}" alt="user photo">
       <span class="ml-4">{{ firstName }} {{ lastName }}</span>
    </a>
