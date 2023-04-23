@@ -6,7 +6,9 @@ import { Component, OnInit, Input} from '@angular/core';
   styleUrls: ['./dm-list-item.component.css']
 })
 export class DmListItemComponent implements OnInit {
-  
+
+  type: string = 'user';
+  @Input() userId: string = '';
   @Input() firstName: string = '';
   @Input() lastName: string = '';
   @Input() image: string = '';
