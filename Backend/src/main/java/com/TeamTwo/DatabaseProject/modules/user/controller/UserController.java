@@ -35,9 +35,9 @@ public class UserController {
 	 */
 	@GetMapping("/api/OrganizationsData")
 	@ResponseBody
-	public ArrayList<String> GetOrganizationsData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
+	public ArrayList<String> GetOrganizationData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
 	{
-		return database.GetOrganizationsData(startDate, endDate);
+		return database.GetOrganizationData(startDate, endDate);
 	}
 
 	/**
@@ -47,9 +47,9 @@ public class UserController {
 	 */
 	@GetMapping("/api/ChannelMessages")
 	@ResponseBody
-	public ArrayList<String> GetChannelMessages(@RequestParam int ChannelId)
+	public ArrayList<String> GetAllChannelMessages(@RequestParam int ChannelId)
 	{
-		return database.GetChannelMessages(ChannelId);
+		return database.GetAllChannelMessages(ChannelId);
 	}
 
 	/**
@@ -71,4 +71,50 @@ public class UserController {
 	{
 		return database.GetGroupChannels(groupId);
 	}
+
+
+	@GetMapping("/api/MessagesMatchingSubstring")
+	@ResponseBody
+	public ArrayList<String> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
+	{
+		return database.GetAllMessagesMatchingSubstring(substring, channelId);
+	}
+
+	@GetMapping("/api/GetAllChannelsInOrganization")
+	@ResponseBody
+	public ArrayList<String> GetAllChannelsInOrganization(@RequestParam int organizationId)
+	{
+		return database.GetAllChannelsInOrganization(organizationId);
+	}
+
+	@GetMapping("/api/GetAllUsersInOrganization")
+	@ResponseBody
+	public ArrayList<String> GetAllUsersInOrganization(@RequestParam int organizationId)
+	{
+		return database.GetAllUsersInOrganization(organizationId);
+	}
+
+	@GetMapping("/api/GetUserInfo")
+	@ResponseBody
+	public ArrayList<String> GetUserInfo(@RequestParam String email)
+	{
+		return database.GetUserInfo(username); 
+	}
+
+	@PutMapping("/api/InsertMessageIntoChannel")
+	@ResponseBody
+	public ArrayList<String> InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
+
+		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+	}
+
+	@PutMapping("/api/InsertDirectMessage")
+	@ResponseBody
+	public ArrayList<String> InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
+
+		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+	}
+
+
+
 }

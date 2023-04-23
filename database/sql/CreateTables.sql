@@ -108,6 +108,8 @@ CREATE TABLE Application.Messages
 		Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
 )
 GO
+ALTER TABLE Application.Users
+ALTER COLUMN ProfilePhoto NVARCHAR(max);
 
 /* Grant Permissions */
 /*
