@@ -1,9 +1,6 @@
-USE cis560_SP23_T1
-GO
-
 
 /* Aggregating Query 1 */ 
-CREATE PROCEDURE Application.GetOrganizationData
+CREATE OR ALTER PROCEDURE Application.GetOrganizationData
 @FirstDate DATETIME,
 @LastDate DATETIME
 AS
@@ -11,14 +8,12 @@ SELECT O.Name, SUM(IIF(U.Active = 1,1,0)) AS ActiveUserCount, Count(M.MsgId) AS 
 FROM Application.Organizations O
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
-WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+--WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
-
-
 /* General Query 1: Fetch all messages for a channel */
-CREATE PROCEDURE Application.GetAllChannelMessages
+CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
 SELECT M.Message, M.SenderId /* update to include the name of the user who send the message */ 
@@ -28,9 +23,8 @@ WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO
 
-
 /* General Query 2: Fetch all messages between given sender and recipient */
-CREATE PROCEDURE Application.GetDirectMessages
+CREATE OR ALTER PROCEDURE Application.GetDirectMessages
 @UserAId INT,
 @UserBId INT
 AS
@@ -40,7 +34,7 @@ AS
 GO
 
 /* General Query 3: Show all messages that match a substring within a given channel over a specified date range. */
-CREATE PROCEDURE Application.GetAllMessagesMatchingSubstring   
+CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring   
 @Substring NVARCHAR(255),
 @ChannelId INT
 AS
@@ -52,7 +46,7 @@ AS
 GO
 
 /* General Query 4: Get all channels in a Organization */
-CREATE PROCEDURE Application.GetAllChannelsInOrganization
+CREATE OR ALTER PROCEDURE Application.GetAllChannelsInOrganization
 @OrganizationId INT
 AS
 SELECT C.ChannelId, C.Name
@@ -63,7 +57,7 @@ WHERE O.OrganizationId = @OrganizationId
 GO
 
 /*General Query 5: Get All Channels In Groups*/
-CREATE PROCEDURE Application.GetAllChannelsInGroup
+CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
 @OrganizationId INT,
 @GroupId INT
 AS
@@ -73,9 +67,8 @@ INNER JOIN Application.Organizations O ON O.OrganizationId = G.OrganizationId
 WHERE G.GroupId = @GroupId AND O.OrganizationId = @OrganizationId
 GO
 
-
 /* General Query 6: Get all users in Organization */
-CREATE PROCEDURE Application.GetAllUsersInOrganization
+CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
 SELECT U.UserId, U.FirstName, U.LastName, U.Username
@@ -85,17 +78,16 @@ WHERE O.OrganizationId = @OrganizationId;
 GO
 
 /* General Query 7: Get users info via username */ 
-ALTER PROCEDURE Application.GetUserInfo
-@Email NVARCHAR(32)
+CREATE OR ALTER PROCEDURE Application.GetUserInfo
+@Username NVARCHAR(32)
 AS
 SELECT U.Email, U.FirstName, U.LastName, U.Password, U.OrganizationId
 FROM Application.Users U
-WHERE U.Email = @Email
+WHERE U.Email = @Username
 GO
 
-
 /*General Query 8: Insert Message into channel */
-CREATE PROCEDURE Application.InsertMessageIntoChannel
+CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
 @Message NVARCHAR(128),
 @SenderId INT,
 @ChannelId INT
@@ -105,7 +97,7 @@ VALUES (@Message, @SenderId, @ChannelId)
 GO 
 
 /*General Query 9: Insert Direct Message */
-CREATE PROCEDURE Application.InsertDirectMessage
+CREATE OR ALTER PROCEDURE Application.InsertDirectMessage
 @Message NVARCHAR(128),
 @SenderId INT,
 @RecipientId INT
@@ -113,21 +105,3 @@ AS
 INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
 GO
-
- 
-SELECT *
-FROM Application.Users;
-
-SELECT *
-FROM Application.Organizations;
-
-SELECT *
-FROM Application.Channels;
-
-SELECT *
-FROM Application.Messages;
-
- 
-
-
-

@@ -27,19 +27,16 @@ public class UserDatabase
 	 * Helper method to send a query to the database and parse the results for the given query
 	 * @param columns The number of columns the query will return
 	 * @param query The query to send to the database
-	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results were empty
+	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results are empty, "Error" if there was an error accessing the database
 	 */
-	private ArrayList<String> sendQuery(int columns, String query)
+	private ArrayList<String> sendQuery(String query)
 	{
 		ArrayList<String> results = new ArrayList<String>();
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{
 			ResultSet rs = stmt.executeQuery();
-			if (rs.isBeforeFirst())
-			{
-				results = new ArrayList<String>();
-				results.add("No Error");
-			}
+			int columns = rs.getMetaData().getColumnCount();
+			if (rs.isBeforeFirst()) results.add("Success");
 			else results.add("Empty");
 			while (rs.next())
 			{
@@ -69,7 +66,7 @@ public class UserDatabase
 				VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu')
 			) T(PersonId, FirstName, LastName, Email);
 		""";
-		return sendQuery(2, query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -79,7 +76,7 @@ public class UserDatabase
 	public ArrayList<String> GetOrganizationData(DateTimeOffset start, DateTimeOffset end)
 	{
 		String query = "EXEC Application.GetOrganizationData " + start + " " + end;
-		return sendQuery(3, query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -90,7 +87,7 @@ public class UserDatabase
 	public ArrayList<String> GetAllChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
-		return sendQuery(1, query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -171,13 +168,14 @@ public class UserDatabase
 	public void InsertDirectMessage(String message, int senderId, int recipientId)
 	{
 		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + RecipientId; 
+		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userA + " " + userB;
+		return sendQuery(query);
 	}
 
-	
-
-
-
-
-	
+	public ArrayList<String> GetGroupChannels(int groupId)
+	{
+		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
+		return sendQuery(query);
+	}
 
 }
