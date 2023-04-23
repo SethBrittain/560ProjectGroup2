@@ -7,9 +7,7 @@ import axios from 'axios' ;
 })
 export class ApiService {
 
-  userId: string = '12345';
-
-  constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }
+  constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }  
 
   public test(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void)
   {

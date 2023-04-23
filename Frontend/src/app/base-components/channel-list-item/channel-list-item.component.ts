@@ -17,4 +17,10 @@ export class ChannelListItemComponent implements OnInit {
   ngOnInit(): void {
       
   }
+
+  reloadPage() {
+    setTimeout(()=>{
+      window.location.reload();
+    }, 1);
+  }
 }

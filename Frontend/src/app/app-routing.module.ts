@@ -16,7 +16,7 @@ const routes: Routes = [
   children: [
     { path:'', component: EmptyStateComponent },
     { path:'-/:type/:id', component: ChatComponent },
-    { path:'search', component: SearchResultsComponent }
+    { path:'search/:terms', component: SearchResultsComponent }
   ]},
   { path: '**', redirectTo:'app' },
 ];
