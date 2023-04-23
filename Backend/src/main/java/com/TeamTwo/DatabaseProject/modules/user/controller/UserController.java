@@ -65,6 +65,13 @@ public class UserController {
 		return database.GetDirectMessages(userA, userB);
 	}
 
+	@GetMapping("/api/GroupChannels")
+	@ResponseBody
+	public ArrayList<String> GetGroupChannels(@RequestParam int groupId)
+	{
+		return database.GetGroupChannels(groupId);
+	}
+
 
 	@GetMapping("/api/MessagesMatchingSubstring")
 	@ResponseBody
