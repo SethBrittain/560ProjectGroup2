@@ -6,7 +6,9 @@ import { Component, OnInit, Input} from '@angular/core';
   styleUrls: ['./dm-list-item.component.css']
 })
 export class DmListItemComponent implements OnInit {
-  
+
+  type: string = 'chat';
+  @Input() userId: string = '';
   @Input() firstName: string = '';
   @Input() lastName: string = '';
   @Input() image: string = '';
@@ -15,5 +17,11 @@ export class DmListItemComponent implements OnInit {
 
   ngOnInit(): void {
       
+  }
+
+  reloadPage() {
+    setTimeout(()=>{
+      window.location.reload();
+    }, 1);
   }
 }
