@@ -142,13 +142,35 @@ public class UserDatabase
 
 	/**
 	 * Get user info via username 
-	 * @param username username 
+	 * @param email email 
 	 * @return ArrayList - Username, FirstName, LastName, Password, OrganizationId
 	 */
-	public ArrayList<String> GetUserInfo(String username)
+	public ArrayList<String> GetUserInfo(String email)
 	{
-		String query = "EXEC Application.GetUserInfo " + username;
+		String query = "EXEC Application.GetUserInfo " + email;
 		return sendQuery(5, query);
+	}
+
+	/**
+	 * Insert Message into channel
+	 * @param message Message to insert
+	 * @param senderId sender id
+	 * @param channelId recipient id
+	 */
+	public void InsertMessageIntoChannel(String message, int senderId, int recipientId)
+	{
+		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + channelId; 
+	}
+
+	/**
+	 * Insert direct message
+	 * @param message message to insert
+	 * @param senderId sender id
+	 * @param recipientId recipient id 
+	 */
+	public void InsertDirectMessage(String message, int senderId, int recipientId)
+	{
+		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + RecipientId; 
 	}
 
 	
