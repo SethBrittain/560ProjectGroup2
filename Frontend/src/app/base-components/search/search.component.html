@@ -4,11 +4,7 @@
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
-        <a class="absolute inset-y-0 right-4 flex items-center pl-3 pointer-events-none">
-            <svg aria-hidden="true" width="24" height="24" class="text-gray-500 dark:text-gray-400 hover:text-gray-600 hover:dark:text-gray-300" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.4142 12L19.7782 18.364L18.364 19.7782L12 13.4143L5.63604 19.7782L4.22183 18.364L10.5858 12L4.22183 5.63608L5.63604 4.22187L12 10.5858L18.364 4.22187L19.7782 5.63608L13.4142 12Z" fill="currentColor"/></svg>
-        </a>
-        <input id="default-search" type="search" class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-gray-white dark:hover:bg-gray-800 transition ease-in-out" placeholder="Search" required>
+        <input #box id="default-search" type="search" (keyup)="0" class="block w-full p-2 pl-10 text-sm text-gray-900 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-gray-white dark:hover:bg-gray-800 transition ease-in-out" placeholder="Search" required>
     </div>
-    <!--Type issue-->
-    <button class="transition ease-in-out ml-2 border-gray-300 text-white bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 border dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-800">Search</button>
+    <button [routerLink]="['./search', searchTerm]" (click)="search(box.value)" class="transition ease-in-out ml-2 text-gray-800 bg-white shadow-none hover:shadow-md hover:shadow-slate-100 dark:hover:shadow:none dark:hover:shadow-slate-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2 border border-slate-200 dark:text-white dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-800">Search</button>
 </form>

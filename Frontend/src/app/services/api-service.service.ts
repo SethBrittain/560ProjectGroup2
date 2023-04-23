@@ -6,7 +6,8 @@ import axios from 'axios' ;
 	providedIn: 'root'
 })
 export class ApiService {
-  constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }
+
+  constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }  
 
   public get(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
   {
