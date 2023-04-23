@@ -1,21 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent {
-  
+export class SearchComponent implements OnInit {
+
   searchTerm: string = '';
+  constructor(public router: Router){}
 
-  constructor(){}
+  ngOnInit(): void {
+      
+  }
 
-  search(val:string) {
+  getVal(event:any) {
 
-    console.warn(val);
-    this.searchTerm = val;
+    this.searchTerm = event.target.value;
 
+  }
+
+  search() {
+    this.router.navigate(['/app/search', this.searchTerm]);
+    
     setTimeout(()=>{
       window.location.reload();
     }, 1);

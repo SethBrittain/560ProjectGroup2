@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 
 @Component({
@@ -8,6 +8,8 @@ import { ApiService } from 'src/app/services/api-service.service';
 })
 export class MessageInputComponent implements OnInit {
 
+  @Input()
+  channelId: string = '';
 
   constructor(private api: ApiService) { 
     
