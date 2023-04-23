@@ -8,7 +8,7 @@ SELECT O.Name, SUM(IIF(U.Active = 1,1,0)) AS ActiveUserCount, Count(M.MsgId) AS 
 FROM Application.Organizations O
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
-WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+--WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 

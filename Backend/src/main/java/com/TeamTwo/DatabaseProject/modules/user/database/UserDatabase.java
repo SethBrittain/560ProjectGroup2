@@ -27,7 +27,7 @@ public class UserDatabase
 	 * Helper method to send a query to the database and parse the results for the given query
 	 * @param columns The number of columns the query will return
 	 * @param query The query to send to the database
-	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results were empty
+	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results are empty, "Error" if there was an error accessing the database
 	 */
 	private ArrayList<String> sendQuery(String query)
 	{
@@ -102,6 +102,10 @@ public class UserDatabase
 		return sendQuery(query);
 	}
 
-	
+	public ArrayList<String> GetGroupChannels(int groupId)
+	{
+		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
+		return sendQuery(query);
+	}
 
 }
