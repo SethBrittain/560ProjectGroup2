@@ -82,12 +82,12 @@ public class UserDatabase
 	/**
 	 * Gets all the messages from the given channel
 	 * @param ChannelId The ID number of the channel to get messages from
-	 * @return ArrayList - Message, null if no results
+	 * @return ArrayList - Message, FirstName, LastName, CreatedOn
 	 */
 	public ArrayList<String> GetAllChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
-		return sendQuery(query);
+		return sendQuery(4,query);
 	}
 
 	/**
