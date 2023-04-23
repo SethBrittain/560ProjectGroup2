@@ -46,7 +46,7 @@ AS
 GO
 
 /* General Query 4: Get all channels in a Organization */
-CREATE PROCEDURE Application.GetAllChannelsInOrganization
+CREATE OR ALTER PROCEDURE Application.GetAllChannelsInOrganization
 @OrganizationId INT
 AS
 SELECT C.ChannelId, C.Name
@@ -57,7 +57,7 @@ WHERE O.OrganizationId = @OrganizationId
 GO
 
 /*General Query 5: Get All Channels In Groups*/
-CREATE PROCEDURE Application.GetAllChannelsInGroup
+CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
 @OrganizationId INT,
 @GroupId INT
 AS
@@ -66,7 +66,6 @@ FROM Application.Groups G
 INNER JOIN Application.Organizations O ON O.OrganizationId = G.OrganizationId
 WHERE G.GroupId = @GroupId AND O.OrganizationId = @OrganizationId
 GO
-
 
 /* General Query 6: Get all users in Organization */
 CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
@@ -84,12 +83,11 @@ CREATE OR ALTER PROCEDURE Application.GetUserInfo
 AS
 SELECT U.Email, U.FirstName, U.LastName, U.Password, U.OrganizationId
 FROM Application.Users U
-WHERE U.Email = @Email
+WHERE U.Email = @Username
 GO
 
-
 /*General Query 8: Insert Message into channel */
-CREATE PROCEDURE Application.InsertMessageIntoChannel
+CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
 @Message NVARCHAR(128),
 @SenderId INT,
 @ChannelId INT
@@ -99,7 +97,7 @@ VALUES (@Message, @SenderId, @ChannelId)
 GO 
 
 /*General Query 9: Insert Direct Message */
-CREATE PROCEDURE Application.InsertDirectMessage
+CREATE OR ALTER PROCEDURE Application.InsertDirectMessage
 @Message NVARCHAR(128),
 @SenderId INT,
 @RecipientId INT
@@ -107,21 +105,3 @@ AS
 INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
 GO
-
- 
-SELECT *
-FROM Application.Users;
-
-SELECT *
-FROM Application.Organizations;
-
-SELECT *
-FROM Application.Channels;
-
-SELECT *
-FROM Application.Messages;
-
- 
-
-
-
