@@ -45,8 +45,8 @@ export class MessageInputComponent implements OnInit {
   }
 
   SendMessageHandler(){
-    this.InsertMessageIntoChannel(this.message, "1", this.channelId);
-  //this.GetAllChannelsInGroup("1");
+    //this.InsertMessageIntoChannel(this.message, "23", "124");
+  this.GetAllChannelsInGroup("1");
    // this.GetAllChannelMessages("1");
     console.log("SendMessageHandlerHit");
   }
@@ -99,9 +99,12 @@ export class MessageInputComponent implements OnInit {
     form.append("groupId", groupId);
     console.log(form);
     console.log(groupId);
-    this.api.get("/GetAllChannelsInGroup",  (response)=>
+    this.api.put("/GetAllChannelsInGroup",  (response)=>
     {
-      console.log(response.data);
+      let fruit : string[] = response.data;
+      console.log(fruit[1]);
+      console.log(fruit[2]);
+      console.log(fruit[3]);
     }, (error)=>{console.log(error.message);},
      form);
   }

@@ -58,7 +58,7 @@ WHERE O.OrganizationId = @OrganizationId
 GO
 
 /*General Query 5: Get All Channels In Groups*/
-CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
+ALTER PROCEDURE Application.GetAllChannelsInGroup
 @GroupId INT
 AS
 SELECT *
@@ -110,4 +110,8 @@ FROM Application.Channels;
 
 SELECT *
 FROM Application.Messages M
-WHERE M.ChannelId = 123;
+WHERE M.ChannelId = 124;
+
+EXEC Application.InsertMessageIntoChannel "efe",1,123;
+
+EXEC Application.GetAllChannelsInGroup 1;
