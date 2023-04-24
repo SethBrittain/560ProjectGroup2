@@ -58,7 +58,7 @@ WHERE O.OrganizationId = @OrganizationId
 GO
 
 /*General Query 5: Get All Channels In Groups*/
-CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
+ALTER PROCEDURE Application.GetAllChannelsInGroup
 @GroupId INT
 AS
 SELECT *

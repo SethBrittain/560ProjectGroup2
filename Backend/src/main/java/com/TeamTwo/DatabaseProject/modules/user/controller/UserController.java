@@ -66,7 +66,7 @@ public class UserController {
 		return database.GetDirectMessages(userA, userB);
 	}
 
-	@GetMapping("/api/GetAllChannelsInGroup")
+	@PutMapping("/api/GetAllChannelsInGroup")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllChannelsInGroup(@RequestParam int groupId)
 	{
