@@ -30,12 +30,26 @@ export class ChatComponent implements OnInit {
     this.channelId = id;
   }
 
+<<<<<<< HEAD
   getMessages(id: any, type: any) {
     // Gets the messages from a channelId
     if (type == 'channel') {
       let form = new FormData();
       form.append("ChannelId", id);
       console.log(form);
+=======
+
+      if (type == 'channel'){
+        
+        this.GetAllChannelMessages(String(id));
+        //messages = this.api.GetAllChannelMessages(id);
+        //name = this.api.GetChannelName(id)
+      }
+      else {
+        //messages = this.api.GetDirectMessages(id, this.api.GetUserId());
+        //name = this.api.GetUserName(id)
+      }
+>>>>>>> origin
 
       this.api.get("/GetAllChannelMessages",
         (response) => {
@@ -54,6 +68,7 @@ export class ChatComponent implements OnInit {
       form.append("UserId", id);
       console.log(form);
 
+<<<<<<< HEAD
       this.api.get("/GetDirectMessages",
         (response) => {
           console.log(response.data);
@@ -63,6 +78,25 @@ export class ChatComponent implements OnInit {
         form
       );
     }
+=======
+      
+      GetAllChannelMessages( channelId : string){
+        let form = new FormData();
+        form.append("channelId", channelId);
+        console.log(form);
+        console.log(channelId);
+        this.api.get("/GetAllChannelMessages",  (response)=>
+        {
+          this.messages = response.data;
+          console.log(response.data);
+        }, (error)=>{console.log(error.message);},
+         {
+          channelId : channelId
+         });
+      }
+      
+
+>>>>>>> origin
   }
 
   //getName
