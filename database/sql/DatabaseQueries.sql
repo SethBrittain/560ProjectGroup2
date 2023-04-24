@@ -1,17 +1,4 @@
 
--- Get data from all organizations
-CREATE OR ALTER PROCEDURE Application.GetOrganizationData
-@FirstDate DATETIMEOFFSET,
-@LastDate DATETIMEOFFSET
-AS
-SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
-FROM Application.Organizations O
-INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
-LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
-WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
-GROUP BY O.Name
-GO
-
 -- Get all the messages in a channel
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
@@ -121,14 +108,15 @@ INSERT INTO Application.Users
 VALUES (@OrganizationId, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
 GO
 
-/*Query 11: Delete Message From Database */
+-- delete message from database
 CREATE PROCEDURE Application.DeleteMessage
 @MessageId INT
 AS
 DELETE FROM Application.Messages WHERE MsgId = @MessageId
 GO
 
-/* get id from api key */
+/*
+-- get user id from api key
 CREATE PROCEDURE Application.GetUserIdFromAPIKey
 @apikey NVARCHAR(MAX)
 AS
@@ -138,9 +126,9 @@ WHERE U.ApiKey = @apikey;
 GO
 
 
-/***** Aggregated Queries *****/
+-- Aggregated Queries
 
-/* Aggregated Query 1 */ 
+-- Aggregate Query 1
 CREATE OR ALTER PROCEDURE Application.GetOrganizationData
 @FirstDate DATETIMEOFFSET,
 @LastDate DATETIMEOFFSET
@@ -153,7 +141,7 @@ WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
-/* Aggregated Query 3 */
+-- Aggregate Query 3
 CREATE PROCEDURE Application.AppTraffic
 @FirstDate DATETIMEOFFSET,
 @LastDate DATETIMEOFFSET
@@ -170,8 +158,9 @@ GO
 SELECT *
 FROM Application.Messages M;
 
-/* Aggregated Query 4 */
+-- Aggregate Query 4
 CREATE PROCEDURE Application.AppGrowth
 @numberOfYears INT
 AS
 SELECT 
+*/
