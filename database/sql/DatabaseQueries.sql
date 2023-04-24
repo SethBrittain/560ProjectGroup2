@@ -16,9 +16,10 @@ GO
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
-SELECT M.Message, M.SenderId /* update to include the name of the user who send the message */ 
+SELECT M.Message, U.FirstName, U.LastName , M.CreatedOn /* update to include the name of the user who send the message */ 
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
+INNER JOIN Application.Users U ON M.SenderId = U.UserId
 WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO
@@ -92,7 +93,7 @@ CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
 @SenderId INT,
 @ChannelId INT
 AS 
-INSERT INTO Application.Messages ([Message], SenderId, ChanneldId)
+INSERT INTO Application.Messages ([Message], SenderId, ChannelId)
 VALUES (@Message, @SenderId, @ChannelId)
 GO 
 
@@ -105,3 +106,10 @@ AS
 INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
 GO
+
+SELECT *
+FROM Application.Channels;
+
+SELECT *
+FROM Application.Messages M
+WHERE M.ChannelId = 123;

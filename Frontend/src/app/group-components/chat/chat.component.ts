@@ -30,6 +30,8 @@ export class ChatComponent implements OnInit {
 
 
       if (type == 'channel'){
+        
+       // this.GetAllChannelMessages(Number(id));
         //messages = this.api.GetAllChannelMessages(id);
         //name = this.api.GetChannelName(id)
       }
@@ -38,6 +40,27 @@ export class ChatComponent implements OnInit {
         //name = this.api.GetUserName(id)
       }
 
+      
+
+      }
+
+      /*
+      GetAllChannelMessages(channelId : number) : void
+      {
+        this.api.put("/GetAllChannelMessages",  (response)=>
+        {
+          this.messages.push({Message: "lorem 30", FirstName: "sam", LastName: "haynes", CreatedOn: "12/2/1999" })
+          console.log(response.data);
+        }, (error)=>{console.log(error.message);},
+        {
+          channelId : channelId
+        });
+      }
+      */
+
   }
 
-}
+
+
+
+

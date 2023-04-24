@@ -8,8 +8,14 @@ import { ApiService } from 'src/app/services/api-service.service';
 })
 export class MessageInputComponent implements OnInit {
 
+  message : string = '';
+
+  @Input()
+  senderId: string = '';
+  
   @Input()
   channelId: string = '';
+
 
   constructor(private api: ApiService) { 
     
@@ -29,9 +35,17 @@ export class MessageInputComponent implements OnInit {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
     {
-      username: username //pass values from front end into dictionary to be used by the back-end
+      username: username 
     });
   
+  }
+
+  GetVal(event:any){
+    this.message = event?.target.value;
+  }
+
+  SendMessageHandler(){
+    this.InsertMessageIntoChannel(this.message, "1", this.channelId);
   }
 
   /**
@@ -40,18 +54,17 @@ export class MessageInputComponent implements OnInit {
 	 * @param senderId sender id
 	 * @param channelId recipient id
 	 */
-  InsertMessageIntoChannel( message : String, senderId : number, channelId : number) : void
+  InsertMessageIntoChannel( message : string, senderId : string, channelId : string) : void
   {
-    
-    this.api.put("/api/InsertMessageIntoChannel",  (response)=>
+    let form = new FormData();
+    form.append("message", message);
+    form.append("senderId", senderId);
+    form.append("channelId", channelId);
+    this.api.put("/InsertMessageIntoChannel",  (response)=>
     {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
-    {
-      message : message,
-      senderId : senderId,
-      channelId : channelId
-    });
+     form);
   }
 
   	/**
@@ -63,7 +76,7 @@ export class MessageInputComponent implements OnInit {
   InsertDirectMessage( message : String, senderId : number, recipientId : number) : void
   {
     
-    this.api.put("/api/InsertDirectMessage",  (response)=>
+    this.api.put("/InsertDirectMessage",  (response)=>
     {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
