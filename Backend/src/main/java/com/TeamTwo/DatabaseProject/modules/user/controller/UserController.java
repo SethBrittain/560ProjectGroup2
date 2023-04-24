@@ -50,7 +50,7 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllChannelMessages(@RequestParam int ChannelId)
 	{
-		return database.GetAllChannelMessages(1);
+		return database.GetAllChannelMessages(ChannelId);
 	}
 
 	/**
