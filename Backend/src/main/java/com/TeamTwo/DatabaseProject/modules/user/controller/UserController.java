@@ -46,11 +46,11 @@ public class UserController {
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * @return ArrayList - Message
 	 */
-	@GetMapping("/api/ChannelMessages")
+	@GetMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<String> GetAllChannelMessages(@RequestParam int ChannelId)
+	public ArrayList<String> GetAllChannelMessages()
 	{
-		return database.GetAllChannelMessages(ChannelId);
+		return database.GetAllChannelMessages(1);
 	}
 
 	/**
@@ -66,11 +66,11 @@ public class UserController {
 		return database.GetDirectMessages(userA, userB);
 	}
 
-	@GetMapping("/api/GroupChannels")
+	@GetMapping("/api/GetAllChannelsInGroup")
 	@ResponseBody
-	public ArrayList<String> GetGroupChannels(@RequestParam int groupId)
+	public ArrayList<String> GetAllChannelsInGroup(@RequestParam(value="groupId", required=false, defaultValue = "1") int groupId)
 	{
-		return database.GetGroupChannels(groupId);
+		return database.GetAllChannelsInGroup(groupId);
 	}
 
 
