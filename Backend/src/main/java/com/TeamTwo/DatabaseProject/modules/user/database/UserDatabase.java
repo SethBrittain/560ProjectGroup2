@@ -133,7 +133,7 @@ public class UserDatabase
 	 */
 	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
-		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + " " + channelId;
+		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + "," + channelId;
 		return sendQuery(query);		
 	}
 
