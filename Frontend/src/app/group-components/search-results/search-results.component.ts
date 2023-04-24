@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from 'src/app/services/api-service.service';
-import { ActivatedRoute } from '@angular/router';
-import { ParamMap } from '@angular/router'
+import { SearchService } from 'src/app/services/search-service.service'
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-results',
@@ -10,12 +9,19 @@ import { ParamMap } from '@angular/router'
 })
 export class SearchResultsComponent implements OnInit {
 
-  title: string | null = '';
-  constructor(private api: ApiService, private route:ActivatedRoute){}
+  //searchResults = this.searchService.searchResult$; // gets the results from the service
+  searchResults: any;
+  title: string | null = ''; // this title shown in the header
+  constructor(private searchService: SearchService, private route:ActivatedRoute, private router: Router){}
 
   ngOnInit(): void {
     let term = this.route.snapshot.paramMap.get('terms');
     this.title = term;
+
+    this.searchService.searchResult$.subscribe((results: string[][]) => {
+      this.searchResults = results;
+      console.log(this.searchResults);
+    });
   }
 
 }

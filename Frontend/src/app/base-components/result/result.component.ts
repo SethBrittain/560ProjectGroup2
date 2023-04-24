@@ -7,7 +7,8 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ResultComponent implements OnInit {
 
-  @Input() name: string = '';
+  @Input() name: string = 'test name';
+  @Input() messageId: string = '';
 
   constructor(){}
 
