@@ -87,6 +87,7 @@ public class UserDatabase
 					(2, N'Jill', N'Cool', N'jillcool@ksu.edu')
 			) T(PersonId, FirstName, LastName, Email);
 		""";
+		
 		return sendQuery(query);
 	}
 
@@ -163,9 +164,10 @@ public class UserDatabase
 	 * @param email email 
 	 * @return ArrayList - Username, FirstName, LastName, Password, OrganizationId
 	 */
-	public ArrayList<ArrayList<String>> GetUserInfo(String email)
+	public ArrayList<ArrayList<String>> GetUserInfo(String username)
 	{
-		String query = "EXEC Application.GetUserInfo " + email;
+		// Right now email doesn't work, but username does, the SQL engine doesn't like the periods in email addresses
+		String query = "EXEC Application.GetUserInfo " + username;
 		return sendQuery(query);
 	}
 
