@@ -43,7 +43,8 @@ export class MessageInputComponent implements OnInit {
   }
 
   SendMessageHandler(){
-    this.InsertMessageIntoChannel(this.message, "apiKey", this.channelId);
+
+    this.InsertMessageIntoChannel(this.message, this.channelId);
     console.log("SendMessageHandlerHit");
   }
 
@@ -53,11 +54,10 @@ export class MessageInputComponent implements OnInit {
 	 * @param senderId sender id
 	 * @param channelId recipient id
 	 */
-  InsertMessageIntoChannel( message : string, senderId : string, channelId : string) : void
+  InsertMessageIntoChannel( message : string, channelId : string) : void
   {
     let form = new FormData();
     form.append("message", message);
-    form.append("senderId", senderId);
     form.append("channelId", channelId);
     this.api.put("/InsertMessageIntoChannel",  (response)=>
     {
