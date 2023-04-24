@@ -4,6 +4,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.swing.RowFilter.Entry;
+
 import java.sql.PreparedStatement;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,23 +35,26 @@ public class UserDatabase
 	 * @param query The query to send to the database
 	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results are empty, "Error" if there was an error accessing the database
 	 */
-	private ArrayList<ArrayList<String>> sendQuery(String query)
+	private ArrayList<Hashtable<String,String>> sendQuery(String query)
 	{
-		ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
-		results.add(new ArrayList<String>());
-		int i = 1;
+		ArrayList<Hashtable<String,String>> results = new ArrayList<Hashtable<String,String>>();
+		int i = 0;
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{
 			ResultSet rs = stmt.executeQuery();
 			int columns = rs.getMetaData().getColumnCount();
-			if (rs.isBeforeFirst()) results.get(0).add("Success");
-			else results.get(0).add("Empty");
+			//if (rs.isBeforeFirst()) results.get(0).add("Success");
+			//else results.get(0).add("Empty");
 			while (rs.next())
 			{
-				results.add(new ArrayList<String>());
+				Hashtable<String,String> m = new Hashtable<String,String>(); 
+				results.add(m);
+			 
 				for (int j = 1; j <= columns; j++)
 				{
-					results.get(i).add(rs.getString(j));
+					String columnName = rs.getMetaData().getColumnName(j);
+					results.get(i).put(columnName,rs.getString(j));
+
 				}
 				i++;
 			}
@@ -53,9 +62,7 @@ public class UserDatabase
 		catch (SQLException e) {
 			String error = e.toString();
 			System.out.println(error);
-			results.add(new ArrayList<String>());
-			results.get(i + 1).add("Error");
-			results.get(i + 1).add(error);
+			
 		}
 		return results;
 	}
@@ -77,7 +84,7 @@ public class UserDatabase
 	 * Example of getting info from a database for reference
 	 * @return ArrayList with: FirstName, Email
 	 */
-	public ArrayList<ArrayList<String>> TestQuery()
+	public ArrayList<Hashtable<String,String>> TestQuery()
 	{
 		String query = """
 			SELECT T.PersonId, T.FirstName, T.Email
@@ -95,7 +102,7 @@ public class UserDatabase
 	 * Gets data about all organizations in the database, counts messages for MessageCount from start to end
 	 * @return ArrayList - String OrgName, int ActiveUserCount, int MessageCount
 	 */
-	public ArrayList<ArrayList<String>> GetOrganizationData(DateTimeOffset start, DateTimeOffset end)
+	public ArrayList<Hashtable<String,String>> GetOrganizationData(DateTimeOffset start, DateTimeOffset end)
 	{
 		String query = "EXEC Application.GetOrganizationData " + start + " " + end;
 		return sendQuery(query);
@@ -106,7 +113,7 @@ public class UserDatabase
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * @return ArrayList - Message, FirstName, LastName, CreatedOn
 	 */
-	public ArrayList<ArrayList<String>> GetAllChannelMessages(int ChannelId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
 		return sendQuery(query);
@@ -118,7 +125,7 @@ public class UserDatabase
 	 * @param userB The ID of the second user
 	 * @return ArrayList - Message, SenderId
 	 */
-	public ArrayList<ArrayList<String>> GetDirectMessages(int userA, int userB)
+	public ArrayList<Hashtable<String,String>> GetDirectMessages(int userA, int userB)
 	{
 		String query = "EXEC Application.GetDirectMessages " + userA + " " + userB;
 		return sendQuery(query);
@@ -131,7 +138,7 @@ public class UserDatabase
 	 * @param channelId channel to search in
 	 * @return ArrayList - Message, SenderId
 	 */
-	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
+	public ArrayList<Hashtable<String,String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
 		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + "," + channelId;
 		return sendQuery(query);		
@@ -142,7 +149,7 @@ public class UserDatabase
 	 * @param organizationId organization identification
 	 * @return ArrayList - ChannelId, ChannelName
 	 */
-	public ArrayList<ArrayList<String>> GetAllChannelsInOrganization(int organizationId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelsInOrganization(int organizationId)
 	{
 		String query = "EXEC Application.GetAllChannelsInOrganization " + organizationId;
 		return sendQuery(query);		
@@ -153,7 +160,7 @@ public class UserDatabase
 	 * @param organizationId org identification
 	 * @return ArrayList - UserId, FirstName, LastName, Username
 	 */
-	public ArrayList<ArrayList<String>> GetAllUsersInOrganization(int organizationId)
+	public ArrayList<Hashtable<String,String>> GetAllUsersInOrganization(int organizationId)
 	{
 		String query = "EXEC Application.GetAllUsersInOrganization " + organizationId;
 		return sendQuery(query);
@@ -164,7 +171,7 @@ public class UserDatabase
 	 * @param email email 
 	 * @return ArrayList - Username, FirstName, LastName, Password, OrganizationId
 	 */
-	public ArrayList<ArrayList<String>> GetUserInfo(String username)
+	public ArrayList<Hashtable<String,String>> GetUserInfo(String username)
 	{
 		// Right now email doesn't work, but username does, the SQL engine doesn't like the periods in email addresses
 		String query = "EXEC Application.GetUserInfo " + username;
@@ -195,10 +202,12 @@ public class UserDatabase
 		return sendStatement(query);
 	}
 
-	public ArrayList<ArrayList<String>> GetAllChannelsInGroup(int groupId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelsInGroup(int groupId)
 	{
 		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
 		return sendQuery(query);
 	}
+
+	
 
 }
