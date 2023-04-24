@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -98,21 +99,21 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<String> GetUserInfo(@RequestParam String email)
 	{
-		return database.GetUserInfo(username); 
+		return database.GetUserInfo(email); 
 	}
 
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public ArrayList<String> InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
+	public void InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int channelId){
 
-		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+		database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
 	@PutMapping("/api/InsertDirectMessage")
 	@ResponseBody
-	public ArrayList<String> InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
+	public void InsertDirectMessage(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
 
-		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+		database.InsertDirectMessage(message, senderId, recipientId);
 	}
 
 
