@@ -35,14 +35,12 @@ export class SearchService implements OnInit{
         form.append("channelId", this.channelId);
         console.log(form);
 
-        this.api.put("/MessagesMatchingSubstring",
-        //this.api.get("/MessagesMatchingSubstring?substring="+term+"?channelId="+this.channelId,  
+        this.api.put("/MessagesMatchingSubstring", 
             (response) => {
                 console.log(response.data);
                 this.searchResult$ = response.data; }, 
             (error) => { console.log(error.message); },
             form
-            //{ substring: term, channelId: this.channelId }
         );
 
         return this.searchResult$; // fix this. This should return the api result
