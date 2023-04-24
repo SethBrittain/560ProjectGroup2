@@ -22,12 +22,12 @@ AS
  WHERE M.SenderId = @UserAId AND M.RecipientId = @UserBId OR M.SenderId = @UserBId AND M.RecipientId = @UserAId; 
 GO
 
-/* General Query 3: Show all messages that match a substring within a given channel over a specified date range. */
+/* General Query 3: Show all messages that match a substring within a given channel. */
 CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring   
 @Substring NVARCHAR(255),
 @ChannelId INT
 AS
- SELECT M.Message, M.SenderId
+ SELECT M.Message, M.SenderId,M.ChannelId, M.RecipientId, M.CreatedOn
  FROM Application.Channels C
  INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
  WHERE C.ChannelId = @ChannelId
@@ -58,7 +58,7 @@ GO
 CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
-SELECT U.UserId, U.FirstName, U.LastName, U.Username
+SELECT U.UserId, U.FirstName, U.LastName
 FROM Application.Organizations O 
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 WHERE O.OrganizationId = @OrganizationId;
@@ -161,6 +161,6 @@ FROM Application.Messages M;
 
 /* Aggregated Query 4 */
 CREATE PROCEDURE Application.AppGrowth
-
-
-
+@numberOfYears INT
+AS
+SELECT 

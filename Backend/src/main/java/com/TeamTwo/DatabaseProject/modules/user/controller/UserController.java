@@ -1,6 +1,7 @@
 package com.TeamTwo.DatabaseProject.modules.user.controller;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
 	@GetMapping("/api/Example")
-	public ArrayList<ArrayList<String>> TestQuery()
+	public ArrayList<Hashtable<String,String>> TestQuery()
 	{
 		return database.TestQuery();
 	}
@@ -36,7 +37,7 @@ public class UserController {
 	 */
 	@GetMapping("/api/OrganizationsData")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetOrganizationData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
+	public ArrayList<Hashtable<String,String>> GetOrganizationData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
 	{
 		return database.GetOrganizationData(startDate, endDate);
 	}
@@ -48,7 +49,7 @@ public class UserController {
 	 */
 	@GetMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetAllChannelMessages(@RequestParam int ChannelId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelMessages(@RequestParam int ChannelId)
 	{
 		return database.GetAllChannelMessages(ChannelId);
 	}
@@ -61,14 +62,14 @@ public class UserController {
 	 */
 	@GetMapping("/api/DirectMessages")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetDirectMessages(@RequestParam int userA, @RequestParam int userB)
+	public ArrayList<Hashtable<String,String>> GetDirectMessages(@RequestParam int userA, @RequestParam int userB)
 	{
 		return database.GetDirectMessages(userA, userB);
 	}
 
 	@PutMapping("/api/GetAllChannelsInGroup")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetAllChannelsInGroup(@RequestParam int groupId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelsInGroup(@RequestParam int groupId)
 	{
 		return database.GetAllChannelsInGroup(groupId);
 	}
@@ -76,38 +77,38 @@ public class UserController {
 
 	@GetMapping("/api/MessagesMatchingSubstring")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
+	public ArrayList<Hashtable<String,String>> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
 	{
 		return database.GetAllMessagesMatchingSubstring(substring, channelId);
 	}
 
 	@GetMapping("/api/GetAllChannelsInOrganization")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetAllChannelsInOrganization(@RequestParam int organizationId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelsInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllChannelsInOrganization(organizationId);
 	}
 
 	@GetMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetAllUsersInOrganization(@RequestParam int organizationId)
+	public ArrayList<Hashtable<String,String>> GetAllUsersInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllUsersInOrganization(organizationId);
 	}
 
 	@GetMapping("/api/GetUserInfo")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetUserInfo(@RequestParam String username)
+	public ArrayList<Hashtable<String,String>> GetUserInfo(@RequestParam String username)
 	{
 		return database.GetUserInfo(username);
 	}
 
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam String apiKey, @RequestParam int recipientId)
+	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey)
 	{
-
-		return database.InsertMessageIntoChannel(message, apiKey, recipientId);
+		int senderId = 4; //method to convert api key into int
+		return database.InsertMessageIntoChannel(message, senderId, recipientId);
 	}
 
 }
