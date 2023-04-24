@@ -46,6 +46,9 @@ export class MessageInputComponent implements OnInit {
 
   SendMessageHandler(){
     this.InsertMessageIntoChannel(this.message, "1", this.channelId);
+  //this.GetAllChannelsInGroup("1");
+   // this.GetAllChannelMessages("1");
+    console.log("SendMessageHandlerHit");
   }
 
   /**
@@ -86,6 +89,38 @@ export class MessageInputComponent implements OnInit {
       recipientId: recipientId
     });
   }
+
+  /* Testing other kinds of requests */ 
+  
+  GetAllChannelsInGroup( groupId : string) : void
+  {
+    
+    let form = new FormData();
+    form.append("groupId", groupId);
+    console.log(form);
+    console.log(groupId);
+    this.api.get("/GetAllChannelsInGroup",  (response)=>
+    {
+      console.log(response.data);
+    }, (error)=>{console.log(error.message);},
+     form);
+  }
+
+
+  GetAllChannelMessages( channelId : string){
+    let form = new FormData();
+    form.append("channelId", channelId);
+    console.log(form);
+    console.log(channelId);
+    this.api.get("/GetAllChannelMessages",  (response)=>
+    {
+      console.log(response.data);
+    }, (error)=>{console.log(error.message);},
+     {
+      channelId : channelId
+     });
+  }
+
 }
 
 // {startDate:"2013-03-22", endDate:"-----"} optional param
