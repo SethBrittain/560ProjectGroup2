@@ -104,9 +104,10 @@ public class UserController {
 
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId)
+	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam String apiKey, @RequestParam int recipientId)
 	{
-		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+
+		return database.InsertMessageIntoChannel(message, apiKey, recipientId);
 	}
 
 }
