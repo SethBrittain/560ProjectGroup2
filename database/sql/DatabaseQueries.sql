@@ -1,10 +1,10 @@
 
 /* Aggregating Query 1 */ 
 CREATE OR ALTER PROCEDURE Application.GetOrganizationData
-@FirstDate DATETIME,
-@LastDate DATETIME
+@FirstDate DATETIMEOFFSET,
+@LastDate DATETIMEOFFSET
 AS
-SELECT O.Name, SUM(IIF(U.Active = 1,1,0)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
+SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
 FROM Application.Organizations O
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
