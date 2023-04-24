@@ -1,8 +1,11 @@
 <div class="w-full">
     <app-search-results-header [title]=title></app-search-results-header>
-    <div class="px-6 pt-36">
+    <ul class="px-6 pt-36">
+        <li *ngFor="let result of searchResults | async">
+            <app-result name ={{result}}></app-result>
+        </li>
         <app-result></app-result>
         <app-result></app-result>
         <app-result></app-result>
-    </div>
+    </ul>
 </div>
