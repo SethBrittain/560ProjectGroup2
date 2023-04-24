@@ -1,6 +1,18 @@
 
+-- Get data from all organizations
+CREATE OR ALTER PROCEDURE Application.GetOrganizationData
+@FirstDate DATETIMEOFFSET,
+@LastDate DATETIMEOFFSET
+AS
+SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
+FROM Application.Organizations O
+INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
+LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
+WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+GROUP BY O.Name
+GO
 
-/* General Query 1: Fetch all messages for a channel */
+-- Get all the messages in a channel
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
@@ -12,29 +24,48 @@ WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO
 
-/* General Query 2: Fetch all messages between given sender and recipient */
+-- Get all direct messages
 CREATE OR ALTER PROCEDURE Application.GetDirectMessages
 @UserAId INT,
 @UserBId INT
 AS
- SELECT M.Message, M.SenderId
- FROM Application.Messages M
- WHERE M.SenderId = @UserAId AND M.RecipientId = @UserBId OR M.SenderId = @UserBId AND M.RecipientId = @UserAId; 
+SELECT M.Message, M.SenderId
+FROM Application.Messages M
+WHERE M.SenderId = @UserAId AND M.RecipientId = @UserBId OR M.SenderId = @UserBId AND M.RecipientId = @UserAId; 
 GO
 
-/* General Query 3: Show all messages that match a substring within a given channel. */
-CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring   
-@Substring NVARCHAR(255),
+-- Get all the messages matching a given substring
+CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring
+@Substring NVARCHAR(512),
 @ChannelId INT
 AS
- SELECT M.Message, M.SenderId,M.ChannelId, M.RecipientId, M.CreatedOn
- FROM Application.Channels C
- INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
- WHERE C.ChannelId = @ChannelId
- AND M.Message LIKE '%' + @Substring + '%'   
+SELECT M.Message, M.SenderId,M.ChannelId, M.RecipientId, M.CreatedOn
+FROM Application.Channels C
+INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
+WHERE C.ChannelId = @ChannelId
+AND M.Message LIKE '%' + @Substring + '%'   
 GO
 
-/* General Query 4: Get all channels in a Organization */
+-- not working yet
+CREATE OR ALTER PROCEDURE Application.GetAllMessagesOfUserMatchingSubstring
+@Substring NVARCHAR(512),
+@UserId INT
+AS
+SELECT U.UserId, G.GroupId, G.Name AS GroupName, C.ChannelId, C.Name AS ChannelName, ME.RecipientId, ME.ChannelId, ME.MsgId, ME.Message
+FROM Application.Users U
+	INNER JOIN Application.Memberships M ON U.UserId = M.UserId
+	INNER JOIN Application.Groups G ON M.GroupId = G.GroupId
+	INNER JOIN Application.Channels C ON G.GroupId = C.GroupId
+	INNER JOIN Application.Messages ME ON U.UserId = ME.SenderId OR C.ChannelId = ME.ChannelId
+WHERE U.UserId = @UserId --AND ME.Message LIKE '%' + @Substring + '%'  
+ORDER BY U.UserId ASC
+GO
+
+-- query to get all channels a user is in, channel id and channel name
+
+-- query to get the name of a channel or person based on the channelId or UserId
+
+-- Get all the channels in an organization
 CREATE OR ALTER PROCEDURE Application.GetAllChannelsInOrganization
 @OrganizationId INT
 AS
@@ -45,16 +76,7 @@ INNER JOIN Application.Channels C ON C.GroupId = G.GroupId
 WHERE O.OrganizationId = @OrganizationId
 GO
 
-/*General Query 5: Get All Channels In Groups*/
-ALTER PROCEDURE Application.GetAllChannelsInGroup
-@GroupId INT
-AS
-SELECT C.ChannelId, C.Name
-FROM Application.Groups G
-INNER JOIN Application.Channels C ON C.GroupId = G.GroupId; 
-GO
-
-/* General Query 6: Get all users in Organization */
+-- Get all the users in an organization
 CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
@@ -64,16 +86,7 @@ INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 WHERE O.OrganizationId = @OrganizationId;
 GO
 
-/* General Query 7: Get users info via username */ 
-CREATE OR ALTER PROCEDURE Application.GetUserInfo
-@Username NVARCHAR(128)
-AS
-SELECT U.Email, U.FirstName, U.LastName, U.Password, U.OrganizationId
-FROM Application.Users U
-WHERE U.Username = @Username
-GO
-
-/*General Query 8: Insert Message into channel */
+-- Insert a channel message
 CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
 @Message NVARCHAR(128),
 @SenderId INT,
@@ -83,7 +96,7 @@ INSERT INTO Application.Messages ([Message], SenderId, ChannelId)
 VALUES (@Message, @SenderId, @ChannelId)
 GO 
 
-/*General Query 9: Insert Direct Message */
+-- Insert a direct message
 CREATE OR ALTER PROCEDURE Application.InsertDirectMessage
 @Message NVARCHAR(128),
 @SenderId INT,
@@ -93,10 +106,9 @@ INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
 GO
 
-/*Query 10: Insert New User*/
+-- Insert a new user
 CREATE OR ALTER PROCEDURE Application.InsertNewUser
 @OrganizationId INT,
-@Username NVARCHAR(64),
 @Email NVARCHAR(128),
 @Password NVARCHAR(128),
 @FirstName NVARCHAR(64),
@@ -104,10 +116,9 @@ CREATE OR ALTER PROCEDURE Application.InsertNewUser
 @Title NVARCHAR(64),
 @ProfilePhoto NVARCHAR(max)
 AS
-
 INSERT INTO Application.Users
-(OrganizationId, Username, [Password], FirstName, LastName, Title, ProfilePhoto)
-VALUES (@OrganizationId, @Username, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
+(OrganizationId, [Password], FirstName, LastName, Title, ProfilePhoto)
+VALUES (@OrganizationId, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
 GO
 
 /*Query 11: Delete Message From Database */
