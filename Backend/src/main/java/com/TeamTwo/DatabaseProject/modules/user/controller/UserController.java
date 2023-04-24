@@ -25,7 +25,7 @@ public class UserController {
     }
 
 	@GetMapping("/api/Example")
-	public ArrayList<String> TestQuery()
+	public ArrayList<ArrayList<String>> TestQuery()
 	{
 		return database.TestQuery();
 	}
@@ -36,7 +36,7 @@ public class UserController {
 	 */
 	@GetMapping("/api/OrganizationsData")
 	@ResponseBody
-	public ArrayList<String> GetOrganizationData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
+	public ArrayList<ArrayList<String>> GetOrganizationData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
 	{
 		return database.GetOrganizationData(startDate, endDate);
 	}
@@ -46,9 +46,9 @@ public class UserController {
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * @return ArrayList - Message
 	 */
-	@GetMapping("/api/ChannelMessages")
+	@GetMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<String> GetAllChannelMessages(@RequestParam int ChannelId)
+	public ArrayList<ArrayList<String>> GetAllChannelMessages(@RequestParam int ChannelId)
 	{
 		return database.GetAllChannelMessages(ChannelId);
 	}
@@ -61,61 +61,52 @@ public class UserController {
 	 */
 	@GetMapping("/api/DirectMessages")
 	@ResponseBody
-	public ArrayList<String> GetDirectMessages(@RequestParam int userA, @RequestParam int userB)
+	public ArrayList<ArrayList<String>> GetDirectMessages(@RequestParam int userA, @RequestParam int userB)
 	{
 		return database.GetDirectMessages(userA, userB);
 	}
 
-	@GetMapping("/api/GroupChannels")
+	@PutMapping("/api/GetAllChannelsInGroup")
 	@ResponseBody
-	public ArrayList<String> GetGroupChannels(@RequestParam int groupId)
+	public ArrayList<ArrayList<String>> GetAllChannelsInGroup(@RequestParam int groupId)
 	{
-		return database.GetGroupChannels(groupId);
+		return database.GetAllChannelsInGroup(groupId);
 	}
 
 
 	@GetMapping("/api/MessagesMatchingSubstring")
 	@ResponseBody
-	public ArrayList<String> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
+	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
 	{
 		return database.GetAllMessagesMatchingSubstring(substring, channelId);
 	}
 
 	@GetMapping("/api/GetAllChannelsInOrganization")
 	@ResponseBody
-	public ArrayList<String> GetAllChannelsInOrganization(@RequestParam int organizationId)
+	public ArrayList<ArrayList<String>> GetAllChannelsInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllChannelsInOrganization(organizationId);
 	}
 
 	@GetMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
-	public ArrayList<String> GetAllUsersInOrganization(@RequestParam int organizationId)
+	public ArrayList<ArrayList<String>> GetAllUsersInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllUsersInOrganization(organizationId);
 	}
 
 	@GetMapping("/api/GetUserInfo")
 	@ResponseBody
-	public ArrayList<String> GetUserInfo(@RequestParam String email)
+	public ArrayList<ArrayList<String>> GetUserInfo(@RequestParam String username)
 	{
-		return database.GetUserInfo(email); 
+		return database.GetUserInfo(username);
 	}
 
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public void InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int channelId){
-
-		database.InsertMessageIntoChannel(message, senderId, channelId);
+	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId)
+	{
+		return database.InsertMessageIntoChannel(message, senderId, recipientId);
 	}
-
-	@PutMapping("/api/InsertDirectMessage")
-	@ResponseBody
-	public void InsertDirectMessage(@RequestParam String message, @RequestParam int senderId, @RequestParam int recipientId){
-
-		database.InsertDirectMessage(message, senderId, recipientId);
-	}
-
-
 
 }
