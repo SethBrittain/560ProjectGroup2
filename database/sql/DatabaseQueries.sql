@@ -59,13 +59,11 @@ GO
 
 /*General Query 5: Get All Channels In Groups*/
 CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
-@OrganizationId INT,
 @GroupId INT
 AS
 SELECT *
 FROM Application.Groups G
 INNER JOIN Application.Organizations O ON O.OrganizationId = G.OrganizationId
-WHERE G.GroupId = @GroupId AND O.OrganizationId = @OrganizationId
 GO
 
 /* General Query 6: Get all users in Organization */
