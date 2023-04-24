@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS Application.Channels;
 DROP TABLE IF EXISTS Application.Memberships;
 DROP TABLE IF EXISTS Application.Groups;
 DROP TABLE IF EXISTS Application.Users;
-DROP TABLE IF EXISTS Application.Roles;
 DROP TABLE IF EXISTS Application.Organizations;
 DROP FUNCTION IF EXISTS Application.fn_CheckOrganizations
 GO
@@ -39,16 +38,17 @@ CREATE TABLE Application.Users
 (
     UserId INT IDENTITY(1,1) PRIMARY KEY,
 	OrganizationId INT NOT NULL FOREIGN KEY REFERENCES Application.Organizations(OrganizationId),
-    Username NVARCHAR(64) NOT NULL UNIQUE, 
-    Email NVARCHAR(128) NOT NULL UNIQUE,
-	[Password] NVARCHAR(128) NOT NULL,
+    Email NVARCHAR(128) NOT NULL,
 	FirstName NVARCHAR(64) NOT NULL,
     LastName NVARCHAR(64) NOT NULL,
-    Title NVARCHAR(64) NOT NULL,
-    ProfilePhoto NVARCHAR(max),
-	Active BIT NOT NULL,
+    Title NVARCHAR(64),
+    ProfilePhoto NVARCHAR(max) NOT NULL,
+	Active BIT NOT NULL DEFAULT (1),
+    ApiKey VARBINARY(max) DEFAULT (HASHBYTES('SHA2_256', SUBSTRING(CAST (NEWID() AS nvarchar(36)), 1, 32))) NOT NULL,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
+
+    UNIQUE(Email)
 )
 
  CREATE TABLE Application.Groups
