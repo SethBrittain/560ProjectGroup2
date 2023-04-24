@@ -9,12 +9,8 @@ import { ApiService } from 'src/app/services/api-service.service';
 export class DmListComponent implements OnInit {
 
   orgId: string = '1'; // SHOULD GET ORG ID
-  users: any[] = [
-    { userId: 234, firstName: 'Sam', lastName: 'Haynes', image: 'https://robohash.org/dud' },
-    { userId: 235, firstName: 'Collin', lastName: 'Hammond', image: 'https://robohash.org/her' },
-    { userId: 236, firstName: 'Seth', lastName: 'Brittain', image: 'https://robohash.org/dfd' },
-    { userId: 237, firstName: 'Heidi', lastName: 'Cossins', image: 'https://robohash.org/dss' }
-  ];
+  //users: { [key: string]: string } = {};
+  users: any;
 
   constructor(private api: ApiService) { }
 
@@ -31,7 +27,7 @@ export class DmListComponent implements OnInit {
     this.api.put("/GetAllUsersInOrganization",
       (response) => {
         console.log(response.data);
-        //this.users = response.data;
+        this.users = response.data;
       },
       (error) => { console.log(error.message); },
       form
