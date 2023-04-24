@@ -97,9 +97,9 @@ public class UserController {
 
 	@GetMapping("/api/GetUserInfo")
 	@ResponseBody
-	public ArrayList<ArrayList<String>> GetUserInfo(@RequestParam String email)
+	public ArrayList<ArrayList<String>> GetUserInfo(@RequestParam String username)
 	{
-		return database.GetUserInfo(email);
+		return database.GetUserInfo(username);
 	}
 
 	@PutMapping("/api/InsertMessageIntoChannel")

@@ -59,13 +59,12 @@ GO
 
 /*General Query 5: Get All Channels In Groups*/
 CREATE OR ALTER PROCEDURE Application.GetAllChannelsInGroup
-@OrganizationId INT,
 @GroupId INT
 AS
 SELECT *
 FROM Application.Groups G
 INNER JOIN Application.Organizations O ON O.OrganizationId = G.OrganizationId
-WHERE G.GroupId = @GroupId AND O.OrganizationId = @OrganizationId
+WHERE G.GroupId = @GroupId
 GO
 
 /* General Query 6: Get all users in Organization */
@@ -80,11 +79,11 @@ GO
 
 /* General Query 7: Get users info via username */ 
 CREATE OR ALTER PROCEDURE Application.GetUserInfo
-@Username NVARCHAR(32)
+@Username NVARCHAR(128)
 AS
 SELECT U.Email, U.FirstName, U.LastName, U.Password, U.OrganizationId
 FROM Application.Users U
-WHERE U.Email = @Username
+WHERE U.Username = @Username
 GO
 
 /*General Query 8: Insert Message into channel */
