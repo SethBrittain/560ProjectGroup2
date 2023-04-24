@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from 'src/app/services/api-service.service';
+import { SearchService } from 'src/app/services/search-service.service'
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
@@ -9,16 +9,19 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 })
 export class SearchResultsComponent implements OnInit {
 
-  title: string | null = '';
-  constructor(private api: ApiService, private route:ActivatedRoute, private router: Router){
-    this.router.routeReuseStrategy.shouldReuseRoute = function() {
-      return false;
-    }
-  }
+  //searchResults = this.searchService.searchResult$; // gets the results from the service
+  searchResults: any;
+  title: string | null = ''; // this title shown in the header
+  constructor(private searchService: SearchService, private route:ActivatedRoute, private router: Router){}
 
   ngOnInit(): void {
     let term = this.route.snapshot.paramMap.get('terms');
     this.title = term;
+
+    this.searchService.searchResult$.subscribe((results: string[][]) => {
+      this.searchResults = results;
+      console.log(this.searchResults);
+    });
   }
 
 }
