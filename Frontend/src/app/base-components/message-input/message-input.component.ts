@@ -12,7 +12,10 @@ export class MessageInputComponent implements OnInit {
 
   @Input()
   senderId: string = '';
+  
+  @Input()
   channelId: string = '';
+
 
   constructor(private api: ApiService) { 
     
@@ -42,7 +45,7 @@ export class MessageInputComponent implements OnInit {
   }
 
   SendMessageHandler(){
-    this.InsertMessageIntoChannel(this.message, 2, Number(this.channelId));
+    this.InsertMessageIntoChannel(this.message, "1", this.channelId);
   }
 
   /**
@@ -51,18 +54,17 @@ export class MessageInputComponent implements OnInit {
 	 * @param senderId sender id
 	 * @param channelId recipient id
 	 */
-  InsertMessageIntoChannel( message : String, senderId : number, channelId : number) : void
+  InsertMessageIntoChannel( message : string, senderId : string, channelId : string) : void
   {
-    
+    let form = new FormData();
+    form.append("message", message);
+    form.append("senderId", senderId);
+    form.append("channelId", channelId);
     this.api.put("/InsertMessageIntoChannel",  (response)=>
     {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
-    {
-      message : message,
-      senderId : senderId,
-      channelId : channelId
-    });
+     form);
   }
 
   	/**
