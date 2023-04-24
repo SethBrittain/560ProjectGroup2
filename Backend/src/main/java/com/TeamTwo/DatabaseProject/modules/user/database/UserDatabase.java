@@ -195,7 +195,7 @@ public class UserDatabase
 		return sendStatement(query);
 	}
 
-	public ArrayList<ArrayList<String>> GetGroupChannels(int groupId)
+	public ArrayList<ArrayList<String>> GetAllChannelsInGroup(int groupId)
 	{
 		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
 		return sendQuery(query);
