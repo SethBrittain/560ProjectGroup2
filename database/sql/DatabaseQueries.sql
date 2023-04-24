@@ -106,3 +106,10 @@ AS
 INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
 GO
+
+SELECT *
+FROM Application.Channels;
+
+SELECT *
+FROM Application.Messages M
+WHERE M.ChannelId = 123;

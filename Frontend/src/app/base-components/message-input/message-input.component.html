@@ -1,7 +1,7 @@
 <div class="fixed bottom-0 z-50 w-full pr-72 border-t border-slate-200 bg-slate-100 dark:bg-gray-900 dark:border-gray-800 py-4 px-6 ">
     <form class="flex grow">   
         <label for="message" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter your message</label>
-        <input id="default-search" (keyup)="GetVal($event)" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="Type your message" required>
+        <input senderId="1" id="default-search" (keyup)="GetVal($event)" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="Type your message" required>
         <button (click)="SendMessageHandler()" class="transition ease-in-out ml-2 text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Send</button>
     </form>
 </div>
