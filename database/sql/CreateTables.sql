@@ -9,10 +9,10 @@ DROP TABLE IF EXISTS Application.Groups;
 DROP TABLE IF EXISTS Application.Users;
 DROP TABLE IF EXISTS Application.Roles;
 DROP TABLE IF EXISTS Application.Organizations;
-DROP FUNCTION IF EXISTS Application.CheckOrganizations
+DROP FUNCTION IF EXISTS Application.fn_CheckOrganizations
 GO
 
-CREATE OR ALTER FUNCTION Application.CheckOrganizations(@UserId INT, @GroupId INT)
+CREATE OR ALTER FUNCTION Application.fn_CheckOrganizations(@UserId INT, @GroupId INT)
 	RETURNS INT
 	AS
 	BEGIN
@@ -35,28 +35,20 @@ CREATE TABLE Application.Organizations
     UNIQUE([Name])
 )
 
-CREATE TABLE Application.Roles
-(
-    [Name] NVARCHAR(32) NOT NULL PRIMARY KEY
-)
-
 CREATE TABLE Application.Users
 (
     UserId INT IDENTITY(1,1) PRIMARY KEY,
 	OrganizationId INT NOT NULL FOREIGN KEY REFERENCES Application.Organizations(OrganizationId),
-	RoleName NVARCHAR(32) NOT NULL FOREIGN KEY REFERENCES Application.Roles([Name]),
-    Username NVARCHAR(64) NOT NULL, 
-    Email NVARCHAR(128) NOT NULL,
+    Username NVARCHAR(64) NOT NULL UNIQUE, 
+    Email NVARCHAR(128) NOT NULL UNIQUE,
 	[Password] NVARCHAR(128) NOT NULL,
 	FirstName NVARCHAR(64) NOT NULL,
     LastName NVARCHAR(64) NOT NULL,
     Title NVARCHAR(64) NOT NULL,
-    ProfilePhoto NVARCHAR(max) NOT NULL,
+    ProfilePhoto NVARCHAR(max),
 	Active BIT NOT NULL,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
-
-    UNIQUE(Username, Email)
 )
 
  CREATE TABLE Application.Groups
@@ -68,19 +60,18 @@ CREATE TABLE Application.Users
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
 
-	UNIQUE(Name, OrganizationId)
+	UNIQUE([Name], OrganizationId)
 )
 
 CREATE TABLE Application.Memberships
 (
     MembershipId INT IDENTITY(1,1) PRIMARY KEY,
-	OrganizationId INT NOT NULL FOREIGN KEY REFERENCES Application.Organizations(OrganizationId),
     GroupId INT NOT NULL FOREIGN KEY REFERENCES Application.Groups(GroupId),
     UserId INT NOT NULL FOREIGN KEY REFERENCES Application.Users(UserId),
 
-    UNIQUE(GroupId, UserId, OrganizationId),
+    UNIQUE(GroupId, UserId),
 	CONSTRAINT [user_must_not_be_in_group_twice] UNIQUE(GroupId, UserId),
-	CONSTRAINT [user_and_group_must_have_same_organization] CHECK(Application.CheckOrganizations(UserId, GroupId) = 1)
+	CONSTRAINT [user_and_group_must_have_same_organization] CHECK(Application.fn_CheckOrganizations(UserId, GroupId) = 1)
 )
 
 CREATE TABLE Application.Channels
@@ -108,8 +99,6 @@ CREATE TABLE Application.Messages
 		Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
 )
 GO
-ALTER TABLE Application.Users
-ALTER COLUMN ProfilePhoto NVARCHAR(max);
 
 /* Grant Permissions */
 

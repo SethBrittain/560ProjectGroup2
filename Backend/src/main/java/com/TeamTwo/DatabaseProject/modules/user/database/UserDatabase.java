@@ -29,54 +29,67 @@ public class UserDatabase
 	 * @param query The query to send to the database
 	 * @return An ArrayList with the results of the query: "Empty" will be in the first index if the results are empty, "Error" if there was an error accessing the database
 	 */
-	private ArrayList<String> sendQuery(String query)
+	private ArrayList<ArrayList<String>> sendSelectQuery(String query)
 	{
-		ArrayList<String> results = new ArrayList<String>();
+		ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
+		results.add(new ArrayList<String>());
+		int i = 1;
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
 		{
 			ResultSet rs = stmt.executeQuery();
 			int columns = rs.getMetaData().getColumnCount();
-			if (rs.isBeforeFirst()) results.add("Success");
-			else results.add("Empty");
+			if (rs.isBeforeFirst()) results.get(0).add("Success");
+			else results.get(0).add("Empty");
 			while (rs.next())
 			{
-				for (int i = 1; i <= columns; i++)
-					results.add(rs.getString(i));
+				results.add(new ArrayList<String>());
+				for (int j = 1; j <= columns; j++)
+				{
+					results.get(i).add(rs.getString(j));
+				}
+				i++;
 			}
 		}	
 		catch (SQLException e) {
 			String error = e.toString();
 			System.out.println(error);
-			results.add("Error");
-			results.add(error);
+			results.add(new ArrayList<String>());
+			results.get(i + 1).add("Error");
+			results.get(i + 1).add(error);
 		}
 		return results;
+	}
+
+	public Boolean sendInsertQuery(String query)
+	{
+		return false;
 	}
 
 	/**
 	 * Example of getting info from a database for reference
 	 * @return ArrayList with: FirstName, Email
 	 */
-	public ArrayList<String> TestQuery()
+	public ArrayList<ArrayList<String>> TestQuery()
 	{
 		String query = """
-			SELECT T.FirstName, T.Email
+			SELECT T.PersonId, T.FirstName, T.Email
 			FROM
 			(
-				VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu')
+				VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu'),
+					(2, N'Jill', N'Cool', N'jillcool@ksu.edu')
 			) T(PersonId, FirstName, LastName, Email);
 		""";
-		return sendQuery(query);
+		return sendSelectQuery(query);
 	}
 
 	/**
 	 * Gets data about all organizations in the database, counts messages for MessageCount from start to end
 	 * @return ArrayList - String OrgName, int ActiveUserCount, int MessageCount
 	 */
-	public ArrayList<String> GetOrganizationData(DateTimeOffset start, DateTimeOffset end)
+	public ArrayList<ArrayList<String>> GetOrganizationData(DateTimeOffset start, DateTimeOffset end)
 	{
 		String query = "EXEC Application.GetOrganizationData " + start + " " + end;
-		return sendQuery(query);
+		return sendSelectQuery(query);
 	}
 
 	/**
@@ -84,10 +97,10 @@ public class UserDatabase
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * @return ArrayList - Message, null if no results
 	 */
-	public ArrayList<String> GetAllChannelMessages(int ChannelId)
+	public ArrayList<ArrayList<String>> GetAllChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
-		return sendQuery(query);
+		return sendSelectQuery(query);
 	}
 
 	/**
@@ -96,10 +109,10 @@ public class UserDatabase
 	 * @param userB The ID of the second user
 	 * @return ArrayList - Message, SenderId
 	 */
-	public ArrayList<String> GetDirectMessages(int userA, int userB)
+	public ArrayList<ArrayList<String>> GetDirectMessages(int userA, int userB)
 	{
 		String query = "EXEC Application.GetDirectMessages " + userA + " " + userB;
-		return sendQuery(2, query);
+		return sendSelectQuery(query);
 	}
 
 
@@ -109,10 +122,10 @@ public class UserDatabase
 	 * @param channelId channel to search in
 	 * @return ArrayList - Message, SenderId
 	 */
-	public ArrayList<String> GetAllMessagesMatchingSubstring(String substring, int channelId)
+	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
 		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + " " + channelId;
-		return sendQuery(2, query);		
+		return sendSelectQuery(query);		
 	}
 
 	/**
@@ -120,10 +133,10 @@ public class UserDatabase
 	 * @param organizationId organization identification
 	 * @return ArrayList - ChannelId, ChannelName
 	 */
-	public ArrayList<String> GetAllChannelsInOrganization(int organizationId)
+	public ArrayList<ArrayList<String>> GetAllChannelsInOrganization(int organizationId)
 	{
 		String query = "EXEC Application.GetAllChannelsInOrganization " + organizationId;
-		return sendQuery(2, query);		
+		return sendSelectQuery(query);		
 	}
 
 	/**
@@ -131,10 +144,10 @@ public class UserDatabase
 	 * @param organizationId org identification
 	 * @return ArrayList - UserId, FirstName, LastName, Username
 	 */
-	public ArrayList<String> GetAllUsersInOrganization(int organizationId)
+	public ArrayList<ArrayList<String>> GetAllUsersInOrganization(int organizationId)
 	{
 		String query = "EXEC Application.GetAllUsersInOrganization " + organizationId;
-		return sendQuery(4, query);
+		return sendSelectQuery(query);
 	}
 
 	/**
@@ -142,10 +155,10 @@ public class UserDatabase
 	 * @param email email 
 	 * @return ArrayList - Username, FirstName, LastName, Password, OrganizationId
 	 */
-	public ArrayList<String> GetUserInfo(String email)
+	public ArrayList<ArrayList<String>> GetUserInfo(String email)
 	{
 		String query = "EXEC Application.GetUserInfo " + email;
-		return sendQuery(5, query);
+		return sendSelectQuery(query);
 	}
 
 	/**
@@ -154,9 +167,10 @@ public class UserDatabase
 	 * @param senderId sender id
 	 * @param channelId recipient id
 	 */
-	public void InsertMessageIntoChannel(String message, int senderId, int recipientId)
+	public Boolean InsertMessageIntoChannel(String message, int senderId, int channelId)
 	{
-		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + channelId; 
+		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + channelId;
+		return sendInsertQuery(query);
 	}
 
 	/**
@@ -165,17 +179,16 @@ public class UserDatabase
 	 * @param senderId sender id
 	 * @param recipientId recipient id 
 	 */
-	public void InsertDirectMessage(String message, int senderId, int recipientId)
+	public Boolean InsertDirectMessage(String message, int senderId, int recipientId)
 	{
-		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + RecipientId; 
-		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userA + " " + userB;
-		return sendQuery(query);
+		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + recipientId;
+		return sendInsertQuery(query);
 	}
 
-	public ArrayList<String> GetGroupChannels(int groupId)
+	public ArrayList<ArrayList<String>> GetGroupChannels(int groupId)
 	{
 		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
-		return sendQuery(query);
+		return sendSelectQuery(query);
 	}
 
 }
