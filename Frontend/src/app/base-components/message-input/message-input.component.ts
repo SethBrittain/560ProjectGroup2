@@ -101,10 +101,8 @@ export class MessageInputComponent implements OnInit {
     console.log(groupId);
     this.api.put("/GetAllChannelsInGroup",  (response)=>
     {
-      let fruit : string[] = response.data;
-      console.log(fruit[1]);
-      console.log(fruit[2]);
-      console.log(fruit[3]);
+      let fruit : string[][] = response.data;
+      console.log(response.data);
     }, (error)=>{console.log(error.message);},
      form);
   }
