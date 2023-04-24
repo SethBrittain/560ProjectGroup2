@@ -11,20 +11,22 @@ import { EmptyStateComponent } from './group-components/empty-state/empty-state.
 // Add routes here in the form of { path: 'pagepath', component: PageComponent } 
 // more documentation can be found here: https://angular.io/tutorial/tour-of-heroes/toh-pt5
 const routes: Routes = [
-  { path: '', redirectTo:'login',pathMatch:'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LogInComponent },
-  { path: 'app', component: MainWindowComponent, 
-  children: [
-    { path:'', component: EmptyStateComponent },
-    { path:'-/:type/:id', component: ChatComponent },
-    { path:'search/:terms', component: SearchResultsComponent }
-  ]},
-  { path: '**', redirectTo:'app' },
+  {
+    path: 'app', component: MainWindowComponent,
+    children: [
+      { path: '', component: EmptyStateComponent },
+      { path: '-/:type/:id', component: ChatComponent },
+      { path: 'search/:terms', component: SearchResultsComponent }
+    ]
+  },
+  { path: '**', redirectTo: 'app' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { 
+export class AppRoutingModule {
 }
