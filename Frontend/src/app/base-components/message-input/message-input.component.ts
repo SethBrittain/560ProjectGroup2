@@ -8,7 +8,10 @@ import { ApiService } from 'src/app/services/api-service.service';
 })
 export class MessageInputComponent implements OnInit {
 
+  message : string = '';
+
   @Input()
+  senderId: string = '';
   channelId: string = '';
 
   constructor(private api: ApiService) { 
@@ -29,9 +32,17 @@ export class MessageInputComponent implements OnInit {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
     {
-      username: username //pass values from front end into dictionary to be used by the back-end
+      username: username 
     });
   
+  }
+
+  GetVal(event:any){
+    this.message = event?.target.value;
+  }
+
+  SendMessageHandler(){
+    this.InsertMessageIntoChannel(this.message, 2, Number(this.channelId));
   }
 
   /**
@@ -43,7 +54,7 @@ export class MessageInputComponent implements OnInit {
   InsertMessageIntoChannel( message : String, senderId : number, channelId : number) : void
   {
     
-    this.api.put("/api/InsertMessageIntoChannel",  (response)=>
+    this.api.put("/InsertMessageIntoChannel",  (response)=>
     {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
@@ -63,7 +74,7 @@ export class MessageInputComponent implements OnInit {
   InsertDirectMessage( message : String, senderId : number, recipientId : number) : void
   {
     
-    this.api.put("/api/InsertDirectMessage",  (response)=>
+    this.api.put("/InsertDirectMessage",  (response)=>
     {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
