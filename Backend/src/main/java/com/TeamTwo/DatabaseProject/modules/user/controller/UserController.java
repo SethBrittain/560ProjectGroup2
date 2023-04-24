@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,7 +35,7 @@ public class UserController {
 	 * Gets data about all organizations in the database
 	 * @return ArrayList<Object> - String OrgName, int ActiveUserCount, int MessageCount
 	 */
-	@GetMapping("/api/OrganizationsData")
+	@PutMapping("/api/OrganizationsData")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetOrganizationData(@RequestParam DateTimeOffset startDate, @RequestParam DateTimeOffset endDate)
 	{
@@ -46,7 +47,7 @@ public class UserController {
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * @return ArrayList - Message
 	 */
-	@GetMapping("/api/GetAllChannelMessages")
+	@PutMapping("/api/GetAllChannelMessages")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllChannelMessages(@RequestParam int ChannelId)
 	{
@@ -59,7 +60,7 @@ public class UserController {
 	 * @param userB The ID of the second user
 	 * @return ArrayList - Message
 	 */
-	@GetMapping("/api/DirectMessages")
+	@PutMapping("/api/DirectMessages")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetDirectMessages(@RequestParam int userA, @RequestParam int userB)
 	{
@@ -74,28 +75,28 @@ public class UserController {
 	}
 
 
-	@GetMapping("/api/MessagesMatchingSubstring")
+	@PutMapping("/api/MessagesMatchingSubstring")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
 	{
 		return database.GetAllMessagesMatchingSubstring(substring, channelId);
 	}
 
-	@GetMapping("/api/GetAllChannelsInOrganization")
+	@PutMapping("/api/GetAllChannelsInOrganization")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllChannelsInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllChannelsInOrganization(organizationId);
 	}
 
-	@GetMapping("/api/GetAllUsersInOrganization")
+	@PutMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllUsersInOrganization(@RequestParam int organizationId)
 	{
 		return database.GetAllUsersInOrganization(organizationId);
 	}
 
-	@GetMapping("/api/GetUserInfo")
+	@PutMapping("/api/GetUserInfo")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetUserInfo(@RequestParam String username)
 	{
