@@ -39,7 +39,6 @@ CREATE TABLE Application.Users
 (
     UserId INT IDENTITY(1,1) PRIMARY KEY,
 	OrganizationId INT NOT NULL FOREIGN KEY REFERENCES Application.Organizations(OrganizationId),
-    Username NVARCHAR(64) NOT NULL UNIQUE, 
     Email NVARCHAR(128) NOT NULL UNIQUE,
 	[Password] NVARCHAR(128) NOT NULL,
 	FirstName NVARCHAR(64) NOT NULL,
@@ -99,10 +98,3 @@ CREATE TABLE Application.Messages
 		Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
 )
 GO
-
-/* Grant Permissions */
-
-/*
-GRANT CONTROL ON SCHEMA :: Application TO hcossins;
-GRANT CONTROL ON SCHEMA :: Application TO sbrittain;
-GRANT CONTROL ON SCHEMA :: Application TO slhaynes4542;*/
