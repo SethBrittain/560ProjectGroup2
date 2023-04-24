@@ -1,14 +1,14 @@
 
 /* Aggregating Query 1 */ 
 CREATE OR ALTER PROCEDURE Application.GetOrganizationData
-@FirstDate DATETIME,
-@LastDate DATETIME
+@FirstDate DATETIMEOFFSET,
+@LastDate DATETIMEOFFSET
 AS
-SELECT O.Name, SUM(IIF(U.Active = 1,1,0)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
+SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
 FROM Application.Organizations O
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
---WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
@@ -64,6 +64,7 @@ AS
 SELECT *
 FROM Application.Groups G
 INNER JOIN Application.Organizations O ON O.OrganizationId = G.OrganizationId
+WHERE G.GroupId = @GroupId
 GO
 
 /* General Query 6: Get all users in Organization */
@@ -78,11 +79,11 @@ GO
 
 /* General Query 7: Get users info via username */ 
 CREATE OR ALTER PROCEDURE Application.GetUserInfo
-@Username NVARCHAR(32)
+@Username NVARCHAR(128)
 AS
 SELECT U.Email, U.FirstName, U.LastName, U.Password, U.OrganizationId
 FROM Application.Users U
-WHERE U.Email = @Username
+WHERE U.Username = @Username
 GO
 
 /*General Query 8: Insert Message into channel */
@@ -105,13 +106,19 @@ INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
 GO
 
-SELECT *
-FROM Application.Channels;
+/*Query 10: Insert New User*/
+CREATE OR ALTER PROCEDURE Application.InsertNewUser
+@OrganizationId INT,
+@Username NVARCHAR(64),
+@Email NVARCHAR(128),
+@Password NVARCHAR(128),
+@FirstName NVARCHAR(64),
+@LastName NVARCHAR(64),
+@Title NVARCHAR(64),
+@ProfilePhoto NVARCHAR(max)
+AS
 
-SELECT *
-FROM Application.Messages M
-WHERE M.ChannelId = 124;
-
-EXEC Application.InsertMessageIntoChannel "efe",1,123;
-
-EXEC Application.GetAllChannelsInGroup 1;
+INSERT INTO Application.Users
+(OrganizationId, Username, [Password], FirstName, LastName, Title, ProfilePhoto)
+VALUES (@OrganizationId, @Username, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
+GO
