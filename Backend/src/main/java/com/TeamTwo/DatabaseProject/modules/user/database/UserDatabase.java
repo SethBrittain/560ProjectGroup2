@@ -179,7 +179,7 @@ public class UserDatabase
 	 */
 	public Boolean InsertMessageIntoChannel(String message, int senderId, int channelId)
 	{
-		String query = "EXEC Application.InsertMessageIntoChannel " + message + " " + senderId + " " + channelId;
+		String query = "EXEC Application.InsertMessageIntoChannel " + message + "," + senderId + "," + channelId; 
 		return sendStatement(query);
 	}
 
