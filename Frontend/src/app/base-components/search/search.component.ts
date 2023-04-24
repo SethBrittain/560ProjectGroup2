@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchService } from 'src/app/services/search-service.service'
 
 @Component({
   selector: 'app-search',
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
 export class SearchComponent implements OnInit {
 
   searchTerm: string = '';
-  constructor(public router: Router){}
+  constructor(public router: Router, private searchService: SearchService){}
 
   ngOnInit(): void {
       
@@ -21,11 +22,12 @@ export class SearchComponent implements OnInit {
 
   }
 
-  search() {
+  search(): void {
     this.router.navigate(['/app/search', this.searchTerm]);
-    
-    setTimeout(()=>{
-      window.location.reload();
-    }, 1);
+    this.searchService.searchFor(this.searchTerm);
+
+    //setTimeout(()=>{
+      //window.location.reload();
+    //}, 1);
   }
 }
