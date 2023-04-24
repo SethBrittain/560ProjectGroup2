@@ -11,6 +11,7 @@ import { ParamMap } from '@angular/router'
 export class ChatComponent implements OnInit {
 
   title:string = '';
+  channelId: any = '';
   messages:any[] = [
     {id:123, name:'Channel1'},
     {id:124, name:'Channel2'},
@@ -25,8 +26,12 @@ export class ChatComponent implements OnInit {
       let id = this.route.snapshot.paramMap.get('id');
       let type = this.route.snapshot.paramMap.get('type');
       this.title = type +' ' + id;
+      this.channelId = id;
+
 
       if (type == 'channel'){
+        
+       // this.GetAllChannelMessages(Number(id));
         //messages = this.api.GetAllChannelMessages(id);
         //name = this.api.GetChannelName(id)
       }
@@ -35,6 +40,27 @@ export class ChatComponent implements OnInit {
         //name = this.api.GetUserName(id)
       }
 
+      
+
+      }
+
+      /*
+      GetAllChannelMessages(channelId : number) : void
+      {
+        this.api.put("/GetAllChannelMessages",  (response)=>
+        {
+          this.messages.push({Message: "lorem 30", FirstName: "sam", LastName: "haynes", CreatedOn: "12/2/1999" })
+          console.log(response.data);
+        }, (error)=>{console.log(error.message);},
+        {
+          channelId : channelId
+        });
+      }
+      */
+
   }
 
-}
+
+
+
+

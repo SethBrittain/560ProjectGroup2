@@ -16,9 +16,10 @@ GO
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
-SELECT M.Message, M.SenderId /* update to include the name of the user who send the message */ 
+SELECT M.Message, U.FirstName, U.LastName , M.CreatedOn /* update to include the name of the user who send the message */ 
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
+INNER JOIN Application.Users U ON M.SenderId = U.UserId
 WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO

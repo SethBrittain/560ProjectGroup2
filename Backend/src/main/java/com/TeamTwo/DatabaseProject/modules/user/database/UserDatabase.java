@@ -103,7 +103,7 @@ public class UserDatabase
 	/**
 	 * Gets all the messages from the given channel
 	 * @param ChannelId The ID number of the channel to get messages from
-	 * @return ArrayList - Message, null if no results
+	 * @return ArrayList - Message, FirstName, LastName, CreatedOn
 	 */
 	public ArrayList<ArrayList<String>> GetAllChannelMessages(int ChannelId)
 	{
@@ -173,11 +173,11 @@ public class UserDatabase
 	 * Insert Message into channel
 	 * @param message Message to insert
 	 * @param senderId sender id
-	 * @param channelId recipient id
+	 * @param channelId channel id
 	 */
 	public Boolean InsertMessageIntoChannel(String message, int senderId, int channelId)
 	{
-		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + channelId;
+		String query = "EXEC Application.InsertMessageIntoChannel " + message + " " + senderId + " " + channelId;
 		return sendStatement(query);
 	}
 
@@ -189,7 +189,7 @@ public class UserDatabase
 	 */
 	public Boolean InsertDirectMessage(String message, int senderId, int recipientId)
 	{
-		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + recipientId;
+		String query = "EXEC Application.InsertDirectMessage " + message + " " + senderId + " " + recipientId;
 		return sendStatement(query);
 	}
 
