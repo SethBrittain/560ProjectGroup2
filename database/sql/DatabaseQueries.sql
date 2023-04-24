@@ -1,16 +1,4 @@
 
-/* Aggregating Query 1 */ 
-CREATE OR ALTER PROCEDURE Application.GetOrganizationData
-@FirstDate DATETIMEOFFSET,
-@LastDate DATETIMEOFFSET
-AS
-SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
-FROM Application.Organizations O
-INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
-LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
-WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
-GROUP BY O.Name
-GO
 
 /* General Query 1: Fetch all messages for a channel */
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
@@ -61,10 +49,9 @@ GO
 ALTER PROCEDURE Application.GetAllChannelsInGroup
 @GroupId INT
 AS
-SELECT *
+SELECT C.ChannelId, C.Name
 FROM Application.Groups G
-INNER JOIN Application.Organizations O ON O.OrganizationId = G.OrganizationId
-WHERE G.GroupId = @GroupId
+INNER JOIN Application.Channels C ON C.GroupId = G.GroupId; 
 GO
 
 /* General Query 6: Get all users in Organization */
@@ -122,3 +109,58 @@ INSERT INTO Application.Users
 (OrganizationId, Username, [Password], FirstName, LastName, Title, ProfilePhoto)
 VALUES (@OrganizationId, @Username, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
 GO
+
+/*Query 11: Delete Message From Database */
+CREATE PROCEDURE Application.DeleteMessage
+@MessageId INT
+AS
+DELETE FROM Application.Messages WHERE MsgId = @MessageId
+GO
+
+/* get id from api key */
+CREATE PROCEDURE Application.GetUserIdFromAPIKey
+@apikey NVARCHAR(MAX)
+AS
+SELECT U.UserId
+FROM Application.Users U
+WHERE U.ApiKey = @apikey;
+GO
+
+
+/***** Aggregated Queries *****/
+
+/* Aggregated Query 1 */ 
+CREATE OR ALTER PROCEDURE Application.GetOrganizationData
+@FirstDate DATETIMEOFFSET,
+@LastDate DATETIMEOFFSET
+AS
+SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
+FROM Application.Organizations O
+INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
+LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
+WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+GROUP BY O.Name
+GO
+
+/* Aggregated Query 3 */
+CREATE PROCEDURE Application.AppTraffic
+@FirstDate DATETIMEOFFSET,
+@LastDate DATETIMEOFFSET
+AS
+SELECT DATEPART(hour, M.CreatedOn) AS Hours,
+Count(*) AS MessagesSent, 
+RANK() OVER (ORDER BY COUNT(*) DESC) AS Rank
+FROM Application.Messages M
+WHERE 
+M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate
+GROUP BY DATEPART(hour, M.CreatedOn);
+GO
+
+SELECT *
+FROM Application.Messages M;
+
+/* Aggregated Query 4 */
+CREATE PROCEDURE Application.AppGrowth
+
+
+

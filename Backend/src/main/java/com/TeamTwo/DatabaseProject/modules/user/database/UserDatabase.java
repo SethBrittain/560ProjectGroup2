@@ -60,6 +60,23 @@ public class UserDatabase
 		return results;
 	}
 
+	private int sendQueryToGetUserId(String query)
+	{
+		int result = -1; 
+		int i = 1;
+		try (PreparedStatement stmt = this.database.prepareStatement(query))
+		{
+			ResultSet rs = stmt.executeQuery();
+			result = rs.getInt(1);
+		}	
+		catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+		}
+		return result;
+	}
+
+
 	public Boolean sendStatement(String query)
 	{
 		try (PreparedStatement stmt = this.database.prepareStatement(query))
@@ -177,8 +194,9 @@ public class UserDatabase
 	 * @param senderId sender id
 	 * @param channelId channel id
 	 */
-	public Boolean InsertMessageIntoChannel(String message, int senderId, int channelId)
+	public Boolean InsertMessageIntoChannel(String message, String apiKey, int channelId)
 	{
+		int senderId = GetUserIdFromAPIKey(apiKey);
 		String query = "EXEC Application.InsertMessageIntoChannel " + message + "," + senderId + "," + channelId; 
 		return sendStatement(query);
 	}
@@ -199,6 +217,11 @@ public class UserDatabase
 	{
 		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
 		return sendQuery(query);
+	}
+
+	public int GetUserIdFromAPIKey(String apikey){
+		String query = "EXEC Application.GetUserIdFromAPIKey " + apikey;
+		return sendQueryToGetUserId(query);
 	}
 
 }

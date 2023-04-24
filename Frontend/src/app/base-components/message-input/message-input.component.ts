@@ -9,9 +9,6 @@ import { ApiService } from 'src/app/services/api-service.service';
 export class MessageInputComponent implements OnInit {
 
   message : string = '';
-
-  @Input()
-  senderId: string = '';
   
   @Input()
   channelId: string = '';
@@ -22,6 +19,7 @@ export class MessageInputComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     
   }
 
@@ -45,9 +43,7 @@ export class MessageInputComponent implements OnInit {
   }
 
   SendMessageHandler(){
-    //this.InsertMessageIntoChannel(this.message, "23", "124");
-  this.GetAllChannelsInGroup("1");
-   // this.GetAllChannelMessages("1");
+    this.InsertMessageIntoChannel(this.message, "apiKey", this.channelId);
     console.log("SendMessageHandlerHit");
   }
 
@@ -69,6 +65,8 @@ export class MessageInputComponent implements OnInit {
     }, (error)=>{console.log(error.message);},
      form);
   }
+
+  
 
   	/**
 	 * Insert direct message
@@ -98,29 +96,17 @@ export class MessageInputComponent implements OnInit {
     let form = new FormData();
     form.append("groupId", groupId);
     console.log(form);
-    console.log(groupId);
     this.api.put("/GetAllChannelsInGroup",  (response)=>
     {
       let fruit : string[][] = response.data;
-      console.log(response.data);
+      //console.log(response.data);
+      console.log(response.data[5]);
     }, (error)=>{console.log(error.message);},
      form);
   }
 
 
-  GetAllChannelMessages( channelId : string){
-    let form = new FormData();
-    form.append("channelId", channelId);
-    console.log(form);
-    console.log(channelId);
-    this.api.get("/GetAllChannelMessages",  (response)=>
-    {
-      console.log(response.data);
-    }, (error)=>{console.log(error.message);},
-     {
-      channelId : channelId
-     });
-  }
+
 
 }
 
