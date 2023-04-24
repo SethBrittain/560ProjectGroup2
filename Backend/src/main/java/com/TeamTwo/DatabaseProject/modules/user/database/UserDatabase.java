@@ -156,7 +156,7 @@ public class UserDatabase
 	 */
 	public void InsertMessageIntoChannel(String message, int senderId, int channelId)
 	{
-		String query = "EXEC Application.InsertMessageIntoChannel " + message + " " + senderId + " " + channelId; 
+		String query = "EXEC Application.InsertMessageIntoChannel " + message + "," + senderId + "," + channelId; 
 		sendQuery(query);
 	}
 
@@ -168,11 +168,11 @@ public class UserDatabase
 	 */
 	public void InsertDirectMessage(String message, int senderId, int recipientId)
 	{
-		String query = "EXEC Application.InsertDirectMessage " + message + " " + senderId + " " + recipientId;
+		String query = "EXEC Application.InsertDirectMessage " + message + "," + senderId + "," + recipientId;
 	    sendQuery(query);
 	}
 
-	public ArrayList<String> GetGroupChannels(int groupId)
+	public ArrayList<String> GetAllChannelsInGroup(int groupId)
 	{
 		String query = "EXEC Application.GetAllChannelsInGroup " + groupId;
 		return sendQuery(query);
