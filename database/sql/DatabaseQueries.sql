@@ -8,7 +8,7 @@ SELECT O.Name, SUM(IIF(U.Active = 1,1,0)) AS ActiveUserCount, Count(M.MsgId) AS 
 FROM Application.Organizations O
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
---WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
@@ -92,7 +92,7 @@ CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
 @SenderId INT,
 @ChannelId INT
 AS 
-INSERT INTO Application.Messages ([Message], SenderId, ChanneldId)
+INSERT INTO Application.Messages ([Message], SenderId, ChannelId)
 VALUES (@Message, @SenderId, @ChannelId)
 GO 
 
@@ -104,4 +104,21 @@ CREATE OR ALTER PROCEDURE Application.InsertDirectMessage
 AS 
 INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
 VALUES (@Message, @SenderId, @RecipientId)
+GO
+
+/*Query 10: Insert New User*/
+CREATE OR ALTER PROCEDURE Application.InsertNewUser
+@OrganizationId INT,
+@Username NVARCHAR(64),
+@Email NVARCHAR(128),
+@Password NVARCHAR(128),
+@FirstName NVARCHAR(64),
+@LastName NVARCHAR(64),
+@Title NVARCHAR(64),
+@ProfilePhoto NVARCHAR(max)
+AS
+
+INSERT INTO Application.Users
+(OrganizationId, Username, [Password], FirstName, LastName, Title, ProfilePhoto)
+VALUES (@OrganizationId, @Username, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
 GO
