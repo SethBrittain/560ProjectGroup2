@@ -93,7 +93,7 @@ CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
 @SenderId INT,
 @ChannelId INT
 AS 
-INSERT INTO Application.Messages ([Message], SenderId, ChanneldId)
+INSERT INTO Application.Messages ([Message], SenderId, ChannelId)
 VALUES (@Message, @SenderId, @ChannelId)
 GO 
 

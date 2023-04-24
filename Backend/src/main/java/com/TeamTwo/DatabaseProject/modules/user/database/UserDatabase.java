@@ -87,7 +87,7 @@ public class UserDatabase
 	public ArrayList<String> GetAllChannelMessages(int ChannelId)
 	{
 		String query = "EXEC Application.GetAllChannelMessages " + ChannelId;
-		return sendQuery(4,query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class UserDatabase
 	public ArrayList<String> GetDirectMessages(int userA, int userB)
 	{
 		String query = "EXEC Application.GetDirectMessages " + userA + " " + userB;
-		return sendQuery(2, query);
+		return sendQuery(query);
 	}
 
 
@@ -112,7 +112,7 @@ public class UserDatabase
 	public ArrayList<String> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
 		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + " " + channelId;
-		return sendQuery(2, query);		
+		return sendQuery(query);		
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class UserDatabase
 	public ArrayList<String> GetAllChannelsInOrganization(int organizationId)
 	{
 		String query = "EXEC Application.GetAllChannelsInOrganization " + organizationId;
-		return sendQuery(2, query);		
+		return sendQuery(query);		
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class UserDatabase
 	public ArrayList<String> GetAllUsersInOrganization(int organizationId)
 	{
 		String query = "EXEC Application.GetAllUsersInOrganization " + organizationId;
-		return sendQuery(4, query);
+		return sendQuery(query);
 	}
 
 	/**
@@ -145,18 +145,19 @@ public class UserDatabase
 	public ArrayList<String> GetUserInfo(String email)
 	{
 		String query = "EXEC Application.GetUserInfo " + email;
-		return sendQuery(5, query);
+		return sendQuery(query);
 	}
 
 	/**
 	 * Insert Message into channel
 	 * @param message Message to insert
 	 * @param senderId sender id
-	 * @param channelId recipient id
+	 * @param channelId channel id
 	 */
-	public void InsertMessageIntoChannel(String message, int senderId, int recipientId)
+	public void InsertMessageIntoChannel(String message, int senderId, int channelId)
 	{
-		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + channelId; 
+		String query = "EXEC Application.InsertMessageIntoChannel " + message + " " + senderId + " " + channelId; 
+		sendQuery(query);
 	}
 
 	/**
@@ -167,9 +168,8 @@ public class UserDatabase
 	 */
 	public void InsertDirectMessage(String message, int senderId, int recipientId)
 	{
-		String query = "EXEC Application.InsertMessageInto " + message + " " + senderId + " " + RecipientId; 
-		String query = "EXEC Application.GetAllMessagesBetweenUsers " + userA + " " + userB;
-		return sendQuery(query);
+		String query = "EXEC Application.InsertDirectMessage " + message + " " + senderId + " " + recipientId;
+	    sendQuery(query);
 	}
 
 	public ArrayList<String> GetGroupChannels(int groupId)
