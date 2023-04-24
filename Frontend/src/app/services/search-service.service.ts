@@ -29,12 +29,20 @@ export class SearchService implements OnInit{
     // can we just ask for a substring?
     search(term: string): Observable<any> {
         console.log(term + '2');
-        this.api.get("/MessagesMatchingSubstring",  
+
+        let form = new FormData();
+        form.append("substring", term);
+        form.append("channelId", this.channelId);
+        console.log(form);
+
+        this.api.put("/MessagesMatchingSubstring",
+        //this.api.get("/MessagesMatchingSubstring?substring="+term+"?channelId="+this.channelId,  
             (response) => {
                 console.log(response.data);
                 this.searchResult$ = response.data; }, 
             (error) => { console.log(error.message); },
-            { substring: term, channelId: this.channelId }
+            form
+            //{ substring: term, channelId: this.channelId }
         );
 
         return this.searchResult$; // fix this. This should return the api result

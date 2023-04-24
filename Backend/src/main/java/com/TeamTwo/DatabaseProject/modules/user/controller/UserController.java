@@ -74,7 +74,7 @@ public class UserController {
 	}
 
 
-	@GetMapping("/api/MessagesMatchingSubstring")
+	@PutMapping("/api/MessagesMatchingSubstring")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllMessagesMatchingSubstring(@RequestParam String substring, @RequestParam int channelId)
 	{
@@ -88,7 +88,7 @@ public class UserController {
 		return database.GetAllChannelsInOrganization(organizationId);
 	}
 
-	@GetMapping("/api/GetAllUsersInOrganization")
+	@PutMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
 	public ArrayList<ArrayList<String>> GetAllUsersInOrganization(@RequestParam int organizationId)
 	{
