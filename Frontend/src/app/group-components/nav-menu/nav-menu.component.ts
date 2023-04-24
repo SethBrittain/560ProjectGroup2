@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class NavMenuComponent implements OnInit{
 
-  @Input() orgName: string = '';
+  orgName: string = 'Kansas State University';
 
   constructor(){}
 

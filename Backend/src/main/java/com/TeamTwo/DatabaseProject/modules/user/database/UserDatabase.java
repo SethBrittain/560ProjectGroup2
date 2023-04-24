@@ -140,7 +140,7 @@ public class UserDatabase
 	 */
 	public ArrayList<Hashtable<String,String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
-		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + " " + channelId;
+		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + "," + channelId;
 		return sendQuery(query);		
 	}
 
