@@ -3,63 +3,117 @@
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 @ChannelId INT
 AS
-SELECT M.Message, U.FirstName, U.LastName , M.CreatedOn /* update to include the name of the user who send the message */ 
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto
 FROM Application.Channels C
-INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
-INNER JOIN Application.Users U ON M.SenderId = U.UserId
+	INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
+	INNER JOIN Application.Users U ON M.SenderId = U.UserId
 WHERE C.ChannelId = @ChannelId
-ORDER BY M.CreatedOn ASC; 
+ORDER BY M.CreatedOn ASC;
 GO
 
 -- Get all direct messages between two given users
 CREATE OR ALTER PROCEDURE Application.GetDirectMessages
-@UserAId INT,
-@UserBId INT
+@CurrentUserId INT,
+@OtherUserId INT
 AS
-SELECT M.Message, M.SenderId
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
 FROM Application.Messages M
-WHERE M.SenderId = @UserAId AND M.RecipientId = @UserBId OR M.SenderId = @UserBId AND M.RecipientId = @UserAId; 
+	INNER JOIN Application.Users U ON M.SenderId = U.UserId
+WHERE M.SenderId = @CurrentUserId AND M.RecipientId = @OtherUserId OR M.SenderId = @OtherUserId AND M.RecipientId = @CurrentUserId; 
 GO
 
--- Get all people who have direct messages with a given user
-
--- Get all users that match a given search substring
-CREATE OR ALTER PROCEDURE Application.GetUsersMatchingSubstring
+-- Get all the messages in a channel that match a given search string
+CREATE OR ALTER PROCEDURE Application.SearchChannelMessages
+@UserId INT,
+@ChannelId INT,
 @Substring NVARCHAR(512)
 AS
-SELECT U.UserId, U.FirstName, U.LastName
-FROM Application.Users U
-WHERE U.FirstName + ' ' + U.LastName LIKE '%' + @Substring + '%'
-	OR U.Email LIKE '%' + @Substring + '%'
-GO
-
--- Get all the messages that match a given search substring
-CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring
-@Substring NVARCHAR(512),
-@ChannelId INT
-AS
-SELECT M.Message, M.SenderId,M.ChannelId, M.RecipientId, M.CreatedOn
+SELECT M.MsgId, M.Message, M.SenderId, M.ChannelId, M.RecipientId, M.UpdatedOn, IIF(M.SenderId = @UserId, 1, 0) AS IsMine
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
 WHERE C.ChannelId = @ChannelId
 AND M.Message LIKE '%' + @Substring + '%'   
 GO
 
--- not working yet
-CREATE OR ALTER PROCEDURE Application.GetAllMessagesOfUserMatchingSubstring
-@Substring NVARCHAR(512),
-@UserId INT
+-- Get all the messages sent to or from a user that match a given search string
+CREATE OR ALTER PROCEDURE Application.SearchUserMessages
+@UserId INT,
+@Substring NVARCHAR(512)
 AS
-SELECT U.UserId, G.GroupId, G.Name AS GroupName, C.ChannelId, C.Name AS ChannelName, ME.RecipientId, ME.ChannelId, ME.MsgId, ME.Message
-FROM Application.Users U
-	INNER JOIN Application.Memberships M ON U.UserId = M.UserId
-	INNER JOIN Application.Groups G ON M.GroupId = G.GroupId
-	INNER JOIN Application.Channels C ON G.GroupId = C.GroupId
-	INNER JOIN Application.Messages ME ON U.UserId = ME.SenderId OR C.ChannelId = ME.ChannelId
-WHERE U.UserId = @UserId --AND ME.Message LIKE '%' + @Substring + '%'  
-ORDER BY U.UserId ASC
+WITH AllUserMessagesCte(MsgId, [Message], UpdatedOn, SenderId, RecipientId, ChannelId, FirstName, LastName, ProfilePhoto, [Name]) AS
+(
+	-- Get all direct messages sent to or from a user
+	SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId, ME.RecipientId, ME.ChannelId, U2.FirstName, U2.LastName, U2.ProfilePhoto, C.Name AS ChannelName
+	FROM Application.Users U1
+		INNER JOIN Application.Messages ME ON U1.UserId = ME.SenderID OR U1.UserId = RecipientId
+		LEFT JOIN Application.Channels C ON ME.ChannelId = C.ChannelId
+		INNER JOIN Application.Users U2 ON ME.SenderId = U2.UserId
+	WHERE U1.UserId = @UserId
+	UNION
+	-- Get all channel messages sent to or from a user
+	SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId, ME.RecipientId, ME.ChannelId, U2.FirstName, U2.LastName, U2.ProfilePhoto, C.Name AS ChannelName
+	FROM Application.Users U1
+		INNER JOIN Application.Memberships M ON U1.UserId = M.UserId
+		INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
+		INNER JOIN Application.Messages ME ON C.ChannelId = ME.ChannelId
+		INNER JOIN Application.Users U2 ON ME.SenderId = U2.UserId
+	WHERE U1.UserId = @UserId
+)
+SELECT *
+FROM AllUserMessagesCte A
+WHERE [Message] LIKE '%' + @Substring + '%'
+ORDER BY UpdatedOn DESC
 GO
 
+-- Get all users who have direct messages with a given user
+CREATE OR ALTER PROCEDURE Application.GetDirectMessageChats
+@UserId INT
+AS
+-- Get all direct messages sent from the user
+SELECT U2.UserId, U2.FirstName, U2.LastName, M.MsgId, M.SenderId, M.RecipientId
+FROM Application.Users U1
+	INNER JOIN Application.Messages M ON U1.UserId = M.SenderId
+	INNER JOIN Application.Users U2 ON M.RecipientId = U2.UserId
+WHERE U1.UserId = @UserId
+UNION
+-- Get all direct messages sent to the user
+SELECT U2.UserId, U2.FirstName, U2.LastName, M.MsgId, M.SenderId, M.RecipientId
+FROM Application.Users U1
+	INNER JOIN Application.Messages M ON U1.UserId = M.RecipientId
+	INNER JOIN Application.Users U2 ON M.SenderId = U2.UserId
+WHERE U1.UserId = @UserId
+GO
+
+-- Get the profile photo for a given user
+CREATE OR ALTER PROCEDURE Application.GetProfilePhoto
+@UserId INT
+AS
+SELECT U.ProfilePhoto
+FROM Application.Users U
+WHERE U.UserId = @UserId
+GO
+
+-- Get the channel name for a given channel
+CREATE OR ALTER PROCEDURE Application.GetChannelName
+@ChannelId INT
+AS
+SELECT C.Name
+FROM Application.Channels C
+WHERE C.ChannelId = @ChannelId
+GO
+
+-- Get all the users in an organization that match a given search string
+CREATE OR ALTER PROCEDURE Application.SearchUsersInOrganization
+@Substring INT,
+@OrganizationId INT
+AS
+SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
+FROM Application.Users U
+WHERE (U.FirstName + ' ' + U.LastName LIKE '%' + @Substring + '%'
+	OR U.Email LIKE '%' + @Substring + '%') AND U.OrganizationId = @OrganizationId
+GO
+
+-- Get all the channels that a user is in
 CREATE OR ALTER PROCEDURE Application.GetAllChannelsOfUser
 @UserId INT
 AS
@@ -67,10 +121,8 @@ SELECT C.ChannelId, C.Name
 FROM Application.Users U
 	INNER JOIN Application.Memberships M ON U.UserId = M.UserId
 	INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
-WHERE U.UserId = @UserId
+WHERE U.UserId = 10
 GO
-
--- query to get the name of a channel or person based on the channelId or UserId
 
 -- Get all the channels in an organization
 CREATE OR ALTER PROCEDURE Application.GetAllChannelsInOrganization
@@ -127,12 +179,23 @@ INSERT INTO Application.Users
 VALUES (@OrganizationId, @FirstName, @LastName, @Title, @ProfilePhoto)
 GO
 
--- delete message from database
+-- Delete the given message
 CREATE OR ALTER PROCEDURE Application.DeleteMessage
-@MessageId INT
+@MsgId INT
 AS
-DELETE FROM Application.Messages WHERE MsgId = @MessageId
+DELETE FROM Application.Messages WHERE MsgId = @MsgId
 GO
+
+-- Update the given message with the given update string
+CREATE OR ALTER PROCEDURE Application.UpdateMessage
+@MsgId INT,
+@Message NVARCHAR(512)
+AS
+SELECT *
+FROM Application.Messages
+UPDATE Application.Messages
+SET [Message] = @Message
+WHERE MsgId = @MsgId
 
 /*
 -- get user id from api key
@@ -186,25 +249,3 @@ CREATE PROCEDURE Application.GetAppGrowth
 AS
 SELECT 
 */
-
-
-SELECT C.ChannelId, C.Name
-FROM Application.Users U
-	INNER JOIN Application.Memberships M ON U.UserId = M.UserId
-	INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
-WHERE U.UserId = 9;
-
-SELECT *
-FROM Application.Users F
-Where F.FirstName = 'Stanislaus';
-
-
-
-
-INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
-VALUES ('testmessage', 4, 1);
-
-
-SELECT * 
-FROM Application.Messages M 
-WHERE M.SenderId = 4 AND M.RecipientId = 1;
