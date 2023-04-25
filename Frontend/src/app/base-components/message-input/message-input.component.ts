@@ -13,6 +13,8 @@ export class MessageInputComponent implements OnInit {
   @Input()
   channelId: string = '';
 
+  @Input()
+  type: string = '';
 
   constructor(private api: ApiService) { 
     
@@ -43,8 +45,15 @@ export class MessageInputComponent implements OnInit {
   }
 
   SendMessageHandler(){
-
-    this.InsertMessageIntoChannel(this.message, this.channelId);
+    
+    if(this.type = "channel"){
+      this.InsertMessageIntoChannel(this.message, this.channelId);
+    }
+    else{
+      this.InsertDirectMessage(this.message, 1);
+    }
+    
+    
     console.log("SendMessageHandlerHit");
   }
 
@@ -74,18 +83,17 @@ export class MessageInputComponent implements OnInit {
 	 * @param senderId sender id
 	 * @param recipientId recipient id 
 	 */
-  InsertDirectMessage( message : String, senderId : number, recipientId : number) : void
+  ///NEED TO PASS API KEY TO USERCONTROLLER
+  InsertDirectMessage( message : any, recipientId : any) : void
   {
-    
+    let form = new FormData();
+    form.append("message", message);
+    form.append("recipientId", recipientId);
     this.api.put("/InsertDirectMessage",  (response)=>
     {
       console.log(response.data);
     }, (error)=>{console.log(error.message);},
-    {
-      message : message,
-      senderId : senderId,
-      recipientId: recipientId
-    });
+    form);
   }
 
   /* Testing other kinds of requests */ 
