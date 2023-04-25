@@ -24,7 +24,7 @@ import { ProfileComponent } from './base-components/profile/profile.component';
 import { SearchComponent } from './base-components/search/search.component';
 import { ApiService } from './services/api-service.service';
 import { GlobalConstants } from './global.config';
-//import { AuthModule } from '@auth0/auth0-angular';
+import { AuthModule } from '@auth0/auth0-angular';
 
 @NgModule({
   declarations: [
@@ -52,13 +52,15 @@ import { GlobalConstants } from './global.config';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatIconModule,
-    /*AuthModule.forRoot({
-      domain: "localhost",
-      clientId: GlobalConstants.ClientID,
+    AuthModule.forRoot({
+      domain: GlobalConstants.AuthDomain,
+      clientId: GlobalConstants.AuthClientID,
+      useRefreshTokens: GlobalConstants.AuthRefreshToken,
+      cacheLocation: GlobalConstants.AuthCacheLocation,
       authorizationParams: {
-        redirect_uri: window.location.origin
-      }
-    }),*/
+        redirect_uri: "http://localhost:4200/app"
+      },
+    }),
   ],
   providers: [
     ApiService

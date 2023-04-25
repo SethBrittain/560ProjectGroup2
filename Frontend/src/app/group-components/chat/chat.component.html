@@ -1,5 +1,5 @@
 <div class="w-full">
-    <app-chat-header [title]=title></app-chat-header>
+    <app-chat-header [title]="title"></app-chat-header>
     <div class="px-6 pt-36">
         <ul *ngFor="let message of messages">
             <app-message image = "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.CreatedOn}}" message="{{message.Message}}"></app-message>

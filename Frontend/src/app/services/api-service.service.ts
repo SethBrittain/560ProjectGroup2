@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AuthService, User } from '@auth0/auth0-angular';
 import { AxiosError, AxiosResponse } from 'axios';
 import axios from 'axios' ;
 
@@ -7,21 +8,43 @@ import axios from 'axios' ;
 })
 export class ApiService {
 
-  constructor() { axios.defaults.baseURL = "http://localhost:8080/api" }  
+  constructor(private auth : AuthService) { 
+    axios.defaults.baseURL = "http://localhost:8080/api"; 
+  }  
 
-  public get(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
+  public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : any = {})
   {
-    axios.get(endpoint, data).then(callback).catch(onError);
+    this.auth.user$.subscribe((user)=>{
+      var fd = new FormData();
+      fd.append("emailAddress", user?.email ?? '',);
+      fd.append("firstName", user?.given_name ?? '');
+      fd.append("lastName", user?.family_name ?? '');
+      fd.append("authId", user?.sub ?? '');
+      axios.post("/CreateNewUser",fd).then((response)=>{
+        data.apiKey = response.data?.apiKey;
+        axios.post(endpoint,data).then(callback).catch(onError);
+      }).catch((error)=>{
+        console.log("Failed to obtain API key");
+        console.log(error.message);
+      });
+    })
   }
 
-  public put(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
+  public put(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : any = {})
   {
-    axios.put(endpoint, data).then(callback).catch(onError);
+    this.auth.user$.subscribe((user)=>{
+      var fd = new FormData();
+      fd.append("emailAddress", user?.email ?? '',);
+      fd.append("firstName", user?.given_name ?? '');
+      fd.append("lastName", user?.family_name ?? '');
+      fd.append("authId", user?.sub ?? '');
+      axios.put("/CreateNewUser",fd).then((response)=>{
+        data.apiKey = response.data?.apiKey;
+        axios.post(endpoint,data).then(callback).catch(onError);
+      }).catch((error)=>{
+        console.log("Failed to obtain API key");
+        console.log(error.message);
+      });
+    })
   }
-
-  public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
-  {
-    axios.post(endpoint, data).then(callback).catch(onError);
-  }
-  
 }
