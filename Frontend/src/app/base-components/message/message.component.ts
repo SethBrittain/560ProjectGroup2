@@ -12,6 +12,8 @@ export class MessageComponent implements OnInit {
   @Input() dateSent: string = '';
   @Input() message: string = '';
   @Input() image: string = '';
+  areaVisible: string = 'hidden';
+  pVisible: string = 'visible';
 
   constructor(){}
 
@@ -20,9 +22,7 @@ export class MessageComponent implements OnInit {
   }
 
   getVal(event:any) {
-
     this.message = event.target.value;
-
   }
 
   editMessage() {
