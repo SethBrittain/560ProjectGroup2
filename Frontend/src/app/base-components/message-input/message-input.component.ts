@@ -8,101 +8,102 @@ import { ApiService } from 'src/app/services/api-service.service';
 })
 export class MessageInputComponent implements OnInit {
 
-  message : string = '';
-  
+  message: string = '';
+
   @Input()
   channelId: string = '';
 
+  @Input()
+  type: string = '';
 
-  constructor(private api: ApiService) { 
-    
+  constructor(private api: ApiService) {
+
   }
 
   ngOnInit(): void {
 
-    
+
   }
 
   /**
    *  testing, testing, 1.2.3.
    * @param username 
    */
-  test(username : String) : void {
-    this.api.get("/Example", (response)=>
-    {
+  test(username: String): void {
+    this.api.get("/Example", (response) => {
       console.log(response.data);
-    }, (error)=>{console.log(error.message);},
-    {
-      username: username 
-    });
-  
+    }, (error) => { console.log(error.message); },
+      {
+        username: username
+      });
+
   }
 
-  GetVal(event:any){
+  GetVal(event: any) {
     this.message = event?.target.value;
   }
 
-  SendMessageHandler(){
+  SendMessageHandler() {
 
-    this.InsertMessageIntoChannel(this.message, this.channelId);
+    if (this.type = "channel") {
+      this.InsertMessageIntoChannel(this.message, this.channelId);
+    }
+    else {
+      this.InsertDirectMessage(this.message, 1);
+    }
+
+
     console.log("SendMessageHandlerHit");
   }
 
   /**
-	 * Insert Message into channel
-	 * @param message Message to insert
-	 * @param senderId sender id
-	 * @param channelId recipient id
-	 */
-  InsertMessageIntoChannel( message : string, channelId : string) : void
-  {
+   * Insert Message into channel
+   * @param message Message to insert
+   * @param senderId sender id
+   * @param channelId recipient id
+   */
+  InsertMessageIntoChannel(message: string, channelId: string): void {
     let form = new FormData();
     form.append("message", message);
     form.append("channelId", channelId);
-    this.api.put("/InsertMessageIntoChannel",  (response)=>
-    {
+    this.api.put("/InsertMessageIntoChannel", (response) => {
       console.log(response.data);
-    }, (error)=>{console.log(error.message);},
-     form);
+    }, (error) => { console.log(error.message); },
+      form);
   }
 
-  
 
-  	/**
-	 * Insert direct message
-	 * @param message message to insert
-	 * @param senderId sender id
-	 * @param recipientId recipient id 
-	 */
-  InsertDirectMessage( message : String, senderId : number, recipientId : number) : void
-  {
-    
-    this.api.put("/InsertDirectMessage",  (response)=>
-    {
+
+  /**
+ * Insert direct message
+ * @param message message to insert
+ * @param senderId sender id
+ * @param recipientId recipient id 
+ */
+  ///NEED TO PASS API KEY TO USERCONTROLLER
+  InsertDirectMessage(message: any, recipientId: any): void {
+    let form = new FormData();
+    form.append("message", message);
+    form.append("recipientId", recipientId);
+    this.api.put("/InsertDirectMessage", (response) => {
       console.log(response.data);
-    }, (error)=>{console.log(error.message);},
-    {
-      message : message,
-      senderId : senderId,
-      recipientId: recipientId
-    });
+    }, (error) => { console.log(error.message); },
+      form);
   }
 
-  /* Testing other kinds of requests */ 
-  
-  GetAllChannelsInGroup( groupId : string) : void
-  {
-    
+  /* Testing other kinds of requests */
+
+  GetAllChannelsInGroup(groupId: string): void {
+
     let form = new FormData();
     form.append("groupId", groupId);
     console.log(form);
-    this.api.put("/GetAllChannelsInGroup",  (response)=>
-    {
-      let fruit : string[][] = response.data;
+    this.api.put("/GetAllChannelsInGroup", (response) => {
+      let fruit: string[][] = response.data;
       //console.log(response.data);
       console.log(response.data[5]);
-    }, (error)=>{console.log(error.message);},
-     form);
+    }, (error) => { console.log(error.message); },
+      form);
   }
 
 

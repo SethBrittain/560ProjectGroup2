@@ -5,5 +5,5 @@
             <app-message image = "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.CreatedOn}}" message="{{message.Message}}"></app-message>
         </ul>
     </div>
-    <app-message-input [channelId] = channelId></app-message-input>
+    <app-message-input [channelId] = channelId [type] = type></app-message-input>
 </div>
