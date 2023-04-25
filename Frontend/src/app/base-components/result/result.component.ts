@@ -23,4 +23,8 @@ export class ResultComponent implements OnInit {
       
   }
 
+  updateUrl(){
+    this.image = '/assets/default-avatar.svg'
+  }
+
 }
