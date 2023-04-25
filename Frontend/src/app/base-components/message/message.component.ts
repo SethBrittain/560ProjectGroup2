@@ -19,4 +19,8 @@ export class MessageComponent implements OnInit {
       
   }
 
+  updateUrl(){
+    this.image = '/assets/default-avatar.svg'
+  }
+
 }
