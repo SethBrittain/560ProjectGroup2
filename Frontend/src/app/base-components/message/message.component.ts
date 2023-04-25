@@ -9,7 +9,7 @@ export class MessageComponent implements OnInit {
 
   @Input() firstName: string = '';
   @Input() lastName: string = '';
-  @Input() date: string = '';
+  @Input() dateSent: string = '';
   @Input() message: string = '';
   @Input() image: string = '';
 
