@@ -18,5 +18,10 @@ export class ApiService {
   {
     axios.put(endpoint, data).then(callback).catch(onError);
   }
+
+  public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data? : object)
+  {
+    axios.post(endpoint, data).then(callback).catch(onError);
+  }
   
 }

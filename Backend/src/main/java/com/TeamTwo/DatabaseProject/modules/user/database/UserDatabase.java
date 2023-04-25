@@ -140,7 +140,7 @@ public class UserDatabase
 	 */
 	public ArrayList<Hashtable<String,String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
-		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + " " + channelId;
+		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + "," + channelId;
 		return sendQuery(query);		
 	}
 
@@ -186,8 +186,21 @@ public class UserDatabase
 	 */
 	public Boolean InsertMessageIntoChannel(String message, int senderId, int channelId)
 	{
-		String query = "EXEC Application.InsertMessageIntoChannel " + message + "," + senderId + "," + channelId; 
-		return sendStatement(query);
+		
+
+		 try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.InsertMessageIntoChannel ?,?,?" ))
+		 {
+			stmt.setString(1,message);
+			stmt.setInt(2,senderId);
+			stmt.setInt(3,channelId);
+			 return stmt.execute();
+		 }	
+		 catch (SQLException e) {
+			 String error = e.toString();
+			 System.out.println(error);
+		 }
+		 return false;
+
 	}
 
 	/**
