@@ -15,57 +15,63 @@ export class ChatComponent implements OnInit {
   messages: any[] = [
 
   ];
+  type: any;
 
   constructor(private api: ApiService, private route: ActivatedRoute) { }
 
 
   ngOnInit(): void {
     let id = this.route.snapshot.paramMap.get('id');
-    let type = this.route.snapshot.paramMap.get('type');
-    this.getMessages(id, type);
-    this.title = type + ' ' + id;
+    this.type = this.route.snapshot.paramMap.get('type');
+    if (this.type = "channel") {
+      this.GetMessages(id);
+    }
+    else {
+      this.GetDirectMessages(id);
+    }
+
+    this.title = this.type + ' ' + id;
     this.channelId = id;
 
 
-    
+
   }
 
-  getMessages(id: any, type: any) {
+  GetMessages(id: any) {
     // Gets the messages from a channelId
-    if (type == 'channel') {
-      let form = new FormData();
-      form.append("ChannelId", id);
-      console.log(form);
 
-      this.api.post("/GetAllChannelMessages",
-        (response) => {
-          console.log(response.data);
-          this.messages = response.data;
-        },
-        (error) => { console.log(error.message); },
-        form
-      );
+    let form = new FormData();
+    form.append("channelId", id);
+    console.log(form);
 
-    }
-    // Gets the messages from a userId
-    // THIS QUERY NEEDS FIXING (DEPENDENT ON USERID)
-    else {
-      let form = new FormData();
-      form.append("UserId", id);
-      console.log(form);
-
-      this.api.get("/GetDirectMessages",
-        (response) => {
-          console.log(response.data);
-          this.messages = response.data;
-        },
-        (error) => { console.log(error.message); },
-        form
-      );
-    }
+    this.api.post("/GetAllChannelMessages",
+      (response) => {
+        console.log(response.data);
+        this.messages = response.data;
+      },
+      (error) => { console.log(error.message); },
+      form
+    );
   }
 
-  //getName
+  // Gets the messages from a userId
+  // THIS QUERY NEEDS FIXING (DEPENDENT ON USERID)
+  GetDirectMessages(userBId: any) {
+    let form = new FormData();
+    form.append("userBId", userBId)
+    console.log(form);
+    this.api.post("/GetDirectMessages",
+      (response) => {
+        console.log(response.data);
+        this.messages = response.data;
+      },
+      (error) => { console.log(error.message); },
+      form
+    );
+  }
+
+
+
 
 }
 
