@@ -9,7 +9,7 @@ export class MessageComponent implements OnInit {
 
   @Input() firstName: string = '';
   @Input() lastName: string = '';
-  @Input() date: string = '';
+  @Input() dateSent: string = '';
   @Input() message: string = '';
   @Input() image: string = '';
 
@@ -17,6 +17,10 @@ export class MessageComponent implements OnInit {
 
   ngOnInit(): void {
       
+  }
+
+  updateUrl(){
+    this.image = '/assets/default-avatar.svg'
   }
 
 }
