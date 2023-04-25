@@ -13,14 +13,11 @@ export class ChatComponent implements OnInit {
   title: string = '';
   channelId: any = '';
   messages: any[] = [
-    { id: 123, name: 'Channel1' },
-    { id: 124, name: 'Channel2' },
-    { id: 125, name: 'Channel3' },
-    { id: 126, name: 'Channel4' },
-    { id: 127, name: 'Channel5' }
+
   ];
 
   constructor(private api: ApiService, private route: ActivatedRoute) { }
+
 
   ngOnInit(): void {
     let id = this.route.snapshot.paramMap.get('id');
@@ -28,6 +25,9 @@ export class ChatComponent implements OnInit {
     this.getMessages(id, type);
     this.title = type + ' ' + id;
     this.channelId = id;
+
+
+    
   }
 
   getMessages(id: any, type: any) {
@@ -37,7 +37,7 @@ export class ChatComponent implements OnInit {
       form.append("ChannelId", id);
       console.log(form);
 
-      this.api.get("/GetAllChannelMessages",
+      this.api.post("/GetAllChannelMessages",
         (response) => {
           console.log(response.data);
           this.messages = response.data;

@@ -48,7 +48,7 @@ public class UserController {
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * @return ArrayList - Message
 	 */
-	@PutMapping("/api/GetAllChannelMessages")
+	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
 	public ArrayList<Hashtable<String,String>> GetAllChannelMessages(@RequestParam int ChannelId)
 	{
@@ -106,10 +106,10 @@ public class UserController {
 
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey)
+	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId)
 	{
 		int senderId = 4; //method to convert api key into int
-		return database.InsertMessageIntoChannel(message, senderId, recipientId);
+		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
 }
