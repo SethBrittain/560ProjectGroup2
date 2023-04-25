@@ -193,3 +193,18 @@ FROM Application.Users U
 	INNER JOIN Application.Memberships M ON U.UserId = M.UserId
 	INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
 WHERE U.UserId = 9;
+
+SELECT *
+FROM Application.Users F
+Where F.FirstName = 'Stanislaus';
+
+
+
+
+INSERT INTO Application.Messages ([Message], SenderId, RecipientId)
+VALUES ('testmessage', 4, 1);
+
+
+SELECT * 
+FROM Application.Messages M 
+WHERE M.SenderId = 4 AND M.RecipientId = 1;
