@@ -11,7 +11,7 @@ WHERE C.ChannelId = @ChannelId
 ORDER BY M.CreatedOn ASC; 
 GO
 
--- Get all direct messages
+-- Get all direct messages between two given users
 CREATE OR ALTER PROCEDURE Application.GetDirectMessages
 @UserAId INT,
 @UserBId INT
@@ -21,7 +21,19 @@ FROM Application.Messages M
 WHERE M.SenderId = @UserAId AND M.RecipientId = @UserBId OR M.SenderId = @UserBId AND M.RecipientId = @UserAId; 
 GO
 
--- Get all the messages matching a given substring
+-- Get all people who have direct messages with a given user
+
+-- Get all users that match a given search substring
+CREATE OR ALTER PROCEDURE Application.GetUsersMatchingSubstring
+@Substring INT
+AS
+SELECT U.UserId, U.FirstName, U.LastName
+FROM Application.Users U
+WHERE U.FirstName + ' ' + U.LastName LIKE '%' + @Substring + '%'
+	OR U.Email LIKE '%' + @Substring + '%'
+GO
+
+-- Get all the messages that match a given search substring
 CREATE OR ALTER PROCEDURE Application.GetAllMessagesMatchingSubstring
 @Substring NVARCHAR(512),
 @ChannelId INT
@@ -48,7 +60,15 @@ WHERE U.UserId = @UserId --AND ME.Message LIKE '%' + @Substring + '%'
 ORDER BY U.UserId ASC
 GO
 
--- query to get all channels a user is in, channel id and channel name
+CREATE OR ALTER PROCEDURE Application.GetAllChannelsOfUser
+@UserId INT
+AS
+SELECT C.ChannelId, C.Name
+FROM Application.Users U
+	INNER JOIN Application.Memberships M ON U.UserId = M.UserId
+	INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
+WHERE U.UserId = @UserId
+GO
 
 -- query to get the name of a channel or person based on the channelId or UserId
 
@@ -67,7 +87,7 @@ GO
 CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
-SELECT U.UserId, U.FirstName, U.LastName
+SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
 FROM Application.Organizations O 
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 WHERE O.OrganizationId = @OrganizationId;
@@ -97,19 +117,18 @@ GO
 CREATE OR ALTER PROCEDURE Application.InsertNewUser
 @OrganizationId INT,
 @Email NVARCHAR(128),
-@Password NVARCHAR(128),
 @FirstName NVARCHAR(64),
 @LastName NVARCHAR(64),
 @Title NVARCHAR(64),
 @ProfilePhoto NVARCHAR(max)
 AS
 INSERT INTO Application.Users
-(OrganizationId, [Password], FirstName, LastName, Title, ProfilePhoto)
-VALUES (@OrganizationId, @Password, @FirstName, @LastName, @Title, @ProfilePhoto)
+(OrganizationId, FirstName, LastName, Title, ProfilePhoto)
+VALUES (@OrganizationId, @FirstName, @LastName, @Title, @ProfilePhoto)
 GO
 
 -- delete message from database
-CREATE PROCEDURE Application.DeleteMessage
+CREATE OR ALTER PROCEDURE Application.DeleteMessage
 @MessageId INT
 AS
 DELETE FROM Application.Messages WHERE MsgId = @MessageId
@@ -141,8 +160,10 @@ WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
--- Aggregate Query 3
-CREATE PROCEDURE Application.AppTraffic
+-- Come up with a 2nd one
+
+-- Aggregate Query 3 -- Get the message traffic over a given month or months?
+CREATE PROCEDURE Application.GetMonthlyTraffic
 @FirstDate DATETIMEOFFSET,
 @LastDate DATETIMEOFFSET
 AS
@@ -158,9 +179,10 @@ GO
 SELECT *
 FROM Application.Messages M;
 
--- Aggregate Query 4
-CREATE PROCEDURE Application.AppGrowth
-@numberOfYears INT
+-- Aggregate Query 4 -- get the growth of users from a given date and over a given number of months
+CREATE PROCEDURE Application.GetAppGrowth
+@StartDate DATETIMEOFFSET,
+@Months INT
 AS
 SELECT 
 */
