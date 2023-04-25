@@ -1,10 +1,12 @@
-import { NgModule } from '@angular/core';
+import { Inject, NgModule, inject } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { MainWindowComponent } from './pages/main-window/main-window.component';
 import { ChatComponent } from './group-components/chat/chat.component';
 import { SearchResultsComponent } from './group-components/search-results/search-results.component';
 import { EmptyStateComponent } from './group-components/empty-state/empty-state.component';
+import { AuthService } from '@auth0/auth0-angular';
+import { take } from 'rxjs';
 
 // Import modules before adding them to routing like: import { moduleName } from 'module/path/string';
 
@@ -14,7 +16,7 @@ const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LogInComponent },
   {
-    path: 'app', component: MainWindowComponent,
+    path: 'app', component: MainWindowComponent, canActivate: [()=>inject(AuthService).isAuthenticated$.pipe(take(1))],
     children: [
       { path: '', component: EmptyStateComponent },
       { path: '-/:type/:id', component: ChatComponent },

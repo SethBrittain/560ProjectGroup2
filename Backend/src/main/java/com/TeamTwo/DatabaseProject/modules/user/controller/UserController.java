@@ -11,18 +11,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.TeamTwo.DatabaseProject.ApiConfig;
 import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import microsoft.sql.DateTimeOffset;
 
 @RestController
 public class UserController {
 
-	private UserDatabase database;
+    private UserDatabase database; 
+    private ApiConfig auth; 
 
-	@Autowired
-	public UserController(UserDatabase udb) {
-		database = udb;
+    @Autowired
+    public UserController(UserDatabase database, ApiConfig auth)
+    {
+        this.database = database;
+		this.auth = auth;
+    }
+
+	private long GetUserId(String apiKey) {
+		return this.database.GetUserId(apiKey);
 	}
 
 	@GetMapping("/api/Example")
@@ -260,4 +270,27 @@ public class UserController {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
+	@PostMapping("/api/CreateNewUser")
+	@ResponseBody
+	public Hashtable<String, String> CreateNewUser(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
+		String apiKey = database.CreateNewUser(emailAddress, firstName, lastName);
+		this.SetUserAuthApiKey(apiKey, authId);
+		Hashtable<String, String> hm = new Hashtable<String, String>();
+		hm.put("ApiKey", apiKey);
+		return hm;
+	}
+
+	private void SetUserAuthApiKey(String apiKey, String authId)
+	{
+		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
+		try {
+			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s",authId))
+				.header("authorization", String.format("Bearer %s",this.auth.token()))
+				.header("content-type", "application/json")
+				.body(dataBody)
+				.asJson();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
+	}
 }
