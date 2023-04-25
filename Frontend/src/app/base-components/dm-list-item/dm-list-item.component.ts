@@ -11,12 +11,11 @@ export class DmListItemComponent implements OnInit {
   @Input() userId: string = '';
   @Input() firstName: string = '';
   @Input() lastName: string = '';
-  @Input() image: string = '';
+  @Input() image: string = '/assets/default-avatar.svg';
 
   constructor(){}
 
   ngOnInit(): void {
-      
   }
 
   reloadPage() {
