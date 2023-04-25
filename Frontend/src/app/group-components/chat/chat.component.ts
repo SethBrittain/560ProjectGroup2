@@ -10,37 +10,39 @@ import { ParamMap } from '@angular/router'
 })
 export class ChatComponent implements OnInit {
 
-  title: string = 'test';
-  id: any;
-  type: any;
+  title: string = '';
+  channelId: any = '';
   messages: any[] = [
 
   ];
+  type: any;
 
   constructor(private api: ApiService, private route: ActivatedRoute) { }
 
 
   ngOnInit(): void {
     
-    this.id = this.route.snapshot.paramMap.get('id');
+    let id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
-    console.log(this.type);
-    console.log(this.id);
-    console.log(this.type == "chat");
+    this.GetDirectMessages(id);
+    console.log("this is the type of the control you just clicked: " + this.type);
     if (this.type == "channel") {
-      this.GetMessages();
-      this.GetChannelName();
+      this.GetMessages(id);
     }
     else {
-      this.GetDirectMessages();
-      this.GetUserName();
+      this.GetDirectMessages(id);
+      this.GetUserName(id);
     }
+
+    this.title = this.type + ' ' + id;
+    this.channelId = id;
   }
 
-  GetMessages() {
+  GetMessages(id: any) {
     // Gets the messages from a channelId
     let form = new FormData();
-    form.append("channelId", this.id);
+    form.append("channelId", id);
+    console.log(form);
 
     this.api.post("/GetAllChannelMessages",
       (response) => {
@@ -54,9 +56,10 @@ export class ChatComponent implements OnInit {
 
   // Gets the messages from a userId
   // THIS QUERY NEEDS FIXING (DEPENDENT ON USERID)
-  GetDirectMessages() {
+  GetDirectMessages(userBId: any) {
     let form = new FormData();
-    form.append("userBId", this.id)
+    form.append("userBId", userBId)
+    console.log(form);
     this.api.post("/GetDirectMessages",
       (response) => {
         console.log(response.data);
@@ -70,9 +73,9 @@ export class ChatComponent implements OnInit {
   /**
    * Gets the channel name to display in the header
    */
-  GetChannelName(){
+  GetChannelName(id: any){
     let form = new FormData();
-    form.append("channelId", this.id);
+    form.append("channelId", id);
     this.api.post("/GetChannelName",
     (response) => {
       console.log(response.data);
@@ -83,9 +86,9 @@ export class ChatComponent implements OnInit {
     );
   }
 
-  GetUserName() {
+  GetUserName(id: any) {
     let form = new FormData();
-    form.append("userId", this.id);
+    form.append("userId", id);
     this.api.post("/GetProfilePhoto",
     (response) => {
       console.log(response.data);
@@ -95,7 +98,7 @@ export class ChatComponent implements OnInit {
     form
     );
     console.log(this.type);
-    this.title = this.type + ' ' + this.id;
+    this.title = this.type + ' ' + this.channelId;
   }
 }
 
