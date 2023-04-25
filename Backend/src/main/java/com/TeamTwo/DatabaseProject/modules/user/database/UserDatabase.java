@@ -221,6 +221,12 @@ public class UserDatabase
 		return sendQuery(query);
 	}
 
+	public ArrayList<Hashtable<String,String>> GetAllChannelsOfUser(int userId)
+	{
+		String query = "EXEC Application.GetAllChannelsOfUser " + userId;
+		return sendQuery(query);
+	}
+
 	
 
 }

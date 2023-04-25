@@ -34,7 +34,7 @@ export class ChatComponent implements OnInit {
     // Gets the messages from a channelId
     if (type == 'channel') {
       let form = new FormData();
-      form.append("ChannelId", id);
+      form.append("channelId", id);
       console.log(form);
 
       this.api.post("/GetAllChannelMessages",
