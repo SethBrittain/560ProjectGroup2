@@ -105,7 +105,7 @@ public class UserController {
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
 	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId) {
-		int senderId = 4; // method to convert api key into int
+		int senderId = 2; // method to convert api key into int
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
