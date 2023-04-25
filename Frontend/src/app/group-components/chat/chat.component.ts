@@ -21,6 +21,7 @@ export class ChatComponent implements OnInit {
 
 
   ngOnInit(): void {
+    
     let id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
     if (this.type = "channel") {
