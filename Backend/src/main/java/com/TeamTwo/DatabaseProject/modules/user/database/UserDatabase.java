@@ -99,7 +99,7 @@ public class UserDatabase {
 	 * @return ArrayList - String OrgName, int ActiveUserCount, int MessageCount
 	 */
 	public ArrayList<Hashtable<String, String>> GetOrganizationData(DateTimeOffset start, DateTimeOffset end) {
-		String query = "EXEC Application.GetOrganizationData " + start + " " + end;
+		String query = "EXEC Application.GetOrganizationData " + start + "," + end;
 		return sendQuery(query);
 	}
 
@@ -122,7 +122,7 @@ public class UserDatabase {
 	 * @return ArrayList - Message, SenderId
 	 */
 	public ArrayList<Hashtable<String, String>> GetDirectMessages(int userA, int userB) {
-		String query = "EXEC Application.GetDirectMessages " + userA + " " + userB;
+		String query = "EXEC Application.GetDirectMessages " + userA + "," + userB;
 		return sendQuery(query);
 	}
 
