@@ -19,6 +19,24 @@ export class MessageComponent implements OnInit {
       
   }
 
+  getVal(event:any) {
+
+    this.message = event.target.value;
+
+  }
+
+  editMessage() {
+
+  }
+
+  deleteMessage() {
+    
+  }
+
+  updateMessage() {
+    
+  }
+
   updateUrl(){
     this.image = '/assets/default-avatar.svg'
   }
