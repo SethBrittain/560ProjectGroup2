@@ -2,7 +2,7 @@
     <app-chat-header [title]=title></app-chat-header>
     <div class="px-6 pt-36">
         <ul *ngFor="let message of messages">
-            <app-message image = "https://robohash.org/seal" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" date="{{message.CreatedOn}}" message="{{message.Message}}"></app-message>
+            <app-message image = "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.CreatedOn}}" message="{{message.Message}}"></app-message>
         </ul>
     </div>
     <app-message-input [channelId] = channelId></app-message-input>
