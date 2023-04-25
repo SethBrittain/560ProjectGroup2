@@ -1,6 +1,6 @@
 <div class="flex w-full py-3 px-1">
-    <div class="mt-1 shrink-0 w-10 h-10 rounded-full bg-indigo-500">
-        <img class="w-10 h-10 rounded-full" src="{{ image }}" alt="user photo">
+    <div class="mt-1 shrink-0 w-10 h-10 rounded-full">
+        <img class="w-10 h-10 rounded-full bg-indigo-500" src="{{ image }}" (error)="updateUrl()" onError="bg-none" alt="user photo">
     </div>
     <div class="pl-4">
         <div class="flex flex-row items-center">

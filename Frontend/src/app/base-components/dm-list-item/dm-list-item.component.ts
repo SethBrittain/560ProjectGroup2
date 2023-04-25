@@ -1,4 +1,4 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-dm-list-item',
@@ -13,13 +13,17 @@ export class DmListItemComponent implements OnInit {
   @Input() lastName: string = '';
   @Input() image: string = '/assets/default-avatar.svg';
 
-  constructor(){}
+  constructor() { }
 
   ngOnInit(): void {
   }
 
+  updateUrl(){
+    this.image = '/assets/default-avatar.svg'
+  }
+
   reloadPage() {
-    setTimeout(()=>{
+    setTimeout(() => {
       window.location.reload();
     }, 1);
   }
