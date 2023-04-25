@@ -133,22 +133,12 @@ public class UserDatabase {
 	 * @param channelId channel to search in
 	 * @return ArrayList - Message, SenderId
 	 */
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
 	public ArrayList<Hashtable<String,String>> GetAllMessagesMatchingSubstring(String substring, int channelId)
 	{
 		String query = "EXEC Application.GetAllMessagesMatchingSubstring '" + substring + "'," + channelId;
-		return sendQuery(query);		
-=======
-	public ArrayList<Hashtable<String, String>> GetAllMessagesMatchingSubstring(String substring, int channelId) {
-		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + "," + channelId;
-		return sendQuery(query);
->>>>>>> Stashed changes
-=======
-	public ArrayList<Hashtable<String, String>> GetAllMessagesMatchingSubstring(String substring, int channelId) {
-		String query = "EXEC Application.GetAllMessagesMatchingSubstring " + substring + "," + channelId;
-		return sendQuery(query);
->>>>>>> Stashed changes
+		return sendQuery(query);	
+
 	}
 
 	/**
