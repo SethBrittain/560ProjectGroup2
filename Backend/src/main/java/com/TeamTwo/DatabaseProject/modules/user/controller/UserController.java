@@ -245,6 +245,19 @@ public class UserController {
 		return database.DeleteMessage(msgId);
 	}
 
+	/**
+	 * Updates the message with the given messageId and new message from the database
+	 * 
+	 * @param msgId The messageId to delete
+	 * @param message The message to update
+	 * @return Boolean - true if the insertion is successful, false otherwise
+	 */
+	@PutMapping("/api/UpdateMessage")
+	@ResponseBody
+	public Boolean UpdateMessage(@RequestParam int msgId, @RequestParam String message) {
+		return database.UpdateMessage(msgId, message);
+	}
+
 	// Aggregating Queries
 
 	/**

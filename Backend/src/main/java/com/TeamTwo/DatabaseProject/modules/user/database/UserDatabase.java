@@ -287,7 +287,7 @@ public class UserDatabase {
 	 * @return Boolean - true if the insertion is successful, false otherwise
 	 */
 	public Boolean DeleteMessage(int msgId) {
-		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.InsertNewUser ?")) {
+		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.DeleteMessage ?")) { // InsertNewUser
 			stmt.setInt(1, msgId);
 			return stmt.execute();
 		} catch (SQLException e) {
@@ -306,7 +306,7 @@ public class UserDatabase {
 	 * @return Boolean - true if the insertion is successful, false otherwise
 	 */
 	public Boolean UpdateMessage(int msgId, String message) {
-		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.InsertNewUser ?,?")) {
+		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.UpdateMessage ?,?")) {
 			stmt.setInt(1, msgId);
 			stmt.setString(2, message);
 			return stmt.execute();
