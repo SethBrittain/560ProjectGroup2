@@ -10,40 +10,37 @@ import { ParamMap } from '@angular/router'
 })
 export class ChatComponent implements OnInit {
 
-  title: string = '';
-  channelId: any = '';
+  title: string = 'test';
+  id: any;
+  type: any;
   messages: any[] = [
 
   ];
-  type: any;
 
   constructor(private api: ApiService, private route: ActivatedRoute) { }
 
 
   ngOnInit(): void {
     
-    let id = this.route.snapshot.paramMap.get('id');
+    this.id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
-    if (this.type = "channel") {
-      this.GetMessages(id);
+    console.log(this.type);
+    console.log(this.id);
+    console.log(this.type == "chat");
+    if (this.type == "channel") {
+      this.GetMessages();
+      this.GetChannelName();
     }
     else {
-      this.GetDirectMessages(id);
+      this.GetDirectMessages();
+      this.GetUserName();
     }
-
-    this.title = this.type + ' ' + id;
-    this.channelId = id;
-
-
-
   }
 
-  GetMessages(id: any) {
+  GetMessages() {
     // Gets the messages from a channelId
-
     let form = new FormData();
-    form.append("channelId", id);
-    console.log(form);
+    form.append("channelId", this.id);
 
     this.api.post("/GetAllChannelMessages",
       (response) => {
@@ -57,10 +54,9 @@ export class ChatComponent implements OnInit {
 
   // Gets the messages from a userId
   // THIS QUERY NEEDS FIXING (DEPENDENT ON USERID)
-  GetDirectMessages(userBId: any) {
+  GetDirectMessages() {
     let form = new FormData();
-    form.append("userBId", userBId)
-    console.log(form);
+    form.append("userBId", this.id)
     this.api.post("/GetDirectMessages",
       (response) => {
         console.log(response.data);
@@ -71,9 +67,36 @@ export class ChatComponent implements OnInit {
     );
   }
 
+  /**
+   * Gets the channel name to display in the header
+   */
+  GetChannelName(){
+    let form = new FormData();
+    form.append("channelId", this.id);
+    this.api.post("/GetChannelName",
+    (response) => {
+      console.log(response.data);
+      //this.title = response.data.ChannelName;
+    },
+    (error) => { console.log(error.message); },
+    form
+    );
+  }
 
-
-
+  GetUserName() {
+    let form = new FormData();
+    form.append("userId", this.id);
+    this.api.post("/GetProfilePhoto",
+    (response) => {
+      console.log(response.data);
+      //this.title = response.data.ChannelName;
+    },
+    (error) => { console.log(error.message); },
+    form
+    );
+    console.log(this.type);
+    this.title = this.type + ' ' + this.id;
+  }
 }
 
 
