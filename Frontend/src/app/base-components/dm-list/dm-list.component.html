@@ -3,6 +3,6 @@
 <div id="direct-messages" class="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
     <p class="text-gray-600 dark:text-gray-400 py-1 px-2 text-base font-semibold uppercase tracking-wide">Direct Messages</p>
     <ul *ngFor="let user of users">
-        <app-dm-list-item userId ={{user.UserId}} firstName={{user.FirstName}} lastName={{user.LastName}} ></app-dm-list-item>
+        <app-dm-list-item userId ={{user.UserId}} firstName={{user.FirstName}} lastName={{user.LastName}} image={{user.ProfilePhoto}}></app-dm-list-item> <!-- image={{user.ProfilePhoto}} -->
     </ul>
 </div>

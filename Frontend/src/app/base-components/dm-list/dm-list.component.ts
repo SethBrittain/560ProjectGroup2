@@ -9,7 +9,6 @@ import { ApiService } from 'src/app/services/api-service.service';
 export class DmListComponent implements OnInit {
 
   orgId: string = '1'; // SHOULD GET ORG ID
-  //users: { [key: string]: string } = {};
   users: any;
 
   constructor(private api: ApiService) { }
