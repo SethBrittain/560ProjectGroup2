@@ -50,9 +50,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String,String>> GetAllChannelMessages(@RequestParam int ChannelId)
+	public ArrayList<Hashtable<String,String>> GetAllChannelMessages(@RequestParam int channelId)
 	{
-		return database.GetAllChannelMessages(ChannelId);
+		return database.GetAllChannelMessages(channelId);
 	}
 
 	/**
@@ -104,12 +104,22 @@ public class UserController {
 		return database.GetUserInfo(username);
 	}
 
+	//NEED TO ADD @RequestParam String APIkey
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
 	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId)
 	{
 		int senderId = 4; //method to convert api key into int
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
+	}
+
+	//NEED TO ADD @RequestParam String APIkey
+	@PostMapping("/api/GetAllChannelsOfUser")
+	@ResponseBody
+	public ArrayList<Hashtable<String,String>> GetAllChannelsOfUser()
+	{
+		int userId = 9; //method to convert api key into int
+		return database.GetAllChannelsOfUser(userId);
 	}
 
 }
