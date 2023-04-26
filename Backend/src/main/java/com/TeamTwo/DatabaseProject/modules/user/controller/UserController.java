@@ -62,9 +62,9 @@ public class UserController {
 	//NEED TO ADD REQUEST PARAM FOR APIKEY
 	@PostMapping("/api/GetDirectMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId) {
+	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId, @RequestParam String apiKey) {
 		// TODO Replace currentUserId with apiKey in parameters
-		int userAId = 3;
+		int userAId = this.GetUserId(apiKey);
 		return database.GetDirectMessages(userAId, userBId);
 	}
 
@@ -131,9 +131,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/SearchChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int userId,
-			@RequestParam int channelId, @RequestParam String subString) {
+	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int channelId, @RequestParam String subString, @RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
+		 int userId = this.GetUserId(apiKey);
 		return database.SearchChannelMessages(userId, channelId, subString);
 	}
 
@@ -150,9 +150,9 @@ public class UserController {
 	@PostMapping("/api/SearchUserMessages")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> SearchUserMessages(
-			@RequestParam String subString) {
+			@RequestParam String subString,@RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
-		int userId = 4;
+		int userId = this.GetUserId(apiKey);
 		return database.SearchUserMessages(userId, subString);
 	}
 
@@ -164,9 +164,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/GetAllChannelsOfUser")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser() {
+	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser(@RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
-		int userId = 4;
+		int userId = this.GetUserId(apiKey);
 		return database.GetAllChannelsOfUser(userId);
 	}
 
