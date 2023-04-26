@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-table-row',
@@ -6,5 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./table-row.component.css']
 })
 export class TableRowComponent {
-
+  @Input() row1: string = '';
+  @Input() row2: string = '';
+  @Input() row3: string = '';
+  constructor(){}
 }
