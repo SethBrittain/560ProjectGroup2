@@ -1,6 +1,6 @@
 <!-- Need to route to the id of the message and chat -->
 <!-- Need to display query result -->
-<a routerLink="/app" class="flex flex-col gap-sm py-3 px-6 border border-slate-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out rounded-lg bg-slate-50 dark:bg-gray-800 radius-lg mb-4">
+<a [routerLink]="['../../-', type, id]" class="flex flex-col gap-sm py-3 px-6 border border-slate-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out rounded-lg bg-slate-50 dark:bg-gray-800 radius-lg mb-4">
     <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide">{{ name }}</p>
     <div class="flex w-full py-3 px-1">
         <div class="mt-1 shrink-0 w-10 h-10 rounded-full">
