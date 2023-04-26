@@ -274,8 +274,8 @@ public class UserController {
 	 */
 	@PutMapping("/api/OrganizationsData")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam DateTimeOffset startDate,
-			@RequestParam DateTimeOffset endDate) {
+	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam String startDate,
+			@RequestParam String endDate) {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
