@@ -56,7 +56,7 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId) {
 		// TODO Replace currentUserId with apiKey in parameters
-		int userAId = 4;
+		int userAId = 3;
 		return database.GetDirectMessages(userAId, userBId);
 	}
 
@@ -199,7 +199,7 @@ public class UserController {
 	public Boolean InsertMessageIntoChannel(@RequestParam String message,
 			@RequestParam int channelId) {
 		// TODO Replace senderId with apiKey in parameterss
-		int senderId = 4;
+		int senderId = 3;
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
@@ -215,7 +215,7 @@ public class UserController {
 	@ResponseBody
 	public Boolean InsertDirectMessage( @RequestParam String message,
 			@RequestParam int recipientId) {
-				int senderId = 4;
+				int senderId = 3;
 		// TODO Replace senderId with apiKey in parameters
 		return database.InsertDirectMessage(message, senderId, recipientId);
 	}
@@ -249,6 +249,19 @@ public class UserController {
 	@ResponseBody
 	public Boolean DeleteMessage(@RequestParam int msgId) {
 		return database.DeleteMessage(msgId);
+	}
+
+	/**
+	 * Updates the message with the given messageId and new message from the database
+	 * 
+	 * @param msgId The messageId to delete
+	 * @param message The message to update
+	 * @return Boolean - true if the insertion is successful, false otherwise
+	 */
+	@PutMapping("/api/UpdateMessage")
+	@ResponseBody
+	public Boolean UpdateMessage(@RequestParam int msgId, @RequestParam String message) {
+		return database.UpdateMessage(msgId, message);
 	}
 
 	// Aggregating Queries
