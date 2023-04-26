@@ -20,21 +20,22 @@
                     </div>
                 </div>
             </div>
-            <!-- <ul class="list-none ml-4 p-2">
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-            </ul> -->
         </div>
-        <div class="h-auto bg-gray-300 dark:bg-gray-800 m-3 p-5 rounded-lg">
-            <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Data 1</h3>
-            <ul class="list-none ml-4 p-2">
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-                <li class="text-2xl text-gray-100">Things per time: <span class="text-gray-400">1.2</span></li>
-            </ul>
+        <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+            <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide">Organization Overview</p>
+            <h3 class="text-5xl font-light text-gray-700 dark:text-gray-200 pl-2 pt-2 pb-6">{{orgData[0].Name}}</h3>
+            <div class="pt-4 border-t border-slate-300 dark:border-slate-600">
+                <div class="md:grid md:grid-cols-2 md:grid-rows-1 px-auto py-auto grow">
+                    <div>
+                        <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Users</p>
+                        <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].ActiveUserCount}}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Message Count</p>
+                        <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].MessageCount}}</p>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="h-auto bg-gray-300 dark:bg-gray-800 m-3 p-5 rounded-lg">
             <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Data 1</h3>

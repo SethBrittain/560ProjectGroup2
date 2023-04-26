@@ -26,6 +26,7 @@ import { ApiService } from './services/api-service.service';
 import { GlobalConstants } from './global.config';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardHeaderComponent } from './group-components/dashboard-header/dashboard-header.component';
+import { TableRowComponent } from './base-components/table-row/table-row.component';
 //import { AuthModule } from '@auth0/auth0-angular';
 
 @NgModule({
@@ -50,6 +51,7 @@ import { DashboardHeaderComponent } from './group-components/dashboard-header/da
     SearchComponent,
     DashboardComponent,
     DashboardHeaderComponent,
+    TableRowComponent,
   ],
   imports: [
     BrowserModule,
