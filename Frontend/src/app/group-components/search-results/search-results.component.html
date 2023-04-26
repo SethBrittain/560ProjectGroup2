@@ -2,7 +2,7 @@
     <app-search-results-header [title]=title></app-search-results-header>
     <ul class="px-6 pt-36">
         <li *ngFor="let result of searchResults | async">
-            <app-result name ={{result}}></app-result>
+            <app-result name ={{result}}  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Message}}" ></app-result>
         </li>
         <app-result></app-result>
         <app-result></app-result>
