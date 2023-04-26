@@ -12,7 +12,7 @@ export class ApiService {
     axios.defaults.baseURL = "http://localhost:8080/api"; 
   }  
 
-  public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : any = {})
+  public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : FormData = new FormData())
   {
     this.auth.user$.subscribe((user)=>{
       var fd = new FormData();
@@ -21,7 +21,7 @@ export class ApiService {
       fd.append("lastName", user?.family_name ?? '');
       fd.append("authId", user?.sub ?? '');
       axios.put("/CreateUserOrGetKey",fd).then((response)=>{
-        data.apiKey = response.data?.apiKey;
+        data.append("ApiKey", response.data.apiKey);
         axios.post(endpoint,data).then(callback).catch(onError);
       }).catch((error)=>{
         console.log("Failed to obtain API key");
@@ -30,7 +30,7 @@ export class ApiService {
     })
   }
 
-  public put(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : any = {})
+  public put(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : FormData = new FormData())
   {
     this.auth.user$.subscribe((user)=>{
       var fd = new FormData();
@@ -39,8 +39,8 @@ export class ApiService {
       fd.append("lastName", user?.family_name ?? '');
       fd.append("authId", user?.sub ?? '');
       axios.put("/CreateUserOrGetKey",fd).then((response)=>{
-        data.apiKey = response.data?.apiKey;
-        axios.post(endpoint,data).then(callback).catch(onError);
+        data.append("ApiKey", response.data.apiKey);
+        axios.put(endpoint,data).then(callback).catch(onError);
       }).catch((error)=>{
         console.log("Failed to obtain API key");
         console.log(error.message);

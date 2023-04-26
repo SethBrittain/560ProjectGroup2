@@ -23,7 +23,7 @@ export class DmListComponent implements OnInit {
     form.append("organizationId", this.orgId);
     console.log(form);
 
-    this.api.put("/GetAllUsersInOrganization",
+    this.api.post("/GetAllUsersInOrganization",
       (response) => {
         console.log(response.data);
         this.users = response.data;
