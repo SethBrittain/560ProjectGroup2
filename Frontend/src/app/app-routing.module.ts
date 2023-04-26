@@ -5,6 +5,7 @@ import { MainWindowComponent } from './pages/main-window/main-window.component';
 import { ChatComponent } from './group-components/chat/chat.component';
 import { SearchResultsComponent } from './group-components/search-results/search-results.component';
 import { EmptyStateComponent } from './group-components/empty-state/empty-state.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 // Import modules before adding them to routing like: import { moduleName } from 'module/path/string';
 
@@ -13,8 +14,8 @@ import { EmptyStateComponent } from './group-components/empty-state/empty-state.
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LogInComponent },
-  {
-    path: 'app', component: MainWindowComponent,
+  { path: 'dashboard', component: DashboardComponent },
+  {  path: 'app', component: MainWindowComponent,
     children: [
       { path: '', component: EmptyStateComponent },
       { path: '-/:type/:id', component: ChatComponent },
