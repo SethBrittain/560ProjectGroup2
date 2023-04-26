@@ -7,6 +7,7 @@ import { SearchResultsComponent } from './group-components/search-results/search
 import { EmptyStateComponent } from './group-components/empty-state/empty-state.component';
 import { AuthService } from '@auth0/auth0-angular';
 import { take } from 'rxjs';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 // Import modules before adding them to routing like: import { moduleName } from 'module/path/string';
 
@@ -15,8 +16,8 @@ import { take } from 'rxjs';
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LogInComponent },
-  {
-    path: 'app', component: MainWindowComponent, canActivate: [()=>inject(AuthService).isAuthenticated$.pipe(take(1))],
+  { path: 'dashboard', component: DashboardComponent },
+  {  path: 'app', component: MainWindowComponent,
     children: [
       { path: '', component: EmptyStateComponent },
       { path: '-/:type/:id', component: ChatComponent },

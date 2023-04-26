@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-result',
@@ -16,8 +17,10 @@ export class ResultComponent implements OnInit {
   @Input() dateSent: string = '';
   @Input() message: string = '';
   @Input() image: string = '';
+  @Input() id : string = ''; 
+  @Input() type : string = '';
 
-  constructor(){}
+  constructor(public router: Router){}
 
   ngOnInit(): void {
       
@@ -26,5 +29,7 @@ export class ResultComponent implements OnInit {
   updateUrl(){
     this.image = '/assets/default-avatar.svg'
   }
+
+ 
 
 }

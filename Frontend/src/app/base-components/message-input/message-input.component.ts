@@ -50,7 +50,7 @@ export class MessageInputComponent implements OnInit {
       this.InsertMessageIntoChannel(this.message, this.channelId);
     }
     else {
-      this.InsertDirectMessage(this.message, 1);
+      this.InsertDirectMessage(this.message, this.channelId);
     }
 
 

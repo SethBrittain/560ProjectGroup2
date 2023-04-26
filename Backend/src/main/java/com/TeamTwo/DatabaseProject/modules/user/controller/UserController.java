@@ -16,8 +16,6 @@ import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import microsoft.sql.DateTimeOffset;
-
 @RestController
 public class UserController {
 
@@ -66,7 +64,7 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId) {
 		// TODO Replace currentUserId with apiKey in parameters
-		int userAId = 4;
+		int userAId = 3;
 		return database.GetDirectMessages(userAId, userBId);
 	}
 
@@ -261,6 +259,19 @@ public class UserController {
 		return database.DeleteMessage(msgId);
 	}
 
+	/**
+	 * Updates the message with the given messageId and new message from the database
+	 * 
+	 * @param msgId The messageId to delete
+	 * @param message The message to update
+	 * @return Boolean - true if the insertion is successful, false otherwise
+	 */
+	@PutMapping("/api/UpdateMessage")
+	@ResponseBody
+	public Boolean UpdateMessage(@RequestParam int msgId, @RequestParam String message) {
+		return database.UpdateMessage(msgId, message);
+	}
+
 	// Aggregating Queries
 
 	/**
@@ -271,8 +282,8 @@ public class UserController {
 	 */
 	@PostMapping("/api/OrganizationsData")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam DateTimeOffset startDate,
-			@RequestParam DateTimeOffset endDate) {
+	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam String startDate,
+			@RequestParam String endDate) {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
@@ -299,4 +310,12 @@ public class UserController {
 			e.printStackTrace();
 		}
 	}
+
+	@PutMapping("/api/GetMonthlyTraffic")
+	@ResponseBody
+	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
+			@RequestParam String endDate) {
+		return database.GetMonthlyTraffic(startDate, endDate);
+	}
+
 }
