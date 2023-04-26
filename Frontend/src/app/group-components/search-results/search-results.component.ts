@@ -14,12 +14,16 @@ export class SearchResultsComponent implements OnInit {
   title: string | null = ''; // this title shown in the header
   constructor(private searchService: SearchService, private route:ActivatedRoute, private router: Router){}
 
+  
+
   ngOnInit(): void {
+    console.error();
     let term = this.route.snapshot.paramMap.get('terms');
     this.title = term;
 
     this.searchService.searchResult$.subscribe((results: string[][]) => {
       this.searchResults = results;
+      console.log("entered search-results.component");
       console.log(this.searchResults);
     });
   }

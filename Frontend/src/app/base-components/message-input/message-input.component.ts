@@ -46,7 +46,7 @@ export class MessageInputComponent implements OnInit {
 
   SendMessageHandler() {
 
-    if (this.type = "channel") {
+    if (this.type == "channel") {
       this.InsertMessageIntoChannel(this.message, this.channelId);
     }
     else {
