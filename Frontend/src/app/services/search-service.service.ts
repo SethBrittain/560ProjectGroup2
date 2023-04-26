@@ -31,14 +31,15 @@ export class SearchService implements OnInit{
         console.log(term + '2');
 
         let form = new FormData();
-        form.append("substring", term);
-        form.append("channelId", this.channelId);
+        form.append("subString", term);
         console.log(form);
 
-        this.api.put("/MessagesMatchingSubstring", 
+        this.api.post("/SearchUserMessages", 
             (response) => {
-                console.log(response.data);
-                this.searchResult$ = response.data; }, 
+               // console.log("below is the response data");
+               // console.log(response.data);
+                this.searchResult$ = response.data;
+                 }, 
             (error) => { console.log(error.message); },
             form
         );

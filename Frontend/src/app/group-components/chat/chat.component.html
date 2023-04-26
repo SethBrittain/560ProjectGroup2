@@ -1,9 +1,9 @@
-<div class="w-full">
+<div class="h-full">
     <app-chat-header [title]=title></app-chat-header>
-    <div class="px-6 pt-36">
-        <ul *ngFor="let message of messages">
-            <app-message image = "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.CreatedOn}}" message="{{message.Message}}"></app-message>
-        </ul>
-    </div>
-    <app-message-input [channelId] = channelId [type] = type></app-message-input>
+    <ul class="flex flex-col justify-end pt-36 px-6 pb-20">
+        <div class="w-full" *ngFor="let message of messages">
+            <app-message msgId="{{message.MsgId}}" image= "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.UpdatedOn}}" message="{{message.Message}}"></app-message>
+        </div>
+    </ul>
+    <app-message-input [channelId]=channelId [type]=type></app-message-input>
 </div>
