@@ -381,4 +381,31 @@ public class UserDatabase {
 		}
 	}
 
+	public ArrayList<Hashtable<String,String>> GetMonthlyTraffic(String start, String end){
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String,String>>();
+		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.GetMonthlyTraffic ?,?")) {
+			stmt.setString(1, start);
+			stmt.setString(2, end);
+			ResultSet rs = stmt.executeQuery();
+			int i = 0;
+			int columns = rs.getMetaData().getColumnCount();
+			while (rs.next()) {
+				Hashtable<String, String> m = new Hashtable<String, String>();
+				results.add(m);
+
+				for (int j = 1; j <= columns; j++) {
+					String columnName = rs.getMetaData().getColumnName(j);
+					results.get(i).put(columnName, rs.getString(j));
+
+				}
+				i++;
+			}
+			return results;
+		} catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+			return results;
+		}
+	}
+
 }
