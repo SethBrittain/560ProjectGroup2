@@ -14,37 +14,29 @@ export class ApiService {
 
   public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : FormData = new FormData())
   {
-    this.auth.user$.subscribe((user)=>{
-      var fd = new FormData();
-      fd.append("emailAddress", user?.email ?? '',);
-      fd.append("firstName", user?.given_name ?? '');
-      fd.append("lastName", user?.family_name ?? '');
-      fd.append("authId", user?.sub ?? '');
-      axios.put("/CreateUserOrGetKey",fd).then((response)=>{
-        data.append("ApiKey", response.data.apiKey);
+    this.auth.idTokenClaims$.subscribe((keyToken)=>{
+        if(keyToken && keyToken["http://kjflaskdjfhaslkdjf.netapi_key"]){
+          console.log("Got token");
+          console.log(keyToken["http://kjflaskdjfhaslkdjf.netapi_key"]);
+          data.append("apiKey",keyToken["http://kjflaskdjfhaslkdjf.netapi_key"]);
+        } else { 
+          //new user
+        }
         axios.post(endpoint,data).then(callback).catch(onError);
-      }).catch((error)=>{
-        console.log("Failed to obtain API key");
-        console.log(error.message);
-      });
-    })
+    });
   }
 
   public put(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : FormData = new FormData())
   {
-    this.auth.user$.subscribe((user)=>{
-      var fd = new FormData();
-      fd.append("emailAddress", user?.email ?? '',);
-      fd.append("firstName", user?.given_name ?? '');
-      fd.append("lastName", user?.family_name ?? '');
-      fd.append("authId", user?.sub ?? '');
-      axios.put("/CreateUserOrGetKey",fd).then((response)=>{
-        data.append("ApiKey", response.data.apiKey);
-        axios.put(endpoint,data).then(callback).catch(onError);
-      }).catch((error)=>{
-        console.log("Failed to obtain API key");
-        console.log(error.message);
-      });
-    })
+    this.auth.idTokenClaims$.subscribe((keyToken)=>{
+      if(keyToken && keyToken["http://kjflaskdjfhaslkdjf.netapi_key"]){
+        console.log("Got token");
+        console.log(keyToken["http://kjflaskdjfhaslkdjf.netapi_key"]);
+        data.append("apiKey",keyToken["http://kjflaskdjfhaslkdjf.netapi_key"]);
+      } else { 
+        //new user
+      }
+      axios.put(endpoint,data).then(callback).catch(onError);
+    });
   }
 }
