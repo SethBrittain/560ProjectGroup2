@@ -10,7 +10,7 @@ import { ParamMap } from '@angular/router'
 })
 export class ChatComponent implements OnInit {
 
-  title: string = '';
+  title: any;
   channelId: any = '';
   messages: any[] = [
 
@@ -21,20 +21,21 @@ export class ChatComponent implements OnInit {
 
 
   ngOnInit(): void {
-    
+
     let id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
-    this.GetDirectMessages(id);
+    //this.GetDirectMessages(id);
     console.log("this is the type of the control you just clicked: " + this.type);
     if (this.type == "channel") {
       this.GetMessages(id);
+      this.GetChannelName(id);
     }
     else {
       this.GetDirectMessages(id);
       this.GetUserName(id);
     }
 
-    this.title = this.type + ' ' + id;
+    //this.title = this.type + ' ' + id;
     this.channelId = id;
   }
 
@@ -73,16 +74,16 @@ export class ChatComponent implements OnInit {
   /**
    * Gets the channel name to display in the header
    */
-  GetChannelName(id: any){
+  GetChannelName(id: any) {
     let form = new FormData();
     form.append("channelId", id);
     this.api.post("/GetChannelName",
-    (response) => {
-      console.log(response.data);
-      //this.title = response.data.ChannelName;
-    },
-    (error) => { console.log(error.message); },
-    form
+      (response) => {
+        console.log(response.data);
+        this.title = response.data[0].Name;
+      },
+      (error) => { console.log(error.message); },
+      form
     );
   }
 
@@ -90,12 +91,12 @@ export class ChatComponent implements OnInit {
     let form = new FormData();
     form.append("userId", id);
     this.api.post("/GetProfilePhoto",
-    (response) => {
-      console.log(response.data);
-      //this.title = response.data.ChannelName;
-    },
-    (error) => { console.log(error.message); },
-    form
+      (response) => {
+        console.log(response.data);
+        this.title = response.data[0].FirstName + ' ' + response.data[0].LastName;
+      },
+      (error) => { console.log(error.message); },
+      form
     );
     console.log(this.type);
     this.title = this.type + ' ' + this.channelId;
