@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.TeamTwo.DatabaseProject.exceptions.ApiException;
 
 @Service
 public class UserDatabase {
@@ -434,5 +435,54 @@ public class UserDatabase {
 			return results;
 		}
 	}
+
+    public String CreateUserOrGetKey(String email, String firstName, String lastName) {
+		try 
+		{
+			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
+			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
+			String apiKey;
+
+			getUserApiKey.setString(1, email);
+			getUserApiKey.setString(2, firstName);
+			getUserApiKey.setString(3, lastName);
+			ResultSet getRS = getUserApiKey.executeQuery();
+			
+			boolean gotKey = getRS.next();
+			if (gotKey) {
+				apiKey = getRS.getString("ApiKey");
+			} else {
+				createUser.setString(1, email);
+				createUser.setString(2, firstName);
+				createUser.setString(3, lastName);
+				createUser.executeQuery();
+				ResultSet elseGetRS = getUserApiKey.executeQuery();
+				elseGetRS.next();
+				apiKey = elseGetRS.getString(0);
+			}
+			
+			return apiKey;
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw new RuntimeException();
+		}
+    }
+
+    public int GetUserId(String apiKey) {
+		try {
+			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
+			System.out.print(apiKey);
+			ResultSet rs = userIdStatement.executeQuery();
+			System.out.print(rs.getFetchSize());
+			rs.next();
+			return rs.getInt("UserId");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+    }
 
 }

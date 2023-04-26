@@ -1,28 +1,3 @@
-IF SCHEMA_ID(N'Application') IS NULL
-   EXEC(N'CREATE SCHEMA [Application];');
-GO
-
-DROP TABLE IF EXISTS Application.Messages;
-DROP TABLE IF EXISTS Application.Channels;
-DROP TABLE IF EXISTS Application.Memberships;
-DROP TABLE IF EXISTS Application.Groups;
-DROP TABLE IF EXISTS Application.Users;
-DROP TABLE IF EXISTS Application.Organizations;
-DROP FUNCTION IF EXISTS Application.fn_CheckOrganizations
-GO
-
-CREATE OR ALTER FUNCTION Application.fn_CheckOrganizations(@UserId INT, @GroupId INT)
-	RETURNS INT
-	AS
-	BEGIN
-		DECLARE @Result INT
-		IF ((SELECT U.OrganizationId FROM Application.Users U WHERE U.UserId = @UserId) = 
-			(SELECT G.OrganizationId FROM Application.Groups G WHERE G.GroupId = @GroupId))
-			RETURN 1
-		RETURN 0;
-END;
-GO
-
 CREATE TABLE Application.Organizations
 ( 
     OrganizationId INT IDENTITY(1,1) PRIMARY KEY,
@@ -98,11 +73,3 @@ CREATE TABLE Application.Messages
 	CONSTRAINT [check_only_one_recipient] CHECK(
 		Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
 )
-GO
-
-/* Grant Permissions */
-
-/*
-GRANT CONTROL ON SCHEMA :: Application TO hcossins;
-GRANT CONTROL ON SCHEMA :: Application TO sbrittain;
-GRANT CONTROL ON SCHEMA :: Application TO slhaynes4542;*/
