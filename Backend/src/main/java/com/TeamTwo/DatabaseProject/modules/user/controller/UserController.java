@@ -11,18 +11,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.TeamTwo.DatabaseProject.ApiConfig;
 import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import microsoft.sql.DateTimeOffset;
 
 @RestController
 public class UserController {
 
-	private UserDatabase database;
+    private UserDatabase database; 
+    private ApiConfig auth; 
 
-	@Autowired
-	public UserController(UserDatabase udb) {
-		database = udb;
+    @Autowired
+    public UserController(UserDatabase database, ApiConfig auth)
+    {
+        this.database = database;
+		this.auth = auth;
+    }
+
+	private long GetUserId(String apiKey) {
+		return this.database.GetUserId(apiKey);
 	}
 
 	@GetMapping("/api/Example")
@@ -56,7 +66,7 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId) {
 		// TODO Replace currentUserId with apiKey in parameters
-		int userAId = 3;
+		int userAId = 4;
 		return database.GetDirectMessages(userAId, userBId);
 	}
 
@@ -121,7 +131,7 @@ public class UserController {
 	 * @return ArrayList->Hashtables - Message, SenderId, ChannelId, RecipientId,
 	 *         CreatedOn, IsMine
 	 */
-	@PutMapping("/api/SearchChannelMessages")
+	@PostMapping("/api/SearchChannelMessages")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int userId,
 			@RequestParam int channelId, @RequestParam String subString) {
@@ -168,7 +178,7 @@ public class UserController {
 	 * @param organizationId The organization to get channels of
 	 * @return ArrayList->Hashtable - ChannelId, Name
 	 */
-	@PutMapping("/api/GetAllChannelsInOrganization")
+	@PostMapping("/api/GetAllChannelsInOrganization")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllChannelsInOrganization(@RequestParam int organizationId) {
 		return database.GetAllChannelsInOrganization(organizationId);
@@ -180,7 +190,7 @@ public class UserController {
 	 * @param organizationId The organization to get users of
 	 * @return ArrayList - UserId, FirstName, LastName, ProfilePhoto
 	 */
-	@PutMapping("/api/GetAllUsersInOrganization")
+	@PostMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllUsersInOrganization(@RequestParam int organizationId) {
 		return database.GetAllUsersInOrganization(organizationId);
@@ -199,7 +209,7 @@ public class UserController {
 	public Boolean InsertMessageIntoChannel(@RequestParam String message,
 			@RequestParam int channelId) {
 		// TODO Replace senderId with apiKey in parameterss
-		int senderId = 3;
+		int senderId = 4;
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
@@ -215,7 +225,7 @@ public class UserController {
 	@ResponseBody
 	public Boolean InsertDirectMessage( @RequestParam String message,
 			@RequestParam int recipientId) {
-				int senderId = 3;
+				int senderId = 4;
 		// TODO Replace senderId with apiKey in parameters
 		return database.InsertDirectMessage(message, senderId, recipientId);
 	}
@@ -251,19 +261,6 @@ public class UserController {
 		return database.DeleteMessage(msgId);
 	}
 
-	/**
-	 * Updates the message with the given messageId and new message from the database
-	 * 
-	 * @param msgId The messageId to delete
-	 * @param message The message to update
-	 * @return Boolean - true if the insertion is successful, false otherwise
-	 */
-	@PutMapping("/api/UpdateMessage")
-	@ResponseBody
-	public Boolean UpdateMessage(@RequestParam int msgId, @RequestParam String message) {
-		return database.UpdateMessage(msgId, message);
-	}
-
 	// Aggregating Queries
 
 	/**
@@ -272,11 +269,34 @@ public class UserController {
 	 * @return ArrayList<Object> - String OrgName, int ActiveUserCount, int
 	 *         MessageCount
 	 */
-	@PutMapping("/api/OrganizationsData")
+	@PostMapping("/api/OrganizationsData")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam String startDate,
 			@RequestParam String endDate) {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
+	@PutMapping("/api/CreateUserOrGetKey")
+	@ResponseBody
+	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
+		String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName);
+		this.SetUserAuthApiKey(apiKey, authId);
+		Hashtable<String, String> hm = new Hashtable<String, String>();
+		hm.put("ApiKey", apiKey);
+		return hm;
+	}
+
+	private void SetUserAuthApiKey(String apiKey, String authId)
+	{
+		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
+		try {
+			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s",authId))
+				.header("authorization", String.format("Bearer %s",this.auth.token()))
+				.header("content-type", "application/json")
+				.body(dataBody)
+				.asJson();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
+	}
 }
