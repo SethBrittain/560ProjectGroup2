@@ -186,7 +186,7 @@ public class UserController {
 	 * @param organizationId The organization to get users of
 	 * @return ArrayList - UserId, FirstName, LastName, ProfilePhoto
 	 */
-	@PutMapping("/api/GetAllUsersInOrganization")
+	@PostMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllUsersInOrganization(@RequestParam int organizationId) {
 		return database.GetAllUsersInOrganization(organizationId);
@@ -270,7 +270,7 @@ public class UserController {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
-	@PostMapping("/api/CreateNewUser")
+	@PutMapping("/api/CreateNewUser")
 	@ResponseBody
 	public Hashtable<String, String> CreateNewUser(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
 		String apiKey = database.CreateNewUser(emailAddress, firstName, lastName);
