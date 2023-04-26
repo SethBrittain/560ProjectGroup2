@@ -1,5 +1,4 @@
 insert into Application.Organizations (Name, Active, CreatedOn, UpdatedOn) values ('Yozio', 1, '9/16/2022', '1/14/2023');
-GO
 
 insert into Application.Users (OrganizationId, Email, FirstName, LastName, Title, ProfilePhoto, Active, CreatedOn, UpdatedOn) values (1, 'sdenington0@ihg.com', 'Stanislaus', 'Denington', 'Project Manager', 'http://dummyimage.com/910x753.png/5fa2dd/ffffff', 0, '5/2/2022', '2/14/2023');
 insert into Application.Users (OrganizationId, Email, FirstName, LastName, Title, ProfilePhoto, Active, CreatedOn, UpdatedOn) values (1, 'aheball1@timesonline.co.uk', 'Alic', 'Heball', 'Office Assistant IV', 'http://dummyimage.com/587x291.png/dddddd/000000', 0, '11/10/2022', '1/8/2023');
@@ -1001,7 +1000,6 @@ insert into Application.Users (OrganizationId, Email, FirstName, LastName, Title
 insert into Application.Users (OrganizationId, Email, FirstName, LastName, Title, ProfilePhoto, Active, CreatedOn, UpdatedOn) values (1, 'jmablestonerp@plala.or.jp', 'Jackie', 'Mablestone', 'Engineer II', 'http://dummyimage.com/250x892.png/dddddd/000000', 0, '5/9/2022', '2/25/2023');
 insert into Application.Users (OrganizationId, Email, FirstName, LastName, Title, ProfilePhoto, Active, CreatedOn, UpdatedOn) values (1, 'hmouanrq@shop-pro.jp', 'Hamil', 'Mouan', 'Financial Analyst', 'http://dummyimage.com/120x768.png/5fa2dd/ffffff', 1, '1/3/2022', '1/12/2023');
 insert into Application.Users (OrganizationId, Email, FirstName, LastName, Title, ProfilePhoto, Active, CreatedOn, UpdatedOn) values (1, 'bcosgriverr@blogspot.com', 'Birgitta', 'Cosgrive', 'Registered Nurse', 'http://dummyimage.com/890x942.png/ff4444/ffffff', 0, '9/30/2022', '1/25/2023');
-GO
 
 insert into Application.Groups (OrganizationId, Name, Active, CreatedOn, UpdatedOn) values (1, 'West Indian Rattlebox', 1, '12/3/2022', '1/5/2023');
 insert into Application.Groups (OrganizationId, Name, Active, CreatedOn, UpdatedOn) values (1, 'Earth Lichen', 1, '2/10/2022', '3/9/2023');
@@ -1153,7 +1151,6 @@ insert into Application.Groups (OrganizationId, Name, Active, CreatedOn, Updated
 insert into Application.Groups (OrganizationId, Name, Active, CreatedOn, UpdatedOn) values (1, 'Singlehead Pussytoes', 0, '2/28/2022', '3/17/2023');
 insert into Application.Groups (OrganizationId, Name, Active, CreatedOn, UpdatedOn) values (1, 'Bluefly Honeysuckle', 1, '3/15/2022', '1/2/2023');
 insert into Application.Groups (OrganizationId, Name, Active, CreatedOn, UpdatedOn) values (1, 'Treasureflower', 0, '12/25/2022', '3/2/2023');
-GO
 
 insert into Application.Memberships (GroupId, UserId) values (33, 1);
 insert into Application.Memberships (GroupId, UserId) values (134, 2);
@@ -4155,7 +4152,6 @@ insert into Application.Memberships (GroupId, UserId) values (5, 997);
 insert into Application.Memberships (GroupId, UserId) values (17, 998);
 insert into Application.Memberships (GroupId, UserId) values (135, 999);
 insert into Application.Memberships (GroupId, UserId) values (110, 1000);
-GO
 
 insert into Application.Channels (GroupId, Name, CreatedOn, UpdatedOn) values (1, 'Bat, madagascar fruit', '11/23/2022', '2/2/2023');
 insert into Application.Channels (GroupId, Name, CreatedOn, UpdatedOn) values (2, 'Caracara (unidentified)', '2/14/2022', '4/19/2023');
@@ -4907,4 +4903,3 @@ insert into Application.Channels (GroupId, Name, CreatedOn, UpdatedOn) values (1
 insert into Application.Channels (GroupId, Name, CreatedOn, UpdatedOn) values (148, 'Barbet, black-collared', '7/31/2022', '3/18/2023');
 insert into Application.Channels (GroupId, Name, CreatedOn, UpdatedOn) values (149, 'Margay', '10/5/2022', '3/4/2023');
 insert into Application.Channels (GroupId, Name, CreatedOn, UpdatedOn) values (150, 'Tortoise, radiated', '2/27/2022', '3/19/2023');
-GO
