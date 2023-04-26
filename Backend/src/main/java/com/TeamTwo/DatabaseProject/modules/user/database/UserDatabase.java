@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.TeamTwo.DatabaseProject.exceptions.ApiException;
 
 @Service
 public class UserDatabase {
@@ -407,5 +408,81 @@ public class UserDatabase {
 			return results;
 		}
 	}
+
+	public ArrayList<Hashtable<String,String>> GetAppGrowth(String start, String end){
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String,String>>();
+		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.GetAppGrowth ?,?")) {
+			stmt.setString(1, start);
+			stmt.setString(2, end);
+			ResultSet rs = stmt.executeQuery();
+			int i = 0;
+			int columns = rs.getMetaData().getColumnCount();
+			while (rs.next()) {
+				Hashtable<String, String> m = new Hashtable<String, String>();
+				results.add(m);
+
+				for (int j = 1; j <= columns; j++) {
+					String columnName = rs.getMetaData().getColumnName(j);
+					results.get(i).put(columnName, rs.getString(j));
+
+				}
+				i++;
+			}
+			return results;
+		} catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+			return results;
+		}
+	}
+
+    public String CreateUserOrGetKey(String email, String firstName, String lastName) {
+		try 
+		{
+			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
+			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
+			String apiKey;
+
+			getUserApiKey.setString(1, email);
+			getUserApiKey.setString(2, firstName);
+			getUserApiKey.setString(3, lastName);
+			ResultSet getRS = getUserApiKey.executeQuery();
+			
+			boolean gotKey = getRS.next();
+			if (gotKey) {
+				apiKey = getRS.getString("ApiKey");
+			} else {
+				createUser.setString(1, email);
+				createUser.setString(2, firstName);
+				createUser.setString(3, lastName);
+				createUser.executeQuery();
+				ResultSet elseGetRS = getUserApiKey.executeQuery();
+				elseGetRS.next();
+				apiKey = elseGetRS.getString(0);
+			}
+			
+			return apiKey;
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw new RuntimeException();
+		}
+    }
+
+    public int GetUserId(String apiKey) {
+		try {
+			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
+			System.out.print(apiKey);
+			ResultSet rs = userIdStatement.executeQuery();
+			System.out.print(rs.getFetchSize());
+			rs.next();
+			return rs.getInt("UserId");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+    }
 
 }

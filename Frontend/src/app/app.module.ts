@@ -24,6 +24,7 @@ import { ProfileComponent } from './base-components/profile/profile.component';
 import { SearchComponent } from './base-components/search/search.component';
 import { ApiService } from './services/api-service.service';
 import { GlobalConstants } from './global.config';
+import { AuthModule } from '@auth0/auth0-angular';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardHeaderComponent } from './group-components/dashboard-header/dashboard-header.component';
 import { TableRowComponent } from './base-components/table-row/table-row.component';
@@ -58,13 +59,15 @@ import { TableRowComponent } from './base-components/table-row/table-row.compone
     AppRoutingModule,
     BrowserAnimationsModule,
     MatIconModule,
-    /*AuthModule.forRoot({
-      domain: "localhost",
-      clientId: GlobalConstants.ClientID,
+    AuthModule.forRoot({
+      domain: GlobalConstants.AuthDomain,
+      clientId: GlobalConstants.AuthClientID,
+      useRefreshTokens: GlobalConstants.AuthRefreshToken,
+      cacheLocation: GlobalConstants.AuthCacheLocation,
       authorizationParams: {
-        redirect_uri: window.location.origin
-      }
-    }),*/
+        redirect_uri: "http://localhost:4200/app"
+      },
+    }),
   ],
   providers: [
     ApiService

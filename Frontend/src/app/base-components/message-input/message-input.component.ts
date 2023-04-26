@@ -29,14 +29,15 @@ export class MessageInputComponent implements OnInit {
    *  testing, testing, 1.2.3.
    * @param username 
    */
-  test(username: String): void {
-    this.api.get("/Example", (response) => {
-      console.log(response.data);
-    }, (error) => { console.log(error.message); },
-      {
-        username: username
-      });
-
+  test(username : String) : void {
+    // this.api.get("/Example", (response)=>
+    // {
+    //   console.log(response.data);
+    // }, (error)=>{console.log(error.message);},
+    // {
+    //   username: username 
+    // });
+  
   }
 
   GetVal(event: any) {
@@ -105,12 +106,7 @@ export class MessageInputComponent implements OnInit {
     }, (error) => { console.log(error.message); },
       form);
   }
-
-
-
-
 }
-
 // {startDate:"2013-03-22", endDate:"-----"} optional param
 // response.data.startDate to access it
 // test is the event.

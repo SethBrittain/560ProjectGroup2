@@ -35,6 +35,8 @@ WHERE C.ChannelId = @ChannelId
 AND M.Message LIKE '%' + @Substring + '%'  
 GO
 
+
+-- edit to not have nulls
 -- Get all the messages sent to or from a user that match a given search string
 CREATE OR ALTER PROCEDURE Application.SearchUserMessages
 @UserId INT,
@@ -193,9 +195,9 @@ AS
 SELECT *
 FROM Application.Messages
 UPDATE Application.Messages
-SET [Message] = @Message
+SET [Message] = @Message, UpdatedOn = SYSDATETIMEOFFSET()
 WHERE MsgId = @MsgId
-
+GO
 /*
 -- get user id from api key
 CREATE PROCEDURE Application.GetUserIdFromAPIKey
@@ -230,14 +232,13 @@ CREATE OR ALTER PROCEDURE Application.GetMonthlyTraffic
 @FirstDate DATETIMEOFFSET,
 @LastDate DATETIMEOFFSET
 AS
-SELECT DATEPART(MONTH, M.CreatedOn) AS MONTH,
+SELECT DATENAME(month, M.CreatedOn) AS MONTH, DATENAME(year,M.CreatedOn) AS YEAR,
 Count(*) AS MessagesSent, 
 RANK() OVER (ORDER BY COUNT(*) DESC) AS Rank
 FROM Application.Messages M
 WHERE 
 M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate
-GROUP BY DATEPART(MONTH, M.CreatedOn)
-ORDER BY DATEPART(MONTH,M.CreatedOn)
+GROUP BY DATENAME(month, M.CreatedOn), DATENAME(year,M.CreatedOn)
 GO
 
 SELECT *
@@ -246,19 +247,50 @@ GO
 
 -- Aggregate Query 4 -- get the growth of users from a given date and over a given number of months
 
-CREATE PROCEDURE Application.GetAppGrowth
+CREATE OR ALTER PROCEDURE Application.GetAppGrowth
 @StartDate DATETIMEOFFSET,
 @EndDate   DATETIMEOFFSET
 AS
-SELECT SUM(IIF(O.Active = 1, 1, 0)) AS NumberOfActiveOrgs,SUM(IIF(O.Active=0,1,0)) AS NumberOfInactiveOrgs
-Application.OrganizationId 
-GO
-
-
+SELECT SUM( IIF(U.Active = 1, 1, 0)) AS NumberOfActiveUsers,SUM(IIF(U.Active = 0, 1, 0)) AS NumberOfInactiveUsers,
+(
+	SELECT COUNT(*)
+	FROM Application.Organizations O
+	WHERE O.Active = 1
+) AS NumberOfActiveOrgs,
+(
+	SELECT COUNT(*)
+	FROM Application.Organizations O
+	WHERE O.Active = 0
+)AS NumberOfInactiveOrgs
+FROM Application.Users U;
 
 
 EXEC  Application.SearchUserMessages 4," ";
 EXEC Application.GetDirectMessages 3,4;
 
-EXEC Application.GetMonthlyTraffic '01/01/2022','01/01/2023';
+EXEC Application.GetMonthlyTraffic '01/01/2022','02/25/2023';
 
+EXEC Application.GetAppGrowth '01/05/2022','01/05/2023';
+
+INSERT INTO Application.Organizations([Name],Active,CreatedOn,UpdatedOn)
+VALUES
+('Garmin',1,'01/01/2022','01/01/2022'),
+('AutoZone',1,'01/01/2022','01/01/2022'),
+('MatressHub',1,'01/01/2022','01/01/2022'),
+('KU',0,'01/01/2022','01/01/2022')
+GO
+
+SELECT *
+FROM Application.Organizations O;
+
+SELECT *
+FROM Application.Messages;
+
+SELECT *
+FROM Application.Messages M
+WHERE 
+M.CreatedOn >= '2022-04-01' AND M.CreatedOn <= '2022-5-01';
+
+EXEC Application.GetMonthlyTraffic '2022-01-01','2023-12-01';
+
+EXEC Application.GetAppGrowth '2022-04-01','2022-5-01';
