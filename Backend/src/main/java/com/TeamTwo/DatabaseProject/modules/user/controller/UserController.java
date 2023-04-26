@@ -276,10 +276,10 @@ public class UserController {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
-	@PutMapping("/api/CreateNewUser")
+	@PutMapping("/api/CreateUserOrGetKey")
 	@ResponseBody
-	public Hashtable<String, String> CreateNewUser(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
-		String apiKey = database.CreateNewUser(emailAddress, firstName, lastName);
+	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
+		String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName);
 		this.SetUserAuthApiKey(apiKey, authId);
 		Hashtable<String, String> hm = new Hashtable<String, String>();
 		hm.put("ApiKey", apiKey);

@@ -358,22 +358,48 @@ public class UserDatabase {
 		return sendQuery(query);
 	}
 
-    public String CreateNewUser(String email, String firstName, String lastName) {
-		String createUser = "EXEC Application.CreateNewDefaultOrgUser ?,?,?";
-		String getUserApiKey = "EXEC Application.GetApiKey ?,?,?";
+    public String CreateUserOrGetKey(String email, String firstName, String lastName) {
 		try 
 		{
-			PreparedStatement insertUserStatement = this.database.prepareStatement(createUser);
-			try {
-				insertUserStatement.executeUpdate();
-			} catch (Exception e) { return ""; }
+			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
+			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
+			// get data
+			// check if valid key
+				// return key
+			// else 
+				// insert
+				// get key
+			String apiKey;
+
+			getUserApiKey.setString(1, email);
+			getUserApiKey.setString(2, firstName);
+			getUserApiKey.setString(3, lastName);
+			ResultSet getRS = getUserApiKey.executeQuery();
 			
-			PreparedStatement getUserStatement = this.database.prepareStatement(getUserApiKey);
-			ResultSet rs = getUserStatement.executeQuery();
-			rs.next();
-			String key = rs.getString("ApiKey");
+			boolean gotKey = getRS.next();
+			if (gotKey) {
+				apiKey = getRS.getString(0);
+			} else {
+				createUser.setString(1, email);
+				createUser.setString(2, firstName);
+				createUser.setString(3, lastName);
+				ResultSet 
+			}
+
+
+
+
+			// PreparedStatement insertUserStatement = this.database.prepareStatement(createUser);
+			// try {
+			// 	insertUserStatement.executeUpdate();
+			// } catch (Exception e) { return ""; }
 			
-			return key;
+			// PreparedStatement getUserStatement = this.database.prepareStatement(getUserApiKey);
+			// ResultSet rs = getUserStatement.executeQuery();
+			// rs.next();
+			// String key = rs.getString("ApiKey");
+			
+			return apiKey;
 		}
 		catch (Exception e)
 		{
