@@ -269,7 +269,7 @@ public class UserController {
 	 * @return ArrayList<Object> - String OrgName, int ActiveUserCount, int
 	 *         MessageCount
 	 */
-	@PutMapping("/api/OrganizationsData")
+	@PostMapping("/api/OrganizationsData")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam DateTimeOffset startDate,
 			@RequestParam DateTimeOffset endDate) {

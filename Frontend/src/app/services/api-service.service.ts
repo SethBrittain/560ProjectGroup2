@@ -20,7 +20,7 @@ export class ApiService {
       fd.append("firstName", user?.given_name ?? '');
       fd.append("lastName", user?.family_name ?? '');
       fd.append("authId", user?.sub ?? '');
-      axios.post("/CreateNewUser",fd).then((response)=>{
+      axios.put("/CreateNewUser",fd).then((response)=>{
         data.apiKey = response.data?.apiKey;
         axios.post(endpoint,data).then(callback).catch(onError);
       }).catch((error)=>{

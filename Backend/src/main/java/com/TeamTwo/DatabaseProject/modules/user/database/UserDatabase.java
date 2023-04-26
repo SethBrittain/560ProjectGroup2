@@ -361,23 +361,14 @@ public class UserDatabase {
     public String CreateNewUser(String email, String firstName, String lastName) {
 		String createUser = "EXEC Application.CreateNewDefaultOrgUser ?,?,?";
 		String getUserApiKey = "EXEC Application.GetApiKey ?,?,?";
-		System.out.println(email);
-		System.out.println(firstName);
-		System.out.println(lastName);
 		try 
 		{
 			PreparedStatement insertUserStatement = this.database.prepareStatement(createUser);
-			insertUserStatement.setString(1, email);
-			insertUserStatement.setString(2, firstName);
-			insertUserStatement.setString(3, lastName);
 			try {
 				insertUserStatement.executeUpdate();
-			} catch (Exception e) {}
-			System.out.println(insertUserStatement.getUpdateCount());
+			} catch (Exception e) { return ""; }
+			
 			PreparedStatement getUserStatement = this.database.prepareStatement(getUserApiKey);
-			getUserStatement.setString(1, email);
-			getUserStatement.setString(2, firstName);
-			getUserStatement.setString(3, lastName);
 			ResultSet rs = getUserStatement.executeQuery();
 			rs.next();
 			String key = rs.getString("ApiKey");
