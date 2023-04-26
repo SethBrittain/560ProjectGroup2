@@ -245,7 +245,7 @@ FROM Application.Messages M;
 GO
 
 -- Aggregate Query 4 -- get the growth of users from a given date and over a given number of months
-/*
+
 CREATE PROCEDURE Application.GetAppGrowth
 @StartDate DATETIMEOFFSET,
 @EndDate   DATETIMEOFFSET
@@ -253,7 +253,7 @@ AS
 SELECT SUM(IIF(O.Active = 1, 1, 0)) AS NumberOfActiveOrgs,SUM(IIF(O.Active=0,1,0)) AS NumberOfInactiveOrgs
 Application.OrganizationId 
 GO
-*/
+
 
 
 
