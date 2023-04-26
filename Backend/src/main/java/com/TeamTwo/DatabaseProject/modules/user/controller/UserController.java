@@ -206,8 +206,6 @@ public class UserController {
 	@ResponseBody
 	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
-		System.out.println(apiKey);
-		System.out.println(senderId);
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
@@ -223,8 +221,6 @@ public class UserController {
 	@ResponseBody
 	public Boolean InsertDirectMessage( @RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
-		System.out.println(apiKey);
-		System.out.println(senderId);
 		return database.InsertDirectMessage(message, senderId, recipientId);
 	}
 
@@ -290,7 +286,7 @@ public class UserController {
 	@PutMapping("/api/CreateUserOrGetKey")
 	@ResponseBody
 	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
-		String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName);
+		String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName, "");
 		this.SetUserAuthApiKey(apiKey, authId);
 		Hashtable<String, String> hm = new Hashtable<String, String>();
 		hm.put("ApiKey", apiKey);
@@ -325,4 +321,18 @@ public class UserController {
 		return this.database.GetAppGrowth(startDate, endDate);	
 	}
 
+	@PostMapping("/api/GetNewDirectMessages")
+	public ArrayList<Hashtable<String,String>> GetNewDirectMessages(@RequestParam String sinceDateTime, @RequestParam String apiKey, @RequestParam String otherUserId)
+	{
+		int currentUser = this.GetUserId(apiKey);
+		int otherUserInt = Integer.parseInt(otherUserId);
+		return this.database.GetNewDirectMessages(sinceDateTime, currentUser, otherUserInt);
+	}
+
+	@PostMapping("/api/GetNewChannelMessages")
+	public ArrayList<Hashtable<String,String>> GetNewChannelMessages(@RequestParam String sinceDateTime, @RequestParam String channelId)
+	{
+		int chanId = Integer.parseInt(channelId);
+		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
+	}
 }
