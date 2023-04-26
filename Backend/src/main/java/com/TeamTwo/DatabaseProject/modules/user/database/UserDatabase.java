@@ -394,7 +394,7 @@ public class UserDatabase {
 
     public int GetUserId(String apiKey) {
 		try {
-			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey %s", apiKey));
+			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
 			System.out.print(apiKey);
 			ResultSet rs = userIdStatement.executeQuery();
 			System.out.print(rs.getFetchSize());

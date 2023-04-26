@@ -31,7 +31,7 @@ public class UserController {
 		this.auth = auth;
     }
 
-	private long GetUserId(String apiKey) {
+	private int GetUserId(String apiKey) {
 		return this.database.GetUserId(apiKey);
 	}
 
@@ -206,10 +206,10 @@ public class UserController {
 	 */
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public Boolean InsertMessageIntoChannel(@RequestParam String message,
-			@RequestParam int channelId) {
-		// TODO Replace senderId with apiKey in parameterss
-		int senderId = 4;
+	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId, @RequestParam String apiKey) {
+		int senderId = this.GetUserId(apiKey);
+		System.out.println(apiKey);
+		System.out.println(senderId);
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
@@ -223,10 +223,10 @@ public class UserController {
 	 */
 	@PutMapping("/api/InsertDirectMessage")
 	@ResponseBody
-	public Boolean InsertDirectMessage( @RequestParam String message,
-			@RequestParam int recipientId) {
-				int senderId = 4;
-		// TODO Replace senderId with apiKey in parameters
+	public Boolean InsertDirectMessage( @RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey) {
+		int senderId = this.GetUserId(apiKey);
+		System.out.println(apiKey);
+		System.out.println(senderId);
 		return database.InsertDirectMessage(message, senderId, recipientId);
 	}
 
