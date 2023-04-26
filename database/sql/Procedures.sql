@@ -35,6 +35,8 @@ WHERE C.ChannelId = @ChannelId
 AND M.Message LIKE '%' + @Substring + '%'  
 GO
 
+
+-- edit to not have nulls
 -- Get all the messages sent to or from a user that match a given search string
 CREATE OR ALTER PROCEDURE Application.SearchUserMessages
 @UserId INT,
@@ -195,7 +197,7 @@ FROM Application.Messages
 UPDATE Application.Messages
 SET [Message] = @Message, UpdatedOn = SYSDATETIMEOFFSET()
 WHERE MsgId = @MsgId
-
+GO
 /*
 -- get user id from api key
 CREATE PROCEDURE Application.GetUserIdFromAPIKey

@@ -1,10 +1,12 @@
-import { NgModule } from '@angular/core';
+import { Inject, NgModule, inject } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { MainWindowComponent } from './pages/main-window/main-window.component';
 import { ChatComponent } from './group-components/chat/chat.component';
 import { SearchResultsComponent } from './group-components/search-results/search-results.component';
 import { EmptyStateComponent } from './group-components/empty-state/empty-state.component';
+import { AuthService } from '@auth0/auth0-angular';
+import { take } from 'rxjs';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 // Import modules before adding them to routing like: import { moduleName } from 'module/path/string';
