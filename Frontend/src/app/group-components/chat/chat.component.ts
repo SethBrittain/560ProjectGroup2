@@ -23,7 +23,9 @@ export class ChatComponent implements OnInit {
   ngOnInit(): void {
     let id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
-    if (this.type = "channel") {
+    this.GetDirectMessages(id);
+    console.log("this is the type of the control you just clicked: " + this.type);
+    if (this.type == "channel") {
       this.GetMessages(id);
     }
     else {

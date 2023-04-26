@@ -76,12 +76,13 @@ public class UserDatabase {
 		return sendQuery(query);
 	}
 
-	/**
+	/*
 	 * Gets all the messages from the given channel
 	 * 
 	 * @param ChannelId The ID number of the channel to get messages from
+	 * 
 	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
-	 *         FirstName, LastName, ProfilePhoto
+	 * FirstName, LastName, ProfilePhoto
 	 */
 	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(int channelId) {
 		String query = "EXEC Application.GetAllChannelMessages " + channelId;
@@ -96,8 +97,8 @@ public class UserDatabase {
 	 * @return ArrayList->Hashtables - MsgId, FirstName, LastName, Message,
 	 *         UpdatedOn, SenderId, ProfilePhoto, IsMine
 	 */
-	public ArrayList<Hashtable<String, String>> GetDirectMessages(int currentUserId, int otherUserId) {
-		String query = "EXEC Application.GetDirectMessages " + currentUserId + " " + otherUserId;
+	public ArrayList<Hashtable<String, String>> GetDirectMessages(int userA, int userB) {
+		String query = "EXEC Application.GetDirectMessages " + userA + "," + userB;
 		return sendQuery(query);
 	}
 
@@ -170,8 +171,34 @@ public class UserDatabase {
 	 *         FirstName, LastName, ProfilePhoto, RecipientId, ChannelId, Name
 	 */
 	public ArrayList<Hashtable<String, String>> SearchUserMessages(int userId, String subString) {
-		String query = "EXEC Application.SearchUserMessages " + userId + " " + subString;
-		return sendQuery(query);
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
+		int i = 0;
+		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.SearchUserMessages ?,?")) {
+			stmt.setInt(1,userId);
+			stmt.setString(2,subString);
+			ResultSet rs = stmt.executeQuery();
+			int columns = rs.getMetaData().getColumnCount();
+			// if (rs.isBeforeFirst()) results.get(0).add("Success");
+			// else results.get(0).add("Empty");
+			while (rs.next()) {
+				Hashtable<String, String> m = new Hashtable<String, String>();
+				results.add(m);
+
+				for (int j = 1; j <= columns; j++) {
+					String columnName = rs.getMetaData().getColumnName(j);
+					results.get(i).put(columnName, rs.getString(j));
+
+				}
+				i++;
+				System.out.println(results);
+			}
+		} catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+
+		}
+		return results;
+
 	}
 
 	/**

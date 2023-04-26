@@ -61,12 +61,13 @@ public class UserController {
 	 * @return ArrayList->Hashtables - MsgId, FirstName, LastName, Message,
 	 *         UpdatedOn, SenderId, ProfilePhoto, IsMine
 	 */
+	//NEED TO ADD REQUEST PARAM FOR APIKEY
 	@PostMapping("/api/GetDirectMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetDirectMessages(@RequestParam int currentUserId,
-			@RequestParam int otherUserId) {
+	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId) {
 		// TODO Replace currentUserId with apiKey in parameters
-		return database.GetDirectMessages(currentUserId, otherUserId);
+		int userAId = 4;
+		return database.GetDirectMessages(userAId, userBId);
 	}
 
 	/**
@@ -147,11 +148,13 @@ public class UserController {
 	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
 	 *         FirstName, LastName, ProfilePhoto, RecipientId, ChannelId, Name
 	 */
-	@PutMapping("/api/SearchUserMessages")
+	//NEED TO ADD REQUEST PARAM FOR APIKEY THEN CONVERT TO USER ID
+	@PostMapping("/api/SearchUserMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> SearchUserMessages(@RequestParam int userId,
+	public ArrayList<Hashtable<String, String>> SearchUserMessages(
 			@RequestParam String subString) {
 		// TODO Replace userId with apiKey in parameters
+		int userId = 4;
 		return database.SearchUserMessages(userId, subString);
 	}
 
@@ -161,10 +164,11 @@ public class UserController {
 	 * @param userId The user to get channels for
 	 * @return ArrayList->Hashtable - ChannelId, Name
 	 */
-	@PutMapping("/api/GetAllChannelsOfUser")
+	@PostMapping("/api/GetAllChannelsOfUser")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser(@RequestParam int userId) {
+	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser() {
 		// TODO Replace userId with apiKey in parameters
+		int userId = 4;
 		return database.GetAllChannelsOfUser(userId);
 	}
 
@@ -202,9 +206,10 @@ public class UserController {
 	 */
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public Boolean InsertMessageIntoChannel(@RequestParam int senderId, @RequestParam String message,
+	public Boolean InsertMessageIntoChannel(@RequestParam String message,
 			@RequestParam int channelId) {
 		// TODO Replace senderId with apiKey in parameterss
+		int senderId = 4;
 		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
@@ -218,8 +223,9 @@ public class UserController {
 	 */
 	@PutMapping("/api/InsertDirectMessage")
 	@ResponseBody
-	public Boolean InsertDirectMessage(@RequestParam int senderId, @RequestParam String message,
+	public Boolean InsertDirectMessage( @RequestParam String message,
 			@RequestParam int recipientId) {
+				int senderId = 4;
 		// TODO Replace senderId with apiKey in parameters
 		return database.InsertDirectMessage(message, senderId, recipientId);
 	}

@@ -64,7 +64,6 @@ FROM AllUserMessagesCte A
 WHERE [Message] LIKE '%' + @Substring + '%'
 ORDER BY UpdatedOn DESC
 GO
-
 -- Get all users who have direct messages with a given user
 CREATE OR ALTER PROCEDURE Application.GetDirectMessageChats
 @UserId INT
@@ -249,3 +248,5 @@ CREATE PROCEDURE Application.GetAppGrowth
 AS
 SELECT 
 */
+
+EXEC  Application.SearchUserMessages 4,"mes";
