@@ -363,12 +363,6 @@ public class UserDatabase {
 		{
 			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
-			// get data
-			// check if valid key
-				// return key
-			// else 
-				// insert
-				// get key
 			String apiKey;
 
 			getUserApiKey.setString(1, email);
@@ -378,26 +372,16 @@ public class UserDatabase {
 			
 			boolean gotKey = getRS.next();
 			if (gotKey) {
-				apiKey = getRS.getString(0);
+				apiKey = getRS.getString("ApiKey");
 			} else {
 				createUser.setString(1, email);
 				createUser.setString(2, firstName);
 				createUser.setString(3, lastName);
-				ResultSet 
+				createUser.executeQuery();
+				ResultSet elseGetRS = getUserApiKey.executeQuery();
+				elseGetRS.next();
+				apiKey = elseGetRS.getString(0);
 			}
-
-
-
-
-			// PreparedStatement insertUserStatement = this.database.prepareStatement(createUser);
-			// try {
-			// 	insertUserStatement.executeUpdate();
-			// } catch (Exception e) { return ""; }
-			
-			// PreparedStatement getUserStatement = this.database.prepareStatement(getUserApiKey);
-			// ResultSet rs = getUserStatement.executeQuery();
-			// rs.next();
-			// String key = rs.getString("ApiKey");
 			
 			return apiKey;
 		}
