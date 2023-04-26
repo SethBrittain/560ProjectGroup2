@@ -279,4 +279,11 @@ public class UserController {
 		return database.GetOrganizationData(startDate, endDate);
 	}
 
+	@PutMapping("/api/GetMonthlyTraffic")
+	@ResponseBody
+	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
+			@RequestParam String endDate) {
+		return database.GetMonthlyTraffic(startDate, endDate);
+	}
+
 }
