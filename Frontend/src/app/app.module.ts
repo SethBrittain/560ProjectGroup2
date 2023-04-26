@@ -24,6 +24,7 @@ import { ProfileComponent } from './base-components/profile/profile.component';
 import { SearchComponent } from './base-components/search/search.component';
 import { ApiService } from './services/api-service.service';
 import { GlobalConstants } from './global.config';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 //import { AuthModule } from '@auth0/auth0-angular';
 
 @NgModule({
@@ -46,6 +47,7 @@ import { GlobalConstants } from './global.config';
     SearchResultsHeaderComponent,
     ProfileComponent,
     SearchComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
