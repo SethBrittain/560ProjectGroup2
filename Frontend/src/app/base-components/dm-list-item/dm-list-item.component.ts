@@ -16,6 +16,7 @@ export class DmListItemComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    
   }
 
   updateUrl(){
