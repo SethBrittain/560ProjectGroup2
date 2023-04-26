@@ -131,7 +131,7 @@ public class UserController {
 	 * @return ArrayList->Hashtables - Message, SenderId, ChannelId, RecipientId,
 	 *         CreatedOn, IsMine
 	 */
-	@PutMapping("/api/SearchChannelMessages")
+	@PostMapping("/api/SearchChannelMessages")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int userId,
 			@RequestParam int channelId, @RequestParam String subString) {
@@ -178,7 +178,7 @@ public class UserController {
 	 * @param organizationId The organization to get channels of
 	 * @return ArrayList->Hashtable - ChannelId, Name
 	 */
-	@PutMapping("/api/GetAllChannelsInOrganization")
+	@PostMapping("/api/GetAllChannelsInOrganization")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllChannelsInOrganization(@RequestParam int organizationId) {
 		return database.GetAllChannelsInOrganization(organizationId);
