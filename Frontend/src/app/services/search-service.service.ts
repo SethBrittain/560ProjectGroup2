@@ -36,9 +36,10 @@ export class SearchService implements OnInit{
 
         this.api.post("/SearchUserMessages", 
             (response) => {
-                console.log("below is the response data");
-                console.log(response.data);
-                this.searchResult$ = response.data; }, 
+               // console.log("below is the response data");
+               // console.log(response.data);
+                this.searchResult$ = response.data;
+                 }, 
             (error) => { console.log(error.message); },
             form
         );

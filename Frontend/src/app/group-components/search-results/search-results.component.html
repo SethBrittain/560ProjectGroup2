@@ -1,11 +1,8 @@
-<div class="w-full">
+<div class="w-full pb-6">
     <app-search-results-header [title]=title></app-search-results-header>
     <ul class="px-6 pt-36">
-        <li *ngFor="let result of searchResults | async">
-            <app-result name ={{result}}  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Message}}" ></app-result>
+        <li *ngFor="let result of searchResults">
+            <app-result name="{{result.Name}}"  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Message}}" type="{{result.Type}}" id="{{result.Id}}"  ></app-result>
         </li>
-        <app-result></app-result>
-        <app-result></app-result>
-        <app-result></app-result>
     </ul>
 </div>
