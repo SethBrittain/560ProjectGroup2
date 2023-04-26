@@ -16,7 +16,7 @@ CREATE OR ALTER PROCEDURE Application.GetDirectMessages
 @CurrentUserId INT,
 @OtherUserId INT
 AS
-SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, M.RecipientId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
 FROM Application.Messages M
 	INNER JOIN Application.Users U ON M.SenderId = U.UserId
 WHERE M.SenderId = @CurrentUserId AND M.RecipientId = @OtherUserId OR M.SenderId = @OtherUserId AND M.RecipientId = @CurrentUserId; 
@@ -32,7 +32,7 @@ SELECT M.MsgId, M.Message, M.SenderId, M.ChannelId, M.RecipientId, M.UpdatedOn, 
 FROM Application.Channels C
 INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
 WHERE C.ChannelId = @ChannelId
-AND M.Message LIKE '%' + @Substring + '%'   
+AND M.Message LIKE '%' + @Substring + '%'  
 GO
 
 -- Get all the messages sent to or from a user that match a given search string
@@ -40,10 +40,10 @@ CREATE OR ALTER PROCEDURE Application.SearchUserMessages
 @UserId INT,
 @Substring NVARCHAR(512)
 AS
-WITH AllUserMessagesCte(MsgId, [Message], UpdatedOn, SenderId, RecipientId, ChannelId, FirstName, LastName, ProfilePhoto, [Name]) AS
+WITH AllUserMessagesCte(MsgId, [Message], UpdatedOn, SenderId, Id, [Type], FirstName, LastName, ProfilePhoto, [Name]) AS
 (
 	-- Get all direct messages sent to or from a user
-	SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId, ME.RecipientId, ME.ChannelId, U2.FirstName, U2.LastName, U2.ProfilePhoto, C.Name AS ChannelName
+	SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId, IIF(ME.SenderId = @UserId,IIF(ME.ChannelId IS NULL, ME.RecipientId, ME.ChannelId),IIF(ME.ChannelId IS NULL, ME.SenderId, ME.ChannelId)), IIF(ME.ChannelId IS NULL, 'chat','channel'), U2.FirstName, U2.LastName, U2.ProfilePhoto, IIF(ME.ChannelId IS NULL, U1.FirstName + ' ' +  U1.LastName, C.Name) AS [Name]
 	FROM Application.Users U1
 		INNER JOIN Application.Messages ME ON U1.UserId = ME.SenderID OR U1.UserId = RecipientId
 		LEFT JOIN Application.Channels C ON ME.ChannelId = C.ChannelId
@@ -51,7 +51,7 @@ WITH AllUserMessagesCte(MsgId, [Message], UpdatedOn, SenderId, RecipientId, Chan
 	WHERE U1.UserId = @UserId
 	UNION
 	-- Get all channel messages sent to or from a user
-	SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId, ME.RecipientId, ME.ChannelId, U2.FirstName, U2.LastName, U2.ProfilePhoto, C.Name AS ChannelName
+	SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId,  IIF(ME.SenderId = @UserId,IIF(ME.ChannelId IS NULL, ME.RecipientId, ME.ChannelId),IIF(ME.ChannelId IS NULL, ME.SenderId, ME.ChannelId)), IIF(ME.ChannelId IS NULL, 'chat','channel'), U2.FirstName, U2.LastName, U2.ProfilePhoto, IIF(ME.ChannelId IS NULL, U1.FirstName + ' ' + U1.LastName, C.Name) AS [Name]
 	FROM Application.Users U1
 		INNER JOIN Application.Memberships M ON U1.UserId = M.UserId
 		INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
@@ -87,7 +87,7 @@ GO
 CREATE OR ALTER PROCEDURE Application.GetProfilePhoto
 @UserId INT
 AS
-SELECT U.ProfilePhoto
+SELECT U.ProfilePhoto, U.FirstName, U.LastName
 FROM Application.Users U
 WHERE U.UserId = @UserId
 GO
@@ -138,7 +138,7 @@ GO
 CREATE OR ALTER PROCEDURE Application.GetAllUsersInOrganization
 @OrganizationId INT 
 AS 
-SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
+SELECT TOP(10) U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
 FROM Application.Organizations O 
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 WHERE O.OrganizationId = @OrganizationId;
@@ -205,6 +205,7 @@ SELECT U.UserId
 FROM Application.Users U
 WHERE U.ApiKey = @apikey;
 GO
+*/
 
 
 -- Aggregated Queries
@@ -225,28 +226,39 @@ GO
 -- Come up with a 2nd one
 
 -- Aggregate Query 3 -- Get the message traffic over a given month or months?
-CREATE PROCEDURE Application.GetMonthlyTraffic
+CREATE OR ALTER PROCEDURE Application.GetMonthlyTraffic
 @FirstDate DATETIMEOFFSET,
 @LastDate DATETIMEOFFSET
 AS
-SELECT DATEPART(hour, M.CreatedOn) AS Hours,
+SELECT DATEPART(MONTH, M.CreatedOn) AS MONTH,
 Count(*) AS MessagesSent, 
 RANK() OVER (ORDER BY COUNT(*) DESC) AS Rank
 FROM Application.Messages M
 WHERE 
 M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate
-GROUP BY DATEPART(hour, M.CreatedOn);
+GROUP BY DATEPART(MONTH, M.CreatedOn)
+ORDER BY DATEPART(MONTH,M.CreatedOn)
 GO
 
 SELECT *
 FROM Application.Messages M;
+GO
 
 -- Aggregate Query 4 -- get the growth of users from a given date and over a given number of months
+/*
 CREATE PROCEDURE Application.GetAppGrowth
 @StartDate DATETIMEOFFSET,
-@Months INT
+@EndDate   DATETIMEOFFSET
 AS
-SELECT 
+SELECT SUM(IIF(O.Active = 1, 1, 0)) AS NumberOfActiveOrgs,SUM(IIF(O.Active=0,1,0)) AS NumberOfInactiveOrgs
+Application.OrganizationId 
+GO
 */
 
-EXEC  Application.SearchUserMessages 4,"mes";
+
+
+EXEC  Application.SearchUserMessages 4," ";
+EXEC Application.GetDirectMessages 3,4;
+
+EXEC Application.GetMonthlyTraffic '01/01/2022','01/01/2023';
+
