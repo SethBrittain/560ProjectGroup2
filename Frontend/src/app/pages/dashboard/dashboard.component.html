@@ -3,28 +3,53 @@
     <div class="flex justify-between flex-row px-4">
         <h1 class="text-3xl text-semibold text-gray-700 dark:text-gray-200 pb-2">Dashboard</h1>
         <div>
-            <div class="flex gap-2 grow max-w-xs">   
+            <div class="flex gap-2 grow max-w-sm">   
                 <label for="start-date" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter the start date</label>
-                <input #startDate senderId="1" id="start-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="Start Date" required>
+                <input value={{startDate}} #start senderId="1" id="start-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="Start Date" required>
                 <label for="end-date" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter the end date</label>
-                <input #endDate senderId="1" id="end-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="End Date" required>
-                <button (click)="RefreshData(startDate, endDate)" class="transition ease-in-out text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2">Refresh</button>
+                <input value={{endDate}} #end senderId="1" id="end-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="End Date" required>
+                <button (click)="RefreshData(start, end)" class="transition ease-in-out text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2">Refresh</button>
             </div>
         </div>
     </div>
-    <div class="md:grid md:grid-cols-2 md:grid-rows-2 px-auto py-auto grow">
-        <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
-            <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide">Organization Overview</p>
-            <h3 class="text-5xl font-light text-gray-700 dark:text-gray-200 pl-2 pt-2 pb-6">{{orgData[0].Name}}</h3>
-            <div class="pt-4 border-t border-slate-300 dark:border-slate-600">
-                <div class="md:grid md:grid-cols-2 md:grid-rows-1 px-auto py-auto grow">
-                    <div>
-                        <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Users</p>
-                        <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].ActiveUserCount}}</p>
+    <div class="md:grid md:grid-cols-2 md:grid-rows-1 px-auto py-auto grow">
+        <div class="md:grid md:grid-cols-1 md:grid-rows-2 px-auto py-auto grow">
+            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+                <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide">Organization</p>
+                <h3 class="text-5xl font-light text-gray-700 dark:text-gray-200 pl-2 pt-2 pb-6">{{orgData[0].Name}}</h3>
+                <div class="pt-4 border-t border-slate-300 dark:border-slate-600">
+                    <div class="md:grid md:grid-cols-2 md:grid-rows-1 gap-4 px-auto py-auto grow">
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Users</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].ActiveUserCount}}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Message Count</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].MessageCount}}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Message Count</p>
-                        <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].MessageCount}}</p>
+                </div>
+            </div>
+            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+                <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide pb-6">App Growth</p>
+                <div class="pt-4 border-t border-slate-300 dark:border-slate-600">
+                    <div class="md:grid md:grid-cols-2 md:grid-rows-1 gap-4 px-auto py-auto grow">
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Users</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfActiveUsers}}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Count</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfInactiveUsers}}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Organizations</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfActiveOrgs}}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Organizations</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfInactiveOrgs}}</p>
+                        </div>
                     </div>
                 </div>
             </div>

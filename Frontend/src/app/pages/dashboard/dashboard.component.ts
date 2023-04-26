@@ -9,15 +9,17 @@ import { ApiService } from 'src/app/services/api-service.service';
 export class DashboardComponent implements OnInit {
 
   startDate: string = '2022-01-01';
-  endDate: string = '2022-08-01';
+  endDate: string = '2023-01-01';
   orgData: any[] = [];
   traffic: any[] = [];
+  growth: any[] = [];
 
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
     this.GetOrgData();
     this.GetMonthlyTraffic();
+    this.GetGrowthData();
   }
 
   RefreshData(start: HTMLInputElement, end: HTMLInputElement) {
@@ -25,6 +27,7 @@ export class DashboardComponent implements OnInit {
     this.endDate = end.value;
     this.GetOrgData();
     this.GetMonthlyTraffic();
+    this.GetGrowthData();
   }
 
   GetOrgData() {
@@ -33,7 +36,7 @@ export class DashboardComponent implements OnInit {
     form.append("endDate", this.endDate);
     console.log(form);
 
-    this.api.put("/OrganizationsData",
+    this.api.post("/OrganizationsData",
       (response) => {
         console.log(response.data);
         this.orgData = response.data;
@@ -53,6 +56,22 @@ export class DashboardComponent implements OnInit {
       (response) => {
         console.log(response.data);
         this.traffic = response.data;
+      },
+      (error) => { console.log(error.message); },
+      form
+    );
+  }
+
+  GetGrowthData() {
+    let form = new FormData();
+    form.append("startDate", this.startDate);
+    form.append("endDate", this.endDate);
+    console.log(form);
+
+    this.api.post("/GetAppGrowth",
+      (response) => {
+        console.log(response.data);
+        this.growth = response.data;
       },
       (error) => { console.log(error.message); },
       form
