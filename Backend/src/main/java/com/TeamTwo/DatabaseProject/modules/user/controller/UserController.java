@@ -311,11 +311,20 @@ public class UserController {
 		}
 	}
 
-	@PutMapping("/api/GetMonthlyTraffic")
+	
+
+
+	@PostMapping("/api/GetMonthlyTraffic")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
 			@RequestParam String endDate) {
 		return database.GetMonthlyTraffic(startDate, endDate);
+	}
+
+	@PostMapping("/api/GetAppGrowth")
+	@ResponseBody
+	public ArrayList<Hashtable<String,String>> GetAppGrowth(@RequestParam String startDate, @RequestParam String endDate){
+		return this.database.GetAppGrowth(startDate, endDate);	
 	}
 
 }
