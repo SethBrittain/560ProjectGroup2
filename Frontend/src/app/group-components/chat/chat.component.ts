@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
-import { ParamMap } from '@angular/router'
 
 @Component({
   selector: 'app-chat',
@@ -16,9 +15,71 @@ export class ChatComponent implements OnInit {
 
   ];
   type: any;
+  updater : any;
 
-  constructor(private api: ApiService, private route: ActivatedRoute) { }
+  constructor(private api: ApiService, private route: ActivatedRoute, private _elementRef : ElementRef) { }
 
+  updateMessages() {
+    if (!this.messages) return;
+    let data = new FormData();
+    let latest = this.messages[this.messages.length-1];
+
+
+    if (this.type == "channel") {
+      data.append("sinceDateTime",(latest?.CreatedOn)??'1753-01-01');
+      data.append("channelId",this.channelId);
+      this.api.post("/GetNewChannelMessages",(response)=>{
+        response.data.forEach((element:any)=> {
+          if (!element) return;
+          else if (!element.CreatedOn) return;
+
+          if (!latest) {
+            this.messages.push(element);
+            window.scrollTo(0, document.body.scrollHeight);
+          }
+          else if (element.CreatedOn!=latest.CreatedOn) {
+            this.messages.push(element);
+            window.scrollTo(0, document.body.scrollHeight);
+          }
+        });
+      }, (error)=>{
+        console.log(error);
+      }, data);
+    } else {
+      data.append("sinceDateTime",(latest?.CreatedOn)??'1753-01-01');
+      data.append("otherUserId",this.channelId);
+      this.api.post("/GetNewDirectMessages",(response)=>{
+        response.data.forEach((element:any)=> {
+          if (!element) return;
+          else if (!element.CreatedOn) return;
+
+          if (!latest) {
+            this.messages.push(element);
+            window.scrollTo(0, document.body.scrollHeight);
+          }
+          else if (element.CreatedOn!=latest.CreatedOn) {
+            this.messages.push(element);
+            window.scrollTo(0, document.body.scrollHeight);
+          }
+        });
+      }, (error)=>{
+        console.log(error);
+      }, data);
+    }
+
+    // this.messages.push({
+    //   "ProfilePhoto":"https://lh3.googleusercontent.com/a/AGNmyxY38W8aDtBM_BT-wkqP2KybvYWu1vDF3wlu-4M73w=s96-c",
+    //   "IsMine":"0",
+    //   "SenderId":"1065",
+    //   "LastName":"Haynes",
+    //   "Message":"hey seth",
+    //   "FirstName":"Sam",
+    //   "UpdatedOn":"2023-04-26 01:33:43.1595796 -05:00",
+    //   "RecipientId":"1008",
+    //   "MsgId":"5106"
+    // });
+    // console.log("added");
+  }
 
   ngOnInit(): void {
 
@@ -37,6 +98,7 @@ export class ChatComponent implements OnInit {
 
     //this.title = this.type + ' ' + id;
     this.channelId = id;
+    this.updater = setInterval(()=>{this.updateMessages()}, 1000);
   }
 
   GetMessages(id: any) {

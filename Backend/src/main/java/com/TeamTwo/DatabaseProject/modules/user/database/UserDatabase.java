@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.TeamTwo.DatabaseProject.exceptions.ApiException;
+import com.TeamTwo.DatabaseProject.modules.user.controller.ArrayLise;
 
 @Service
 public class UserDatabase {
@@ -190,7 +191,6 @@ public class UserDatabase {
 
 				}
 				i++;
-				System.out.println(results);
 			}
 		} catch (SQLException e) {
 			String error = e.toString();
@@ -436,16 +436,17 @@ public class UserDatabase {
 		}
 	}
 
-    public String CreateUserOrGetKey(String email, String firstName, String lastName) {
+    public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) {
 		try 
 		{
-			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
+			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
 			String apiKey;
 
 			getUserApiKey.setString(1, email);
 			getUserApiKey.setString(2, firstName);
 			getUserApiKey.setString(3, lastName);
+			getUserApiKey.setString(4, profilePhoto);
 			ResultSet getRS = getUserApiKey.executeQuery();
 			
 			boolean gotKey = getRS.next();
@@ -473,9 +474,7 @@ public class UserDatabase {
     public int GetUserId(String apiKey) {
 		try {
 			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
-			System.out.print(apiKey);
 			ResultSet rs = userIdStatement.executeQuery();
-			System.out.print(rs.getFetchSize());
 			rs.next();
 			return rs.getInt("UserId");
 		} catch (SQLException e) {
@@ -485,4 +484,13 @@ public class UserDatabase {
 		}
     }
 
+	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(String sinceDateTime, int currentUser, int otherUser) {
+		System.out.println(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime, currentUser, otherUser));
+		return this.sendQuery(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime, currentUser, otherUser));
+	}
+
+	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(String sinceDateTime, int channelId) {
+		System.out.println(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
+		return this.sendQuery(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
+	}
 }
