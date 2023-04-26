@@ -86,7 +86,7 @@ public class UserController {
 	 * Gets the profile photo of the given user
 	 * 
 	 * @param userId The user to get the profile photo for
-	 * @return ArrayList->Hashtable - ProfilePhoto
+	 * @return ArrayList->Hashtable - FirstName - LastName - ProfilePhoto
 	 */
 	@PostMapping("/api/GetProfilePhoto")
 	@ResponseBody
@@ -310,8 +310,6 @@ public class UserController {
 			e.printStackTrace();
 		}
 	}
-
-	
 
 
 	@PostMapping("/api/GetMonthlyTraffic")
