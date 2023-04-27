@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 
 @Component({
@@ -16,6 +16,8 @@ export class MessageInputComponent implements OnInit {
   @Input()
   type: string = '';
 
+  @ViewChild('sendInput',{static:false}) inputElement : ElementRef | null = null; 
+
   constructor(private api: ApiService) {
 
   }
@@ -23,21 +25,6 @@ export class MessageInputComponent implements OnInit {
   ngOnInit(): void {
 
 
-  }
-
-  /**
-   *  testing, testing, 1.2.3.
-   * @param username 
-   */
-  test(username : String) : void {
-    // this.api.get("/Example", (response)=>
-    // {
-    //   console.log(response.data);
-    // }, (error)=>{console.log(error.message);},
-    // {
-    //   username: username 
-    // });
-  
   }
 
   GetVal(event: any) {
@@ -52,7 +39,8 @@ export class MessageInputComponent implements OnInit {
     else {
       this.InsertDirectMessage(this.message, this.channelId);
     }
-
+    console.log(this.inputElement);
+    if (this.inputElement) this.inputElement.nativeElement.value='';
 
     console.log("SendMessageHandlerHit");
   }
@@ -67,9 +55,7 @@ export class MessageInputComponent implements OnInit {
     let form = new FormData();
     form.append("message", message);
     form.append("channelId", channelId);
-    this.api.put("/InsertMessageIntoChannel", (response) => {
-      console.log(response.data);
-    }, (error) => { console.log(error.message); },
+    this.api.put("/InsertMessageIntoChannel", (response) => { }, (error) => { console.log(error.message); },
       form);
   }
 

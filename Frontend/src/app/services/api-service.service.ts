@@ -15,7 +15,6 @@ export class ApiService {
   public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : FormData = new FormData())
   {
     this.auth.idTokenClaims$.subscribe((keyToken)=>{
-      console.log(keyToken);
         if(keyToken && keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]){
           data.append("apiKey",keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]);
         } else {
@@ -41,7 +40,6 @@ export class ApiService {
   {
     this.auth.idTokenClaims$.subscribe((keyToken)=>{
       if(keyToken && keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]){
-        console.log("got here");
         data.append("apiKey",keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]);
       } else {
         this.auth.user$.subscribe((user)=>{
