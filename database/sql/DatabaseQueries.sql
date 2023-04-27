@@ -61,7 +61,7 @@ WITH AllUserMessagesCte(MsgId, [Message], UpdatedOn, SenderId, Id, [Type], First
 )
 SELECT *
 FROM AllUserMessagesCte A
-WHERE [Message] LIKE '%' + @Substring + '%'
+WHERE [Message] LIKE '%' + @Substring + '%' OR A.FirstName + A.LastName LIKE '%' + '%' + @Substring + '%'
 ORDER BY UpdatedOn DESC
 GO
 -- Get all users who have direct messages with a given user
@@ -103,10 +103,10 @@ GO
 
 -- Get all the users in an organization that match a given search string
 CREATE OR ALTER PROCEDURE Application.SearchUsersInOrganization
-@Substring INT,
+@Substring NVARCHAR(128),
 @OrganizationId INT
 AS
-SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
+SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto, U.Title
 FROM Application.Users U
 WHERE (U.FirstName + ' ' + U.LastName LIKE '%' + @Substring + '%'
 	OR U.Email LIKE '%' + @Substring + '%') AND U.OrganizationId = @OrganizationId
@@ -195,6 +195,7 @@ FROM Application.Messages
 UPDATE Application.Messages
 SET [Message] = @Message, UpdatedOn = SYSDATETIMEOFFSET()
 WHERE MsgId = @MsgId
+GO;
 
 /*
 -- get user id from api key
@@ -219,7 +220,7 @@ SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCo
 FROM Application.Organizations O
 INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
-WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate AND U.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
@@ -231,11 +232,9 @@ CREATE OR ALTER PROCEDURE Application.GetMonthlyTraffic
 @LastDate DATETIMEOFFSET
 AS
 SELECT DATENAME(month, M.CreatedOn) AS MONTH, DATENAME(year,M.CreatedOn) AS YEAR,
-Count(*) AS MessagesSent, 
-RANK() OVER (ORDER BY COUNT(*) DESC) AS Rank
+SUM(IIF(M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate,1,0)) AS MessagesSent, 
+RANK() OVER (ORDER BY SUM(IIF(M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate,1,0))DESC) AS Rank
 FROM Application.Messages M
-WHERE 
-M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate
 GROUP BY DATENAME(month, M.CreatedOn), DATENAME(year,M.CreatedOn)
 GO
 
@@ -249,16 +248,16 @@ CREATE OR ALTER PROCEDURE Application.GetAppGrowth
 @StartDate DATETIMEOFFSET,
 @EndDate   DATETIMEOFFSET
 AS
-SELECT SUM( IIF(U.Active = 1, 1, 0)) AS NumberOfActiveUsers,SUM(IIF(U.Active = 0, 1, 0)) AS NumberOfInactiveUsers,
+SELECT SUM( IIF(U.Active = 1 AND U.CreatedOn >= @StartDate AND U.CreatedOn <= @EndDate, 1, 0)) AS NumberOfActiveUsers,SUM(IIF(U.Active = 0 AND U.CreatedOn >= @StartDate AND U.CreatedOn <= @EndDate, 1, 0)) AS NumberOfInactiveUsers,
 (
-	SELECT COUNT(*)
+	SELECT SUM(IIF(O.CreatedOn >= @StartDate AND O.CreatedOn <= @EndDate,1,0))
 	FROM Application.Organizations O
-	WHERE O.Active = 1
+	WHERE O.Active = 1 
 ) AS NumberOfActiveOrgs,
 (
 	SELECT COUNT(*)
 	FROM Application.Organizations O
-	WHERE O.Active = 0
+	WHERE O.Active = 0 AND O.CreatedOn >= @StartDate AND O.CreatedOn <= @EndDate
 )AS NumberOfInactiveOrgs
 FROM Application.Users U;
 
@@ -287,7 +286,7 @@ FROM Application.Messages;
 SELECT *
 FROM Application.Messages M
 WHERE 
-M.CreatedOn >= '2022-04-01' AND M.CreatedOn <= '2022-5-01';
+M.CreatedOn >= '2022-01-01' AND M.CreatedOn <= '2022-05-01';
 
 EXEC Application.GetMonthlyTraffic '2022-01-01','2023-12-01';
 
@@ -298,3 +297,9 @@ SELECT *
 FROM Application.Users U
 INNER JOIN Application.Organizations O ON U.OrganizationId = O.OrganizationId
 WHERE U.UserId = 1065;
+
+EXEC Application.SearchUsersInOrganization "sa", 1;
+
+SELECT *
+FROM Application.Users U 
+WHERE U.OrganizationId = 1;
