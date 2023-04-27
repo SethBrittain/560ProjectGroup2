@@ -39,7 +39,8 @@ public class UserController {
 	 */
 	@GetMapping("/api/Example")
 	public ArrayList<Hashtable<String, String>> TestQuery() {
-		return database.TestQuery();
+		String call = "{call Application.Example}";
+		return database.callProcedure(call, 0, null);
 	}
 
 	/**
@@ -197,6 +198,9 @@ public class UserController {
 		return database.GetAllUsersInOrganization(organizationId);
 	}
 
+
+	// Insertion statement API endpoints
+
 	/**
 	 * Inserts a channel message with the given parameters into the database
 	 * 
@@ -225,6 +229,21 @@ public class UserController {
 	public Boolean InsertDirectMessage( @RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
 		return database.InsertDirectMessage(message, senderId, recipientId);
+	}
+
+	@PostMapping("/api/GetNewDirectMessages")
+	public ArrayList<Hashtable<String,String>> GetNewDirectMessages(@RequestParam String sinceDateTime, @RequestParam String apiKey, @RequestParam String otherUserId)
+	{
+		int currentUser = this.GetUserId(apiKey);
+		int otherUserInt = Integer.parseInt(otherUserId);
+		return this.database.GetNewDirectMessages(sinceDateTime, currentUser, otherUserInt);
+	}
+
+	@PostMapping("/api/GetNewChannelMessages")
+	public ArrayList<Hashtable<String,String>> GetNewChannelMessages(@RequestParam String sinceDateTime, @RequestParam String channelId)
+	{
+		int chanId = Integer.parseInt(channelId);
+		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
 	}
 
 	/**
@@ -271,7 +290,8 @@ public class UserController {
 		return database.UpdateMessage(msgId, message);
 	}
 
-	// Aggregating Queries
+
+	// Aggregating Query API endpoints
 
 	/**
 	 * Gets data about all organizations in the database
@@ -296,21 +316,6 @@ public class UserController {
 		return hm;
 	}
 
-	private void SetUserAuthApiKey(String apiKey, String authId)
-	{
-		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
-		try {
-			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s",authId))
-				.header("authorization", String.format("Bearer %s",this.auth.token()))
-				.header("content-type", "application/json")
-				.body(dataBody)
-				.asJson();
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
-
-
 	@PostMapping("/api/GetMonthlyTraffic")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
@@ -324,18 +329,20 @@ public class UserController {
 		return this.database.GetAppGrowth(startDate, endDate);	
 	}
 
-	@PostMapping("/api/GetNewDirectMessages")
-	public ArrayList<Hashtable<String,String>> GetNewDirectMessages(@RequestParam String sinceDateTime, @RequestParam String apiKey, @RequestParam String otherUserId)
-	{
-		int currentUser = this.GetUserId(apiKey);
-		int otherUserInt = Integer.parseInt(otherUserId);
-		return this.database.GetNewDirectMessages(sinceDateTime, currentUser, otherUserInt);
-	}
 
-	@PostMapping("/api/GetNewChannelMessages")
-	public ArrayList<Hashtable<String,String>> GetNewChannelMessages(@RequestParam String sinceDateTime, @RequestParam String channelId)
+	// API Key methods
+
+	private void SetUserAuthApiKey(String apiKey, String authId)
 	{
-		int chanId = Integer.parseInt(channelId);
-		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
+		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
+		try {
+			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s",authId))
+				.header("authorization", String.format("Bearer %s",this.auth.token()))
+				.header("content-type", "application/json")
+				.body(dataBody)
+				.asJson();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
 	}
 }

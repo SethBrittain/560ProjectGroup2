@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import microsoft.sql.DateTimeOffset;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Queue;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.TeamTwo.DatabaseProject.exceptions.ApiException;
@@ -58,42 +60,42 @@ public class UserDatabase {
 	}
 
 	/**
-	 * Calls the given stored procedure on the database and returns the results as an ArrayList of Hashtables
+	 * Calls the given stored procedure on the database and returns the results as
+	 * an ArrayList of Hashtables
 	 * 
 	 * @param cs The stored procedure to call
 	 * @return ArrayList->Hashtable - results of the query
 	 * @throws SQLException
 	 */
-	private ArrayList<Hashtable<String, String>> callProcedure(CallableStatement cs) throws SQLException {
+	public ArrayList<Hashtable<String, String>> callProcedure(String call, int argSize, Object[] args) {
 		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
-		ResultSet rs = cs.executeQuery();
-		if (rs.isBeforeFirst()) {
-			int columns = rs.getMetaData().getColumnCount();
-			while (rs.next()) {
-				Hashtable<String, String> h = new Hashtable<String, String>();
-				results.add(h);
-				for (int j = 1; j <= columns; j++) {
-					String columnName = rs.getMetaData().getColumnName(j);
-					h.put(columnName, rs.getString(j));
+		try (CallableStatement cs = database.prepareCall(call)) {
+			for (int i = 0; i < argSize; i++) {
+				cs.setObject(i+1, args[i]);
+			}
+			ResultSet rs = cs.executeQuery();
+			if (rs.isBeforeFirst()) {
+				int columns = rs.getMetaData().getColumnCount();
+				while (rs.next()) {
+					Hashtable<String, String> h = new Hashtable<String, String>();
+					results.add(h);
+					for (int j = 1; j <= columns; j++) {
+						String columnName = rs.getMetaData().getColumnName(j);
+						h.put(columnName, rs.getString(j));
+					}
 				}
+				return results;
 			}
 			return results;
 		}
-		return results;
-	}
-
-	/**
-	 * Example of getting info from a database for reference
-	 * 
-	 * @return ArrayList->Hashtable - UserId, FirstName, Email
-	 */
-	public ArrayList<Hashtable<String, String>> TestQuery() {
-		try (CallableStatement cs = database.prepareCall("{call Application.Example()}")) {
-			return callProcedure(cs);
-		} catch (SQLException e) {
-			System.out.println(e.toString());
+		catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+			Hashtable<String, String> h = new Hashtable<String, String>();
+			h.put("Error", error);
+			results.add(h);
+			return results;
 		}
-		return new ArrayList<Hashtable<String, String>>();
 	}
 
 	/**
@@ -105,8 +107,22 @@ public class UserDatabase {
 	 *         FirstName, LastName, ProfilePhoto
 	 */
 	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(int channelId) {
-		String query = "EXEC Application.GetAllChannelMessages " + channelId;
-		return sendQuery(query);
+		String call = "{call Application.GetAllChannelMessages(?)}";
+		Object[] args = {channelId};
+		return callProcedure(call, 1, args);
+
+		/*
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
+		try (CallableStatement cs = database.prepareCall("{call Application.GetAllChannelMessages(?)}")) {
+			cs.setInt(1, channelId);
+			return callProcedure(cs, results);
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+			return results;
+		}*/
+
+		//String query = "EXEC Application.GetAllChannelMessages " + channelId;
+		//return sendQuery(query);
 	}
 
 	/**
@@ -412,22 +428,29 @@ public class UserDatabase {
 	 * @return ArrayList->Hashtable - GroupId, Name, MessagesSent, HighestSender
 	 */
 	public ArrayList<Hashtable<String, String>> GetGroupActivity(int organizationId, String startDate, String endDate) {
+
+		/*
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
 		try (CallableStatement cs = database.prepareCall("{call Application.GetGroupActivity(?,?,?)}")) {
 			cs.setInt(1, organizationId);
 			cs.setString(2, startDate);
 			cs.setString(3, endDate);
-			return callProcedure(cs);
+			return callProcedure(cs, results);
 		} catch (SQLException e) {
 			System.out.println(e.toString());
 		}
 		return new ArrayList<Hashtable<String, String>>();
+		*/
+		return null;
 	}
 
 	/**
 	 * Gets monthly traffic stats of the entire application between the given dates
 	 * 
-	 * @param startDate String of the date to start counting traffic from in SQL DATETIME format
-	 * @param endDate   String of the date to stop counting traffic at in SQL DATETIME format
+	 * @param startDate String of the date to start counting traffic from in SQL
+	 *                  DATETIME format
+	 * @param endDate   String of the date to stop counting traffic at in SQL
+	 *                  DATETIME format
 	 * @return ArrayList->Hashtable - Month, Year, MessagesSent, Rank
 	 */
 	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(String start, String end) {
@@ -458,11 +481,15 @@ public class UserDatabase {
 	}
 
 	/**
-	 * Gets the growth of the entire application based on number of users between the given dates
+	 * Gets the growth of the entire application based on number of users between
+	 * the given dates
 	 * 
-	 * @param startDate String of the date to start counting growth from in SQL DATETIME format
-	 * @param endDate   String of the date to stop counting growth at in SQL DATETIME format
-	 * @return ArrayList->Hashtable - NumberOfActiveUsers, NumberOfInactiveUsers, NumberOfActiveOrgs, NumberOfInactiveOrgs
+	 * @param startDate String of the date to start counting growth from in SQL
+	 *                  DATETIME format
+	 * @param endDate   String of the date to stop counting growth at in SQL
+	 *                  DATETIME format
+	 * @return ArrayList->Hashtable - NumberOfActiveUsers, NumberOfInactiveUsers,
+	 *         NumberOfActiveOrgs, NumberOfInactiveOrgs
 	 */
 	public ArrayList<Hashtable<String, String>> GetAppGrowth(String start, String end) {
 		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
@@ -491,12 +518,12 @@ public class UserDatabase {
 		}
 	}
 
-
 	public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) {
 		try {
 			PreparedStatement createUser = this.database
 					.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
-			// PreparedStatement createUser = this.database.prepareStatement("EXEC Application.InsertNewUser ?,?,?,?,?,?")
+			// PreparedStatement createUser = this.database.prepareStatement("EXEC
+			// Application.InsertNewUser ?,?,?,?,?,?")
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
 			String apiKey;
 
