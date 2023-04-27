@@ -439,6 +439,7 @@ public class UserDatabase {
 		try 
 		{
 			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
+			//PreparedStatement createUser = this.database.prepareStatement("EXEC Application.InsertNewUser ?,?,?,?,?,?")
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
 			String apiKey;
 
@@ -448,8 +449,8 @@ public class UserDatabase {
 			getUserApiKey.setString(4, profilePhoto);
 			ResultSet getRS = getUserApiKey.executeQuery();
 			
-			boolean gotKey = getRS.next();
-			if (gotKey) {
+			if (getRS.isBeforeFirst()) {
+				getRS.next();
 				apiKey = getRS.getString("ApiKey");
 			} else {
 				createUser.setString(1, email);
@@ -474,7 +475,6 @@ public class UserDatabase {
 		try {
 			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
 			ResultSet rs = userIdStatement.executeQuery();
-			rs.next();
 			return rs.getInt("UserId");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
