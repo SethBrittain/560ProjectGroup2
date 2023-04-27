@@ -1,5 +1,6 @@
 package com.TeamTwo.DatabaseProject.modules.user.database;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,6 +8,8 @@ import java.sql.PreparedStatement;
 import microsoft.sql.DateTimeOffset;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Queue;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.TeamTwo.DatabaseProject.exceptions.ApiException;
@@ -37,8 +40,6 @@ public class UserDatabase {
 		try (PreparedStatement stmt = this.database.prepareStatement(query)) {
 			ResultSet rs = stmt.executeQuery();
 			int columns = rs.getMetaData().getColumnCount();
-			// if (rs.isBeforeFirst()) results.get(0).add("Success");
-			// else results.get(0).add("Empty");
 			while (rs.next()) {
 				Hashtable<String, String> m = new Hashtable<String, String>();
 				results.add(m);
@@ -59,34 +60,69 @@ public class UserDatabase {
 	}
 
 	/**
-	 * Example of getting info from a database for reference
+	 * Calls the given stored procedure on the database and returns the results as
+	 * an ArrayList of Hashtables
 	 * 
-	 * @return ArrayList with: FirstName, Email
+	 * @param cs The stored procedure to call
+	 * @return ArrayList->Hashtable - results of the query
+	 * @throws SQLException
 	 */
-	public ArrayList<Hashtable<String, String>> TestQuery() {
-		String query = """
-					SELECT T.PersonId, T.FirstName, T.Email
-					FROM
-					(
-						VALUES (1, N'Joe', N'Cool', N'joecool@ksu.edu'),
-							(2, N'Jill', N'Cool', N'jillcool@ksu.edu')
-					) T(PersonId, FirstName, LastName, Email);
-				""";
-
-		return sendQuery(query);
+	public ArrayList<Hashtable<String, String>> callProcedure(String call, int argSize, Object[] args) {
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
+		try (CallableStatement cs = database.prepareCall(call)) {
+			for (int i = 0; i < argSize; i++) {
+				cs.setObject(i+1, args[i]);
+			}
+			ResultSet rs = cs.executeQuery();
+			if (rs.isBeforeFirst()) {
+				int columns = rs.getMetaData().getColumnCount();
+				while (rs.next()) {
+					Hashtable<String, String> h = new Hashtable<String, String>();
+					results.add(h);
+					for (int j = 1; j <= columns; j++) {
+						String columnName = rs.getMetaData().getColumnName(j);
+						h.put(columnName, rs.getString(j));
+					}
+				}
+				return results;
+			}
+			return results;
+		}
+		catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+			Hashtable<String, String> h = new Hashtable<String, String>();
+			h.put("Error", error);
+			results.add(h);
+			return results;
+		}
 	}
 
-	/*
+	/**
 	 * Gets all the messages from the given channel
 	 * 
 	 * @param ChannelId The ID number of the channel to get messages from
 	 * 
 	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
-	 * FirstName, LastName, ProfilePhoto
+	 *         FirstName, LastName, ProfilePhoto
 	 */
 	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(int channelId) {
-		String query = "EXEC Application.GetAllChannelMessages " + channelId;
-		return sendQuery(query);
+		String call = "{call Application.GetAllChannelMessages(?)}";
+		Object[] args = {channelId};
+		return callProcedure(call, 1, args);
+
+		/*
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
+		try (CallableStatement cs = database.prepareCall("{call Application.GetAllChannelMessages(?)}")) {
+			cs.setInt(1, channelId);
+			return callProcedure(cs, results);
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+			return results;
+		}*/
+
+		//String query = "EXEC Application.GetAllChannelMessages " + channelId;
+		//return sendQuery(query);
 	}
 
 	/**
@@ -174,8 +210,8 @@ public class UserDatabase {
 		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
 		int i = 0;
 		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.SearchUserMessages ?,?")) {
-			stmt.setInt(1,userId);
-			stmt.setString(2,subString);
+			stmt.setInt(1, userId);
+			stmt.setString(2, subString);
 			ResultSet rs = stmt.executeQuery();
 			int columns = rs.getMetaData().getColumnCount();
 			// if (rs.isBeforeFirst()) results.get(0).add("Success");
@@ -336,7 +372,8 @@ public class UserDatabase {
 		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.UpdateMessage ?,?")) {
 			stmt.setInt(1, msgId);
 			stmt.setString(2, message);
-			return stmt.execute();
+			stmt.execute();
+			return true;
 		} catch (SQLException e) {
 			String error = e.toString();
 			System.out.println(error);
@@ -353,15 +390,13 @@ public class UserDatabase {
 	 * @return ArrayList - String OrgName, int ActiveUserCount, int MessageCount
 	 */
 	public ArrayList<Hashtable<String, String>> GetOrganizationData(String start, String end) {
-		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String,String>>();
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
 		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.GetOrganizationData ?,?")) {
 			stmt.setString(1, start);
 			stmt.setString(2, end);
 			ResultSet rs = stmt.executeQuery();
 			int i = 0;
 			int columns = rs.getMetaData().getColumnCount();
-			// if (rs.isBeforeFirst()) results.get(0).add("Success");
-			// else results.get(0).add("Empty");
 			while (rs.next()) {
 				Hashtable<String, String> m = new Hashtable<String, String>();
 				results.add(m);
@@ -381,8 +416,45 @@ public class UserDatabase {
 		}
 	}
 
-	public ArrayList<Hashtable<String,String>> GetMonthlyTraffic(String start, String end){
-		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String,String>>();
+	/**
+	 * Gets the message activity of the groups in the given organization between the
+	 * given dates
+	 * 
+	 * @param organizationId The organization to get group activity for
+	 * @param startDate      String of the date to start counting activity from in
+	 *                       SQL DATETIME format
+	 * @param endDate        String of the date to stop counting activity at in SQL
+	 *                       DATETIME format
+	 * @return ArrayList->Hashtable - GroupId, Name, MessagesSent, HighestSender
+	 */
+	public ArrayList<Hashtable<String, String>> GetGroupActivity(int organizationId, String startDate, String endDate) {
+
+		/*
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
+		try (CallableStatement cs = database.prepareCall("{call Application.GetGroupActivity(?,?,?)}")) {
+			cs.setInt(1, organizationId);
+			cs.setString(2, startDate);
+			cs.setString(3, endDate);
+			return callProcedure(cs, results);
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+		}
+		return new ArrayList<Hashtable<String, String>>();
+		*/
+		return null;
+	}
+
+	/**
+	 * Gets monthly traffic stats of the entire application between the given dates
+	 * 
+	 * @param startDate String of the date to start counting traffic from in SQL
+	 *                  DATETIME format
+	 * @param endDate   String of the date to stop counting traffic at in SQL
+	 *                  DATETIME format
+	 * @return ArrayList->Hashtable - Month, Year, MessagesSent, Rank
+	 */
+	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(String start, String end) {
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
 		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.GetMonthlyTraffic ?,?")) {
 			stmt.setString(1, start);
 			stmt.setString(2, end);
@@ -408,8 +480,19 @@ public class UserDatabase {
 		}
 	}
 
-	public ArrayList<Hashtable<String,String>> GetAppGrowth(String start, String end){
-		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String,String>>();
+	/**
+	 * Gets the growth of the entire application based on number of users between
+	 * the given dates
+	 * 
+	 * @param startDate String of the date to start counting growth from in SQL
+	 *                  DATETIME format
+	 * @param endDate   String of the date to stop counting growth at in SQL
+	 *                  DATETIME format
+	 * @return ArrayList->Hashtable - NumberOfActiveUsers, NumberOfInactiveUsers,
+	 *         NumberOfActiveOrgs, NumberOfInactiveOrgs
+	 */
+	public ArrayList<Hashtable<String, String>> GetAppGrowth(String start, String end) {
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
 		try (PreparedStatement stmt = this.database.prepareStatement("EXEC Application.GetAppGrowth ?,?")) {
 			stmt.setString(1, start);
 			stmt.setString(2, end);
@@ -435,10 +518,12 @@ public class UserDatabase {
 		}
 	}
 
-    public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) {
-		try 
-		{
-			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
+	public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) {
+		try {
+			PreparedStatement createUser = this.database
+					.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
+			// PreparedStatement createUser = this.database.prepareStatement("EXEC
+			// Application.InsertNewUser ?,?,?,?,?,?")
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
 			String apiKey;
 
@@ -447,9 +532,9 @@ public class UserDatabase {
 			getUserApiKey.setString(3, lastName);
 			getUserApiKey.setString(4, profilePhoto);
 			ResultSet getRS = getUserApiKey.executeQuery();
-			
-			boolean gotKey = getRS.next();
-			if (gotKey) {
+
+			if (getRS.isBeforeFirst()) {
+				getRS.next();
 				apiKey = getRS.getString("ApiKey");
 			} else {
 				createUser.setString(1, email);
@@ -460,36 +545,39 @@ public class UserDatabase {
 				elseGetRS.next();
 				apiKey = elseGetRS.getString(0);
 			}
-			
+
 			return apiKey;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new RuntimeException();
 		}
-    }
+	}
 
-    public int GetUserId(String apiKey) {
+	public int GetUserId(String apiKey) {
 		try {
-			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
+			PreparedStatement userIdStatement = this.database
+					.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
 			ResultSet rs = userIdStatement.executeQuery();
-			rs.next();
 			return rs.getInt("UserId");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return -1;
 		}
-    }
+	}
 
-	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(String sinceDateTime, int currentUser, int otherUser) {
-		System.out.println(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime, currentUser, otherUser));
-		return this.sendQuery(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime, currentUser, otherUser));
+	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(String sinceDateTime, int currentUser,
+			int otherUser) {
+		System.out.println(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime,
+				currentUser, otherUser));
+		return this.sendQuery(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime,
+				currentUser, otherUser));
 	}
 
 	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(String sinceDateTime, int channelId) {
-		System.out.println(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
-		return this.sendQuery(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
+		System.out.println(
+				String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
+		return this.sendQuery(
+				String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 	}
 }
