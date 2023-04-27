@@ -33,6 +33,10 @@ public class UserController {
 		return this.database.GetUserId(apiKey);
 	}
 
+	/**
+	 * An example of how to use the API, returns an ArrayList of Hashtables with String-String key-value pairs which are the results of a query to the database
+	 * @return ArrayList->Hashtable - UserId, FirstName, Email
+	 */
 	@GetMapping("/api/Example")
 	public ArrayList<Hashtable<String, String>> TestQuery() {
 		return database.TestQuery();
@@ -59,10 +63,9 @@ public class UserController {
 	 * @return ArrayList->Hashtables - MsgId, FirstName, LastName, Message,
 	 *         UpdatedOn, SenderId, ProfilePhoto, IsMine
 	 */
-	//NEED TO ADD REQUEST PARAM FOR APIKEY
 	@PostMapping("/api/GetDirectMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId, @RequestParam String apiKey) {
+	public ArrayList<Hashtable<String, String>> GetDirectMessages(@RequestParam int userBId, @RequestParam String apiKey) {
 		// TODO Replace currentUserId with apiKey in parameters
 		int userAId = this.GetUserId(apiKey);
 		return database.GetDirectMessages(userAId, userBId);

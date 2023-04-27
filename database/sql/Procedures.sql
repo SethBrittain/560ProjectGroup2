@@ -1,3 +1,14 @@
+CREATE OR ALTER PROCEDURE Application.Example
+AS
+SELECT E.UserId, E.FirstName, E.Email
+FROM
+	(
+		VALUES
+		(1, N'Joe', N'Cool', N'joecool@ksu.edu'),
+		(2, N'Jill', N'Cool', N'jillcool@ksu.edu')
+	) E(UserId, FirstName, LastName, Email)
+GO
+
 
 -- Get all the messages in a channel
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
@@ -242,15 +253,16 @@ WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
 GROUP BY O.Name
 GO
 
--- Come up with a 2nd one -- Get the activity (by number of messages sent in channels) of all the groups in a given organization (excluding DMs) between the given dates
+-- Aggregate Query 2 -- Get the activity (by number of messages sent in channels) of all the groups in a given organization (excluding DMs) between the given dates
 CREATE OR ALTER PROCEDURE Application.GetGroupActivity
 	@OrganizationId INT,
 	@StartDate DATETIMEOFFSET,
 	@EndDate DATETIMEOFFSET
 AS
 SELECT G.GroupId, G.Name, COUNT(*) AS MessagesSent,
-(
-	SELECT TOP(1) U.FirstName + ' ' + U.LastName
+	(
+	SELECT TOP(1)
+		U.FirstName + ' ' + U.LastName
 	FROM Application.Channels C
 		INNER JOIN Application.Messages M ON C.ChannelId = M.ChannelId
 		INNER JOIN Application.Users U ON M.SenderId = U.UserId
@@ -271,7 +283,7 @@ CREATE OR ALTER PROCEDURE Application.GetMonthlyTraffic
 	@FirstDate DATETIMEOFFSET,
 	@LastDate DATETIMEOFFSET
 AS
-SELECT DATENAME(month, M.CreatedOn) AS MONTH, DATENAME(year,M.CreatedOn) AS YEAR,
+SELECT DATENAME(month, M.CreatedOn) AS [Month], DATENAME(year,M.CreatedOn) AS [Year],
 	Count(*) AS MessagesSent,
 	RANK() OVER (ORDER BY COUNT(*) DESC) AS Rank
 FROM Application.Messages M
