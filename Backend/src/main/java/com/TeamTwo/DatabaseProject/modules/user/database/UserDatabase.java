@@ -37,8 +37,6 @@ public class UserDatabase {
 		try (PreparedStatement stmt = this.database.prepareStatement(query)) {
 			ResultSet rs = stmt.executeQuery();
 			int columns = rs.getMetaData().getColumnCount();
-			// if (rs.isBeforeFirst()) results.get(0).add("Success");
-			// else results.get(0).add("Empty");
 			while (rs.next()) {
 				Hashtable<String, String> m = new Hashtable<String, String>();
 				results.add(m);
