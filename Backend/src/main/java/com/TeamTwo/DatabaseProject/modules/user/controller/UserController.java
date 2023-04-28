@@ -65,6 +65,7 @@ public class UserController {
 	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId, @RequestParam String apiKey) {
 		// TODO Replace currentUserId with apiKey in parameters
 		int userAId = this.GetUserId(apiKey);
+		//int userAId = 1065;
 		return database.GetDirectMessages(userAId, userBId);
 	}
 
@@ -134,6 +135,7 @@ public class UserController {
 	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int channelId, @RequestParam String subString, @RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
 		 int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
 		return database.SearchChannelMessages(userId, channelId, subString);
 	}
 
@@ -153,6 +155,7 @@ public class UserController {
 			@RequestParam String subString,@RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
 		int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
 		return database.SearchUserMessages(userId, subString);
 	}
 
@@ -167,6 +170,7 @@ public class UserController {
 	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser(@RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
 		int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
 		return database.GetAllChannelsOfUser(userId);
 	}
 

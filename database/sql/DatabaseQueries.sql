@@ -197,16 +197,16 @@ SET [Message] = @Message, UpdatedOn = SYSDATETIMEOFFSET()
 WHERE MsgId = @MsgId
 GO;
 
-/*
+
 -- get user id from api key
-CREATE PROCEDURE Application.GetUserIdFromAPIKey
+CREATE OR ALTER PROCEDURE Application.GetUserIdFromAPIKey
 @apikey NVARCHAR(MAX)
 AS
 SELECT U.UserId
 FROM Application.Users U
 WHERE U.ApiKey = @apikey;
 GO
-*/
+
 
 
 -- Aggregated Queries
@@ -307,3 +307,8 @@ SELECT *
 FROM Application.Users U 
 WHERE U.OrganizationId = 1;
 
+EXEC Application.GetAllChannelMessages 1;
+
+SELECT *
+FROM Application.Users U
+WHERE U.UserId = 1065;
