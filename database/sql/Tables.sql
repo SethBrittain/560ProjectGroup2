@@ -72,3 +72,4 @@ CREATE TABLE Application.Messages
 	CONSTRAINT [must_have_exactly_one_receiver] CHECK(
 		Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
 )
+GO

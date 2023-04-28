@@ -10,7 +10,6 @@ import java.util.Hashtable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.TeamTwo.DatabaseProject.exceptions.ApiException;
 
 @Service
 public class UserDatabase {

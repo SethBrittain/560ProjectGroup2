@@ -18,7 +18,7 @@ SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.P
 FROM Application.Channels C
 	INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
 	INNER JOIN Application.Users U ON M.SenderId = U.UserId
-WHERE C.ChannelId = @ChannelId
+WHERE C.ChannelId = @ChannelId AND M.IsDeleted = 0
 ORDER BY M.CreatedOn ASC;
 GO
 
@@ -30,7 +30,7 @@ AS
 SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, M.RecipientId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
 FROM Application.Messages M
 	INNER JOIN Application.Users U ON M.SenderId = U.UserId
-WHERE M.SenderId = @CurrentUserId AND M.RecipientId = @OtherUserId OR M.SenderId = @OtherUserId AND M.RecipientId = @CurrentUserId; 
+WHERE (M.SenderId = @CurrentUserId AND M.RecipientId = @OtherUserId OR M.SenderId = @OtherUserId AND M.RecipientId = @CurrentUserId) AND M.IsDeleted = 0
 GO
 
 -- Get all the messages in a channel that match a given search string
@@ -42,8 +42,8 @@ AS
 SELECT M.MsgId, M.Message, M.SenderId, M.ChannelId, M.RecipientId, M.UpdatedOn, IIF(M.SenderId = @UserId, 1, 0) AS IsMine
 FROM Application.Channels C
 	INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
-WHERE C.ChannelId = @ChannelId
-	AND M.Message LIKE '%' + @Substring + '%'  
+WHERE (C.ChannelId = @ChannelId
+	AND M.Message LIKE '%' + @Substring + '%') AND M.IsDeleted = 0
 GO
 
 -- Get all the messages sent to or from a user that match a given search string
@@ -61,7 +61,7 @@ WITH
 				INNER JOIN Application.Messages ME ON U1.UserId = ME.SenderID OR U1.UserId = RecipientId
 				LEFT JOIN Application.Channels C ON ME.ChannelId = C.ChannelId
 				INNER JOIN Application.Users U2 ON ME.SenderId = U2.UserId
-			WHERE U1.UserId = @UserId
+			WHERE U1.UserId = @UserId AND ME.IsDeleted = 0
 		UNION
 			-- Get all channel messages sent to or from a user
 			SELECT ME.MsgId, ME.Message, ME.UpdatedOn, ME.SenderId, IIF(ME.SenderId = @UserId,IIF(ME.ChannelId IS NULL, ME.RecipientId, ME.ChannelId),IIF(ME.ChannelId IS NULL, ME.SenderId, ME.ChannelId)), IIF(ME.ChannelId IS NULL, 'chat','channel'), U2.FirstName, U2.LastName, U2.ProfilePhoto, IIF(ME.ChannelId IS NULL, U1.FirstName + ' ' + U1.LastName, C.Name) AS [Name]
@@ -70,7 +70,7 @@ WITH
 				INNER JOIN Application.Channels C ON M.GroupId = C.GroupId
 				INNER JOIN Application.Messages ME ON C.ChannelId = ME.ChannelId
 				INNER JOIN Application.Users U2 ON ME.SenderId = U2.UserId
-			WHERE U1.UserId = @UserId
+			WHERE U1.UserId = @UserId AND ME.IsDeleted = 0
 	)
 SELECT *
 FROM AllUserMessagesCte A
@@ -87,7 +87,7 @@ AS
 	FROM Application.Users U1
 		INNER JOIN Application.Messages M ON U1.UserId = M.SenderId
 		INNER JOIN Application.Users U2 ON M.RecipientId = U2.UserId
-	WHERE U1.UserId = @UserId
+	WHERE U1.UserId = @UserId AND M.IsDeleted = 0
 UNION
 	-- Get all direct messages sent to the user
 	SELECT U2.UserId, U2.FirstName, U2.LastName, M.MsgId, M.SenderId, M.RecipientId
@@ -258,7 +258,7 @@ GO
 
 -- Aggregate Query 2 -- Get the activity (by number of messages sent in channels) of all the groups in a given organization (excluding DMs) between the given dates
 CREATE OR ALTER PROCEDURE Application.GetGroupActivity
-	@OrganizationId BIT,
+	@OrganizationId INT,
 	@StartDate DATETIMEOFFSET,
 	@EndDate DATETIMEOFFSET
 AS
@@ -313,3 +313,4 @@ SELECT SUM( IIF(U.Active = 1, 1, 0)) AS NumberOfActiveUsers, SUM(IIF(U.Active = 
 	WHERE O.Active = 0
 ) AS NumberOfInactiveOrgs
 FROM Application.Users U;
+GO
