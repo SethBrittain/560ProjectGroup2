@@ -5,11 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
-import microsoft.sql.DateTimeOffset;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Queue;
-import java.sql.Types;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

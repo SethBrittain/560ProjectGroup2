@@ -10,7 +10,6 @@ FROM
 RETURN 2;
 GO
 
-
 -- Get all the messages in a channel
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
 	@ChannelId INT
@@ -47,8 +46,6 @@ WHERE C.ChannelId = @ChannelId
 	AND M.Message LIKE '%' + @Substring + '%'  
 GO
 
-
--- edit to not have nulls
 -- Get all the messages sent to or from a user that match a given search string
 CREATE OR ALTER PROCEDURE Application.SearchUserMessages
 	@UserId INT,
@@ -80,6 +77,7 @@ FROM AllUserMessagesCte A
 WHERE [Message] LIKE '%' + @Substring + '%'
 ORDER BY UpdatedOn DESC
 GO
+
 -- Get all users who have direct messages with a given user
 CREATE OR ALTER PROCEDURE Application.GetDirectMessageChats
 	@UserId INT
@@ -215,7 +213,11 @@ GO
 CREATE OR ALTER PROCEDURE Application.DeleteMessage
 	@MsgId INT
 AS
-DELETE FROM Application.Messages WHERE MsgId = @MsgId
+SELECT *
+FROM Application.Messages
+UPDATE Application.Messages
+SET [Message] = '', UpdatedOn = SYSDATETIMEOFFSET(), IsDeleted = 1
+WHERE MsgId = @MsgId
 GO
 
 -- Update the given message with the given update string

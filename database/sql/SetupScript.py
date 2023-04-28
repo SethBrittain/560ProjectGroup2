@@ -28,6 +28,7 @@ def partition_script(sql_script: str) -> list:
 
 
 file = open("Tables.sql", "r")
+tables = file.read()
 
 file = open("Functions.sql", "r")
 functions = file.read()
@@ -42,8 +43,7 @@ file = open("Data/PopulateMessages.sql", "r")
 messages = file.read()
 
 setup = """IF SCHEMA_ID(N'Application') IS NULL
-EXEC(N'CREATE SCHEMA [Application];');
-GO
+   EXEC(N'CREATE SCHEMA [Application];');
 
 DROP TABLE IF EXISTS Application.Messages;
 DROP TABLE IF EXISTS Application.Channels;
@@ -54,7 +54,6 @@ DROP TABLE IF EXISTS Application.Organizations;
 DROP FUNCTION IF EXISTS Application.fn_CheckOrganizations
 GO"""
 
-script = setup + tables
 
 conn = pymssql.connect(server='172.17.0.2', user='SA', password='webkinz.com13', database='cohammo')
 cursor = conn.cursor()
