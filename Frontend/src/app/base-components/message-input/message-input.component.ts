@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
+import { ChatService } from 'src/app/services/chat-service.service';
 
 @Component({
   selector: 'app-message-input',
@@ -18,31 +19,17 @@ export class MessageInputComponent implements OnInit {
 
   @ViewChild('sendInput',{static:false}) inputElement : ElementRef | null = null; 
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private messenger : ChatService) { }
 
-  }
-
-  ngOnInit(): void {
-
-
-  }
+  ngOnInit(): void { }
 
   GetVal(event: any) {
     this.message = event?.target.value;
   }
 
   SendMessageHandler() {
-
-    if (this.type == "channel") {
-      this.InsertMessageIntoChannel(this.message, this.channelId);
-    }
-    else {
-      this.InsertDirectMessage(this.message, this.channelId);
-    }
-    console.log(this.inputElement);
+    this.messenger.sendMessage(this.message);
     if (this.inputElement) this.inputElement.nativeElement.value='';
-
-    console.log("SendMessageHandlerHit");
   }
 
   /**
@@ -73,7 +60,6 @@ export class MessageInputComponent implements OnInit {
     form.append("message", message);
     form.append("recipientId", recipientId);
     this.api.put("/InsertDirectMessage", (response) => {
-      console.log(response.data);
     }, (error) => { console.log(error.message); },
       form);
   }
@@ -84,11 +70,8 @@ export class MessageInputComponent implements OnInit {
 
     let form = new FormData();
     form.append("groupId", groupId);
-    console.log(form);
     this.api.put("/GetAllChannelsInGroup", (response) => {
       let fruit: string[][] = response.data;
-      //console.log(response.data);
-      console.log(response.data[5]);
     }, (error) => { console.log(error.message); },
       form);
   }

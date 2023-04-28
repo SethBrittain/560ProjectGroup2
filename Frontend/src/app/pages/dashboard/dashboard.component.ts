@@ -34,11 +34,9 @@ export class DashboardComponent implements OnInit {
     let form = new FormData();
     form.append("startDate", this.startDate);
     form.append("endDate", this.endDate);
-    console.log(form);
 
     this.api.post("/OrganizationsData",
       (response) => {
-        console.log(response.data);
         this.orgData = response.data;
       },
       (error) => { console.log(error.message); },
@@ -54,7 +52,6 @@ export class DashboardComponent implements OnInit {
 
     this.api.post("/GetMonthlyTraffic",
       (response) => {
-        console.log(response.data);
         this.traffic = response.data;
       },
       (error) => { console.log(error.message); },
@@ -66,11 +63,9 @@ export class DashboardComponent implements OnInit {
     let form = new FormData();
     form.append("startDate", this.startDate);
     form.append("endDate", this.endDate);
-    console.log(form);
 
     this.api.post("/GetAppGrowth",
       (response) => {
-        console.log(response.data);
         this.growth = response.data;
       },
       (error) => { console.log(error.message); },

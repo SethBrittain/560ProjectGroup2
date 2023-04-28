@@ -28,7 +28,6 @@ export class HeaderComponent implements OnInit{
     form.append("userId", this.userId);
     this.api.post("/GetProfilePhoto",
       (response) => {
-        console.log(response.data);
         this.firstName = response.data[0].FirstName;
         this.lastName = response.data[0].LastName;
         this.profilePhoto = response.data[0].ProfilePhoto;

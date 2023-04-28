@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
+import { ChatService } from 'src/app/services/chat-service.service';
 
 @Component({
   selector: 'app-chat',
@@ -17,7 +18,7 @@ export class ChatComponent implements OnInit {
   type: any;
   updater : any;
 
-  constructor(private api: ApiService, private route: ActivatedRoute, private _elementRef : ElementRef) { }
+  constructor(private api: ApiService, private route: ActivatedRoute, private chat : ChatService) { }
 
   updateMessages() {
     if (!this.messages) return;
@@ -85,15 +86,16 @@ export class ChatComponent implements OnInit {
 
     let id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
-    //this.GetDirectMessages(id);
-    console.log("this is the type of the control you just clicked: " + this.type);
+    
     if (this.type == "channel") {
       this.GetMessages(id);
       this.GetChannelName(id);
+      if (id) this.chat.connectChannel(Number.parseInt(id));
     }
     else {
       this.GetDirectMessages(id);
       this.GetUserName(id);
+      if (id) this.chat.connectDirect(Number.parseInt(id));
     }
 
     //this.title = this.type + ' ' + id;
@@ -105,11 +107,9 @@ export class ChatComponent implements OnInit {
     // Gets the messages from a channelId
     let form = new FormData();
     form.append("channelId", id);
-    console.log(form);
 
     this.api.post("/GetAllChannelMessages",
       (response) => {
-        console.log(response.data);
         this.messages = response.data;
       },
       (error) => { console.log(error.message); },
@@ -122,10 +122,8 @@ export class ChatComponent implements OnInit {
   GetDirectMessages(userBId: any) {
     let form = new FormData();
     form.append("userBId", userBId)
-    console.log(form);
     this.api.post("/GetDirectMessages",
       (response) => {
-        console.log(response.data);
         this.messages = response.data;
       },
       (error) => { console.log(error.message); },
@@ -141,7 +139,6 @@ export class ChatComponent implements OnInit {
     form.append("channelId", id);
     this.api.post("/GetChannelName",
       (response) => {
-        console.log(response.data);
         this.title = response.data[0].Name;
       },
       (error) => { console.log(error.message); },
@@ -154,13 +151,11 @@ export class ChatComponent implements OnInit {
     form.append("userId", id);
     this.api.post("/GetProfilePhoto",
       (response) => {
-        console.log(response.data);
         this.title = response.data[0].FirstName + ' ' + response.data[0].LastName;
       },
       (error) => { console.log(error.message); },
       form
     );
-    console.log(this.type);
     this.title = this.type + ' ' + this.channelId;
   }
 }

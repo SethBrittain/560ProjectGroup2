@@ -20,12 +20,9 @@ export class ChannelListComponent implements OnInit {
 
   GetAllChannelsOfUser(){
     let form = new FormData();
-     // form.append("", channelId);
-      console.log(form);
 
       this.api.post("/GetAllChannelsOfUser",
         (response) => {
-          console.log(response.data);
           this.channels = response.data;
         },
         (error) => { console.log(error.message); },

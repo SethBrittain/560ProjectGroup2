@@ -21,11 +21,9 @@ export class DmListComponent implements OnInit {
   populateUsers(): void {
     let form = new FormData();
     form.append("organizationId", this.orgId);
-    console.log(form);
 
     this.api.post("/GetAllUsersInOrganization",
       (response) => {
-        console.log(response.data);
         this.users = response.data;
       },
       (error) => { console.log(error.message); },

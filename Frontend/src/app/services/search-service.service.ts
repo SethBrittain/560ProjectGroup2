@@ -21,23 +21,17 @@ export class SearchService implements OnInit{
         )
     }
 
-    ngOnInit(): void {
-        
-    }
+    ngOnInit(): void { }
 
     // asking for string and channel id. 
     // can we just ask for a substring?
     search(term: string): Observable<any> {
-        console.log(term + '2');
 
         let form = new FormData();
         form.append("subString", term);
-        console.log(form);
 
         this.api.post("/SearchUserMessages", 
             (response) => {
-               // console.log("below is the response data");
-               // console.log(response.data);
                 this.searchResult$ = response.data;
                  }, 
             (error) => { console.log(error.message); },
@@ -50,6 +44,5 @@ export class SearchService implements OnInit{
     // triggers the searchResult$ observable and emits the result of the search
     searchFor(term: string): void {
         this.searchSubject.next(term);
-        console.log(term)
     }
 }

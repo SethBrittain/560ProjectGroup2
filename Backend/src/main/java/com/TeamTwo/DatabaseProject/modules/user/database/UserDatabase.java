@@ -13,7 +13,6 @@ import java.util.Queue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.TeamTwo.DatabaseProject.exceptions.ApiException;
-import com.TeamTwo.DatabaseProject.modules.user.controller.ArrayLise;
 
 @Service
 public class UserDatabase {
@@ -559,6 +558,7 @@ public class UserDatabase {
 			PreparedStatement userIdStatement = this.database
 					.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
 			ResultSet rs = userIdStatement.executeQuery();
+			rs.next();
 			return rs.getInt("UserId");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -569,15 +569,11 @@ public class UserDatabase {
 
 	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(String sinceDateTime, int currentUser,
 			int otherUser) {
-		System.out.println(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime,
-				currentUser, otherUser));
 		return this.sendQuery(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime,
 				currentUser, otherUser));
 	}
 
 	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(String sinceDateTime, int channelId) {
-		System.out.println(
-				String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 		return this.sendQuery(
 				String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 	}

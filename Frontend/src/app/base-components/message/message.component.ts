@@ -36,11 +36,9 @@ export class MessageComponent implements OnInit {
   deleteMessage() {
     let form = new FormData();
     form.append("msgId", this.msgId);
-    console.log(form);
 
     this.api.put("/DeleteMessage",
       (response) => {
-        console.log(response.data);
       },
       (error) => { console.log(error.message); },
       form
@@ -53,12 +51,9 @@ export class MessageComponent implements OnInit {
     let form = new FormData();
     form.append("msgId", this.msgId);
     form.append("message", this.message);
-    console.log(form);
 
     this.api.put("/UpdateMessage",
       (response) => {
-        console.log(response.data);
-        //this.message = response.data.Message;
       },
       (error) => { console.log(error.message); },
       form
