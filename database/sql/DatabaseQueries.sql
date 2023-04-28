@@ -227,14 +227,16 @@ GO
 -- Come up with a 2nd one
 
 -- Aggregate Query 3 -- Get the message traffic over a given month or months?
+
 CREATE OR ALTER PROCEDURE Application.GetMonthlyTraffic
 @FirstDate DATETIMEOFFSET,
 @LastDate DATETIMEOFFSET
 AS
 SELECT DATENAME(month, M.CreatedOn) AS MONTH, DATENAME(year,M.CreatedOn) AS YEAR,
-SUM(IIF(M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate,1,0)) AS MessagesSent, 
-RANK() OVER (ORDER BY SUM(IIF(M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate,1,0))DESC) AS Rank
+COUNT(*) AS MessagesSent, 
+RANK() OVER (ORDER BY COUNT(*)DESC) AS Rank
 FROM Application.Messages M
+WHERE M.CreatedOn >= @FirstDate AND M.CreatedOn <= @LastDate
 GROUP BY DATENAME(month, M.CreatedOn), DATENAME(year,M.CreatedOn)
 GO
 
@@ -248,7 +250,8 @@ CREATE OR ALTER PROCEDURE Application.GetAppGrowth
 @StartDate DATETIMEOFFSET,
 @EndDate   DATETIMEOFFSET
 AS
-SELECT SUM( IIF(U.Active = 1 AND U.CreatedOn >= @StartDate AND U.CreatedOn <= @EndDate, 1, 0)) AS NumberOfActiveUsers,SUM(IIF(U.Active = 0 AND U.CreatedOn >= @StartDate AND U.CreatedOn <= @EndDate, 1, 0)) AS NumberOfInactiveUsers,
+SELECT SUM( IIF(U.Active = 1 AND U.CreatedOn >= @StartDate AND U.CreatedOn <= @EndDate, 1, 0)) AS NumberOfActiveUsers,
+SUM(IIF(U.Active = 0 AND U.CreatedOn >= @StartDate AND U.CreatedOn <= @EndDate, 1, 0)) AS NumberOfInactiveUsers,
 (
 	SELECT SUM(IIF(O.CreatedOn >= @StartDate AND O.CreatedOn <= @EndDate,1,0))
 	FROM Application.Organizations O
@@ -303,3 +306,4 @@ EXEC Application.SearchUsersInOrganization "sa", 1;
 SELECT *
 FROM Application.Users U 
 WHERE U.OrganizationId = 1;
+
