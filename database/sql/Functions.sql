@@ -1,4 +1,3 @@
-
 CREATE OR ALTER FUNCTION Application.fn_CheckOrganizations(@UserId INT, @GroupId INT)
 	RETURNS INT
 	AS
@@ -9,3 +8,4 @@ CREATE OR ALTER FUNCTION Application.fn_CheckOrganizations(@UserId INT, @GroupId
 			RETURN 1
 		RETURN 0;
 END;
+GO
