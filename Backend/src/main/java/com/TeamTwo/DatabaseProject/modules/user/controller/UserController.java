@@ -19,47 +19,36 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 @RestController
 public class UserController {
 
-	private UserDatabase database;
-	private ApiConfig auth;
+    private UserDatabase database; 
+    private ApiConfig auth; 
 
-	@Autowired
-	public UserController(UserDatabase database, ApiConfig auth) {
-		this.database = database;
+    @Autowired
+    public UserController(UserDatabase database, ApiConfig auth)
+    {
+        this.database = database;
 		this.auth = auth;
-	}
+    }
 
 	private int GetUserId(String apiKey) {
 		return this.database.GetUserId(apiKey);
 	}
 
-	/**
-	 * An example of how to use the API, returns an ArrayList of Hashtables with
-	 * String-String key-value pairs which are the results of a query to the
-	 * database
-	 * 
-	 * @return ArrayList->Hashtable - UserId, FirstName, Email
-	 */
 	@GetMapping("/api/Example")
 	public ArrayList<Hashtable<String, String>> TestQuery() {
-		String call = "{call Application.Example}";
-		return database.callQueryProcedure(call, 0, null);
+		return database.TestQuery();
 	}
 
-	/*
-	 * /**
+	/**
 	 * Gets all the messages from the given channel
 	 * 
 	 * @param ChannelId The ID number of the channel to get messages from
-	 * 
 	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
-	 * FirstName, LastName, ProfilePhoto
+	 *         FirstName, LastName, ProfilePhoto
 	 */
-	@GetMapping("/api/GetAllChannelMessages")
+	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam int channelId) {
-		String call = "{call Application.GetAllChannelMessages(?)}";
-		Object[] args = { channelId };
-		return database.callQueryProcedure(call, 1, args);
+		return database.GetAllChannelMessages(channelId);
 	}
 
 	/**
@@ -70,14 +59,14 @@ public class UserController {
 	 * @return ArrayList->Hashtables - MsgId, FirstName, LastName, Message,
 	 *         UpdatedOn, SenderId, ProfilePhoto, IsMine
 	 */
+	//NEED TO ADD REQUEST PARAM FOR APIKEY
 	@PostMapping("/api/GetDirectMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetDirectMessages(@RequestParam String apiKey,
-			@RequestParam int userBId) {
+	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId, @RequestParam String apiKey) {
+		// TODO Replace currentUserId with apiKey in parameters
 		int userAId = this.GetUserId(apiKey);
-		String call = "{call GetDirectMessages(?,?)}";
-		Object[] args = { userAId, userBId };
-		return database.callQueryProcedure(call, 2, args);
+		//int userAId = 1065;
+		return database.GetDirectMessages(userAId, userBId);
 	}
 
 	/**
@@ -89,11 +78,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/GetDirectMessageChats")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetDirectMessageChats(@RequestParam String apiKey) {
-		int userId = this.GetUserId(apiKey);
-		String call = "{call GetDirectMessageChats(?)}";
-		Object[] args = { userId };
-		return database.callQueryProcedure(call, 1, args);
+	public ArrayList<Hashtable<String, String>> GetDirectMessageChats(@RequestParam int userId) {
+		// TODO Replace userId with apiKey in parameters
+		return database.GetDirectMessageChats(userId);
 	}
 
 	/**
@@ -104,11 +91,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/GetProfilePhoto")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetProfilePhoto(@RequestParam String apiKey) {
-		int userId = this.GetUserId(apiKey);
-		String call = "{call GetProfilePhoto(?)}";
-		Object[] args = { userId };
-		return database.callQueryProcedure(call, 1, args);
+	public ArrayList<Hashtable<String, String>> GetProfilePhoto(@RequestParam int userId) {
+		// TODO Replace userId with apiKey in parameters
+		return database.GetProfilePhoto(userId);
 	}
 
 	/**
@@ -120,25 +105,21 @@ public class UserController {
 	@PostMapping("/api/GetChannelName")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetChannelName(@RequestParam int channelId) {
-		String call = "{call GetChannelName(?)}";
-		Object[] args = { channelId };
-		return database.callQueryProcedure(call, 2, args);
+		return database.GetChannelName(channelId);
 	}
 
 	/**
 	 * Gets the users in the given organization matching the given search string
 	 * 
+	 * @param substring      The name or email to search for
 	 * @param organizationId The organization to search for
-	 * @param subString      The name or email to search for
 	 * @return ArrayList->Hashtables - UserId, FirstName, LastName, ProfilePhoto
 	 */
 	@PostMapping("/api/SearchUsersInOrganization")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> SearchUsersInOrganization(@RequestParam String organizationId,
-			@RequestParam int subString) {
-		String call = "{call SearchUsersInOrganization(?,?)}";
-		Object[] args = { organizationId, subString };
-		return database.callQueryProcedure(call, 2, args);
+	public ArrayList<Hashtable<String, String>> SearchUsersInOrganization(@RequestParam String subString,
+			@RequestParam int organizationId) {
+		return database.SearchUsersInOrganization(subString, organizationId);
 	}
 
 	/**
@@ -151,12 +132,11 @@ public class UserController {
 	 */
 	@PostMapping("/api/SearchChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam String apiKey,
-			@RequestParam int channelId, @RequestParam String subString) {
-		int userId = this.GetUserId(apiKey);
-		String call = "{call SearchChannelMessages(?,?,?)}";
-		Object[] args = { userId, channelId, subString };
-		return database.callQueryProcedure(call, 3, args);
+	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int channelId, @RequestParam String subString, @RequestParam String apiKey) {
+		// TODO Replace userId with apiKey in parameters
+		 int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
+		return database.SearchChannelMessages(userId, channelId, subString);
 	}
 
 	/**
@@ -168,14 +148,15 @@ public class UserController {
 	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
 	 *         FirstName, LastName, ProfilePhoto, RecipientId, ChannelId, Name
 	 */
+	//NEED TO ADD REQUEST PARAM FOR APIKEY THEN CONVERT TO USER ID
 	@PostMapping("/api/SearchUserMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> SearchUserMessages(@RequestParam String apiKey,
-			@RequestParam String subString) {
+	public ArrayList<Hashtable<String, String>> SearchUserMessages(
+			@RequestParam String subString,@RequestParam String apiKey) {
+		// TODO Replace userId with apiKey in parameters
 		int userId = this.GetUserId(apiKey);
-		String call = "{call SearchUserMessages(?,?)}";
-		Object[] args = { userId, subString };
-		return database.callQueryProcedure(call, 2, args);
+		//int userId = 1065;
+		return database.SearchUserMessages(userId, subString);
 	}
 
 	/**
@@ -187,10 +168,10 @@ public class UserController {
 	@PostMapping("/api/GetAllChannelsOfUser")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser(@RequestParam String apiKey) {
+		// TODO Replace userId with apiKey in parameters
 		int userId = this.GetUserId(apiKey);
-		String call = "{call GetAllChannelsOfUser(?)}";
-		Object[] args = { userId };
-		return database.callQueryProcedure(call, 1, args);
+		//int userId = 1065;
+		return database.GetAllChannelsOfUser(userId);
 	}
 
 	/**
@@ -202,9 +183,7 @@ public class UserController {
 	@PostMapping("/api/GetAllChannelsInOrganization")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllChannelsInOrganization(@RequestParam int organizationId) {
-		String call = "{call GetAllChannelsInOrganization(?)}";
-		Object[] args = { organizationId };
-		return database.callQueryProcedure(call, 1, args);
+		return database.GetAllChannelsInOrganization(organizationId);
 	}
 
 	/**
@@ -216,12 +195,8 @@ public class UserController {
 	@PostMapping("/api/GetAllUsersInOrganization")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAllUsersInOrganization(@RequestParam int organizationId) {
-		String call = "{call GetAllUsersInOrganization(?)}";
-		Object[] args = { organizationId };
-		return database.callQueryProcedure(call, 1, args);
+		return database.GetAllUsersInOrganization(organizationId);
 	}
-
-	// Insertion statement API endpoints
 
 	/**
 	 * Inserts a channel message with the given parameters into the database
@@ -233,12 +208,9 @@ public class UserController {
 	 */
 	@PutMapping("/api/InsertMessageIntoChannel")
 	@ResponseBody
-	public Boolean InsertMessageIntoChannel(@RequestParam String apiKey, @RequestParam int channelId,
-			@RequestParam String message) {
+	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
-		String call = "{call InsertMessageIntoChannel(?,?,?)}";
-		Object[] args = { senderId, channelId, message };
-		return database.callStatementProcedure(call, 3, args);
+		return database.InsertMessageIntoChannel(message, senderId, channelId);
 	}
 
 	/**
@@ -251,29 +223,9 @@ public class UserController {
 	 */
 	@PutMapping("/api/InsertDirectMessage")
 	@ResponseBody
-	public Boolean InsertDirectMessage(@RequestParam String apiKey, @RequestParam int recipientId,
-			@RequestParam String message) {
+	public Boolean InsertDirectMessage( @RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
-		String call = "{call InsertDirectMessage(?,?,?)}";
-		Object[] args = { senderId, recipientId, message };
-		return database.callStatementProcedure(call, 3, args);
-	}
-
-	@PostMapping("/api/GetNewDirectMessages")
-	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(@RequestParam String apiKey,
-			@RequestParam int userBId, @RequestParam String sinceDateTime) {
-		int userId = this.GetUserId(apiKey);
-		String call = "{call GetNewDirectMessage(?,?,?)}";
-		Object[] args = { userId, userBId, sinceDateTime };
-		return database.callQueryProcedure(call, 3, args);
-	}
-
-	@PostMapping("/api/GetNewChannelMessages")
-	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(@RequestParam int channelId,
-			@RequestParam String sinceDateTime) {
-		String call = "{call GetNewChannelMessages(?,?)}";
-		Object[] args = { channelId, sinceDateTime };
-		return database.callQueryProcedure(call, 2, args);
+		return database.InsertDirectMessage(message, senderId, recipientId);
 	}
 
 	/**
@@ -292,9 +244,7 @@ public class UserController {
 	public Boolean InsertNewUser(@RequestParam int organizationId, @RequestParam String email,
 			@RequestParam String firstName, @RequestParam String lastName, @RequestParam String title,
 			@RequestParam String profilePhoto) {
-		String call = "{call InsertNewUser(?,?,?,?,?,?)}";
-		Object[] args = { organizationId, email, firstName, lastName, title, profilePhoto };
-		return database.callStatementProcedure(call, 6, args);
+		return database.InsertNewUser(organizationId, email, firstName, lastName, title, profilePhoto);
 	}
 
 	/**
@@ -306,28 +256,23 @@ public class UserController {
 	@PutMapping("/api/DeleteMessage")
 	@ResponseBody
 	public Boolean DeleteMessage(@RequestParam int msgId) {
-		String call = "{call DeleteMessage(?)}";
-		Object[] args = { msgId };
-		return database.callStatementProcedure(call, 1, args);
+		return database.DeleteMessage(msgId);
 	}
 
 	/**
-	 * Updates the message with the given messageId and new message from the
-	 * database
+	 * Updates the message with the given messageId and new message from the database
 	 * 
-	 * @param msgId   The messageId to delete
+	 * @param msgId The messageId to delete
 	 * @param message The message to update
 	 * @return Boolean - true if the insertion is successful, false otherwise
 	 */
 	@PutMapping("/api/UpdateMessage")
 	@ResponseBody
 	public Boolean UpdateMessage(@RequestParam int msgId, @RequestParam String message) {
-		String call = "{call UpdateMessage(?,?)}";
-		Object[] args = { msgId, message };
-		return database.callStatementProcedure(call, 2, args);
+		return database.UpdateMessage(msgId, message);
 	}
 
-	// Aggregating Query API endpoints
+	// Aggregating Queries
 
 	/**
 	 * Gets data about all organizations in the database
@@ -339,51 +284,7 @@ public class UserController {
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetOrganizationData(@RequestParam String startDate,
 			@RequestParam String endDate) {
-		String call = "{call GetOrganizationData(?,?)}";
-		Object[] args = { startDate, endDate };
-		return database.callQueryProcedure(call, 2, args);
-	}
-
-	@PostMapping("/api/GetGroupActivity")
-	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetGroupActivity(@RequestParam int organizationId,
-			@RequestParam String startDate, @RequestParam String endDate) {
-		String call = "{call Application.GetGroupActivity(?,?,?)}";
-		Object[] args = { organizationId, startDate, endDate };
-		return database.callQueryProcedure(call, 3, args);
-	}
-
-	@PostMapping("/api/GetMonthlyTraffic")
-	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
-			@RequestParam String endDate) {
-		String call = "{call GetMonthlyTraffic(?,?)}";
-		Object[] args = { startDate, endDate };
-		return database.callQueryProcedure(call, 1, args);
-	}
-
-	@PostMapping("/api/GetAppGrowth")
-	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAppGrowth(@RequestParam String startDate,
-			@RequestParam String endDate) {
-		String call = "{call GetAppGrowth(?,?)}";
-		Object[] args = { startDate, endDate };
-		return database.callQueryProcedure(call, 2, args);
-	}
-
-	// API Key methods
-
-	private void SetUserAuthApiKey(String apiKey, String authId) {
-		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
-		try {
-			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s", authId))
-					.header("authorization", String.format("Bearer %s", this.auth.token()))
-					.header("content-type", "application/json")
-					.body(dataBody)
-					.asJson();
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
+		return database.GetOrganizationData(startDate, endDate);
 	}
 
 	@PutMapping("/api/CreateUserOrGetKey")
@@ -394,5 +295,48 @@ public class UserController {
 		Hashtable<String, String> hm = new Hashtable<String, String>();
 		hm.put("ApiKey", apiKey);
 		return hm;
+	}
+
+	private void SetUserAuthApiKey(String apiKey, String authId)
+	{
+		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
+		try {
+			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s",authId))
+				.header("authorization", String.format("Bearer %s",this.auth.token()))
+				.header("content-type", "application/json")
+				.body(dataBody)
+				.asJson();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@PostMapping("/api/GetMonthlyTraffic")
+	@ResponseBody
+	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
+			@RequestParam String endDate) {
+		return database.GetMonthlyTraffic(startDate, endDate);
+	}
+
+	@PostMapping("/api/GetAppGrowth")
+	@ResponseBody
+	public ArrayList<Hashtable<String,String>> GetAppGrowth(@RequestParam String startDate, @RequestParam String endDate){
+		return this.database.GetAppGrowth(startDate, endDate);	
+	}
+
+	@PostMapping("/api/GetNewDirectMessages")
+	public ArrayList<Hashtable<String,String>> GetNewDirectMessages(@RequestParam String sinceDateTime, @RequestParam String apiKey, @RequestParam String otherUserId)
+	{
+		int currentUser = this.GetUserId(apiKey);
+		int otherUserInt = Integer.parseInt(otherUserId);
+		return this.database.GetNewDirectMessages(sinceDateTime, currentUser, otherUserInt);
+	}
+
+	@PostMapping("/api/GetNewChannelMessages")
+	public ArrayList<Hashtable<String,String>> GetNewChannelMessages(@RequestParam String sinceDateTime, @RequestParam String channelId)
+	{
+		int chanId = Integer.parseInt(channelId);
+		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
 	}
 }

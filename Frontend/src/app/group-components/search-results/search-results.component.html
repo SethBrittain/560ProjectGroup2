@@ -1,8 +1,13 @@
 <div class="w-full pb-6">
     <app-search-results-header [title]=title></app-search-results-header>
     <ul class="px-6 pt-36">
+        <p _ngcontent-xhu-c10="" class="space-y-2 px-2 py-4 font-medium tracking-tight text-lg text-gray-700 dark:text-slate-100 leading-6">Messages</p>
         <li *ngFor="let result of searchResults">
             <app-result name="{{result.Name}}"  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Message}}" type="{{result.Type}}" id="{{result.Id}}"  ></app-result>
+        </li>
+        <p _ngcontent-xhu-c10="" class="space-y-2 px-2 py-4 font-medium tracking-tight text-lg text-gray-700 dark:text-slate-100 leading-6">Users</p>
+        <li *ngFor="let result of userResults ">
+            <app-result name="{{result.Name}}"  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Title}}" type="{{result.Type}}" id="{{result.UserId}}"  ></app-result>
         </li>
     </ul>
 </div>

@@ -24,7 +24,7 @@ export class SearchComponent implements OnInit {
 
   search(): void {
     this.router.navigate(['/app/search', this.searchTerm]);
-    this.searchService.searchFor(this.searchTerm);
+    //this.searchService.searchFor(this.searchTerm);
 
     //setTimeout(()=>{
       //window.location.reload();
