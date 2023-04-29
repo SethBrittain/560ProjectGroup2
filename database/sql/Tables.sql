@@ -1,12 +1,10 @@
 CREATE TABLE Application.Organizations
 ( 
     OrganizationId INT IDENTITY(1,1) PRIMARY KEY,
-    [Name] NVARCHAR(64) NOT NULL,
+    [Name] NVARCHAR(64) NOT NULL UNIQUE,
     Active BIT NOT NULL DEFAULT 1,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
-
-    UNIQUE([Name])
 )
 
 CREATE TABLE Application.Users
@@ -42,7 +40,6 @@ CREATE TABLE Application.Memberships
     UserId INT NOT NULL FOREIGN KEY REFERENCES Application.Users(UserId),
 	CreatedOn DATETIMEOFFSET DEFAULT(SYSDATETIMEOFFSET())
 
-    UNIQUE(GroupId, UserId),
 	CONSTRAINT [user_must_not_be_in_group_twice] UNIQUE(GroupId, UserId),
 	CONSTRAINT [user_and_group_must_have_same_organization] CHECK(Application.fn_CheckOrganizations(UserId, GroupId) = 1)
 )

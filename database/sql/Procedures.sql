@@ -1,3 +1,4 @@
+-- Example query for testing
 CREATE OR ALTER PROCEDURE Application.Example
 AS
 SELECT E.UserId, E.FirstName, E.Email
@@ -12,14 +13,28 @@ GO
 
 -- Get all the messages in a channel
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
+	@CurrentUserId INT,
 	@ChannelId INT
 AS
-SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
 FROM Application.Channels C
 	INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
 	INNER JOIN Application.Users U ON M.SenderId = U.UserId
 WHERE C.ChannelId = @ChannelId AND M.IsDeleted = 0
 ORDER BY M.CreatedOn ASC;
+GO
+
+-- Gets new channel messages after the given date
+CREATE PROCEDURE [Application].[GetNewChannelMessages]
+@ChannelId INT,
+@Since DATETIMEOFFSET
+AS 
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.CreatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto
+FROM Application.Messages M
+    INNER JOIN Application.Users U ON M.SenderId = U.UserId
+WHERE ChannelId=@ChannelId 
+AND (M.CreatedOn < SYSDATETIMEOFFSET() AND M.CreatedOn > @Since )
+ORDER BY CreatedOn ASC
 GO
 
 -- Get all direct messages between two given users
@@ -31,6 +46,24 @@ SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, M.RecipientId, U.FirstName, 
 FROM Application.Messages M
 	INNER JOIN Application.Users U ON M.SenderId = U.UserId
 WHERE (M.SenderId = @CurrentUserId AND M.RecipientId = @OtherUserId OR M.SenderId = @OtherUserId AND M.RecipientId = @CurrentUserId) AND M.IsDeleted = 0
+GO
+
+-- Get new direct messages after a given date
+CREATE PROCEDURE [Application].[GetNewDirectMessages]
+	@CurrentUser INT,
+	@UserBId INT,
+	@Since DATETIMEOFFSET
+AS
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.CreatedOn, M.SenderId, M.RecipientId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUser, 1, 0) AS IsMine
+FROM Application.Messages M
+	INNER JOIN Application.Users U ON M.SenderId = U.UserId
+WHERE 
+((M.SenderId = @CurrentUser AND M.RecipientId = @OtherUser)
+	OR
+	(M.SenderId = @OtherUser AND M.RecipientId = @CurrentUser))
+	AND
+	M.CreatedOn > @Since
+ORDER BY M.CreatedOn ASC
 GO
 
 -- Get all the messages in a channel that match a given search string

@@ -28,6 +28,11 @@ public class UserController {
 		this.auth = auth;
 	}
 
+	/**
+	 * Gets the userId that matches the given apiKey
+	 * @param apiKey The apiKey to get the userId for
+	 * @return Int of a userId
+	 */
 	private int GetUserId(String apiKey) {
 		return this.database.GetUserId(apiKey);
 	}
@@ -45,21 +50,19 @@ public class UserController {
 		return database.callQueryProcedure(call, 0, null);
 	}
 
-	/*
-	 * /**
-	 * Gets all the messages from the given channel
-	 * 
-	 * @param ChannelId The ID number of the channel to get messages from
-	 * 
-	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
-	 * FirstName, LastName, ProfilePhoto
+	/**
+	 * Gets all the messages for the given channel
+	 * @param apiKey The apiKey of the user getting the messages
+	 * @param channelId The channel to get messages for
+	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId, FirstName, LastName, ProfilePhoto, IsMine
 	 */
-	@GetMapping("/api/GetAllChannelMessages")
+	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam int channelId) {
-		String call = "{call Application.GetAllChannelMessages(?)}";
-		Object[] args = { channelId };
-		return database.callQueryProcedure(call, 1, args);
+	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam String apiKey, @RequestParam int channelId) {
+		int userId = GetUserId(apiKey);
+		String call = "{call Application.GetAllChannelMessages(?,?)}";
+		Object[] args = { userId, channelId };
+		return database.callQueryProcedure(call, 2, args);
 	}
 
 	/**
@@ -259,6 +262,13 @@ public class UserController {
 		return database.callStatementProcedure(call, 3, args);
 	}
 
+	/**
+	 * Gets new direct messages after the given date between the given users
+	 * @param apiKey The apiKey of the current user to get direct messages for
+	 * @param userBId The userId of the user to get direct messages with for the current user
+	 * @param sinceDateTime Date to check for messages after
+	 * @return ArrayList->Hashtable - MsgId, Message, UpdatedOn, CreatedOn, SenderId, RecipientId, FirstName, LastName, ProfilePhoto, IsMine
+	 */
 	@PostMapping("/api/GetNewDirectMessages")
 	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(@RequestParam String apiKey,
 			@RequestParam int userBId, @RequestParam String sinceDateTime) {
@@ -268,6 +278,12 @@ public class UserController {
 		return database.callQueryProcedure(call, 3, args);
 	}
 
+	/**
+	 * Gets new channel messages after the given date in the given channel
+	 * @param channelId the ID of the channel to get messages for
+	 * @param sinceDateTime Date to check for messages after
+	 * @return ArrayList->Hashtable - MsgId, Message, UpdatedOn, CreatedOn, SenderId, FirstName, LastName, ProfilePhoto
+	 */
 	@PostMapping("/api/GetNewChannelMessages")
 	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(@RequestParam int channelId,
 			@RequestParam String sinceDateTime) {
@@ -279,7 +295,7 @@ public class UserController {
 	/**
 	 * Inserts a new user with the given parameters into the database
 	 * 
-	 * @param orgId        The organization the user is part of
+	 * @param organizationId        The organization the user is part of
 	 * @param email        The email address of the user
 	 * @param firstName    The first name of the user
 	 * @param lastName     The last name of the user
@@ -330,10 +346,10 @@ public class UserController {
 	// Aggregating Query API endpoints
 
 	/**
-	 * Gets data about all organizations in the database
-	 * 
-	 * @return ArrayList<Object> - String OrgName, int ActiveUserCount, int
-	 *         MessageCount
+	 * Gets usage stats about all the organizations in the database between the given dates
+	 * @param startDate The date to start getting stats from
+	 * @param endDate The
+	 * @return
 	 */
 	@PostMapping("/api/OrganizationsData")
 	@ResponseBody
