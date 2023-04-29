@@ -14,13 +14,12 @@ export class MessageComponent implements OnInit {
   @Input() message: string = '';
   @Input() image: string = '';
   @Input() msgId: any = '';
+  @Input() isMine: any;
   aVisible: boolean = false;
   pVisible: boolean = true;
   allVisible: boolean = true;
   editVisible: boolean = false;
-  deleteVisible: boolean = false;
-
-  constructor(private api: ApiService) { }
+comonstructor(private api: ApiService) { }
 
   ngOnInit(): void { }
 
