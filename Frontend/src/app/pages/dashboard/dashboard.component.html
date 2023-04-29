@@ -84,8 +84,8 @@
                 <p class="text-gray-600 dark:text-gray-300 py-1 text-base">Messages Sent</p>
                 <p class="text-gray-600 dark:text-gray-300 py-1 text-base">Highest Sender</p>
             </div>
-            <div class="w-full" *ngFor="let result of traffic">
-                <app-table-row row1="{{result.MONTH}} {{result.YEAR}}" row2="{{result.MessagesSent}}" row3="{{result.Rank}}"></app-table-row>            
+            <div class="w-full" *ngFor="let result of groups">
+                <app-table-row row1="{{result.Name}}" row2="{{result.MessagesSent}}" row3="{{result.HighestSender}}"></app-table-row>            
             </div>            
         </div>
     </div>

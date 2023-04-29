@@ -47,8 +47,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam int channelId) {
-		return database.GetAllChannelMessages(channelId);
+	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam String apiKey,@RequestParam int channelId) {
+		int userId = GetUserId(apiKey);
+		return database.GetAllChannelMessages(userId, channelId);
 	}
 
 	/**
@@ -339,4 +340,14 @@ public class UserController {
 		int chanId = Integer.parseInt(channelId);
 		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
 	}
+
+	@PostMapping("/api/GetGroupActivity")
+	@ResponseBody
+	public ArrayList<Hashtable<String, String>> GetGroupActivity(@RequestParam int organizationId,
+			@RequestParam String startDate, @RequestParam String endDate) {
+		String call = "{call Application.GetGroupActivity(?,?,?)}";
+		Object[] args = { organizationId, startDate, endDate };
+		return database.callQueryProcedure(call, 3, args);
+	}
+	
 }

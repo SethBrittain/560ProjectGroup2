@@ -19,7 +19,8 @@ export class MessageComponent implements OnInit {
   pVisible: boolean = true;
   allVisible: boolean = true;
   editVisible: boolean = false;
-comonstructor(private api: ApiService) { }
+  deleteVisible: boolean = false;
+constructor(private api: ApiService) { }
 
   ngOnInit(): void { }
 

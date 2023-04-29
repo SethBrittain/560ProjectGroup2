@@ -1,5 +1,6 @@
 package com.TeamTwo.DatabaseProject.modules.user.database;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -85,7 +86,7 @@ public class UserDatabase {
 	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
 	 * FirstName, LastName, ProfilePhoto
 	 */
-	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(int channelId) {
+	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(int userId, int channelId) {
 		String query = "EXEC Application.GetAllChannelMessages " + channelId;
 		return sendQuery(query);
 	}
@@ -519,4 +520,51 @@ public class UserDatabase {
 		System.out.println(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 		return this.sendQuery(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 	}
+
+	
+	/**
+	 * Calls the given stored procedure on the database with the given arguments. If
+	 * the call is a query the results of the query are returned
+	 * as an ArrayList of Hashtables with String-String key-value pairs, and an
+	 * empty ArrayList if there are no results for the query.
+	 * An empty ArrayList is also returned if the call is to a stored procedure that
+	 * does not return results.
+	 * 
+	 * @param call   String of the call to make to the database
+	 * @param argNum The number of arguments to pass to the stored procedure
+	 * @param args   The arguments to pass to the stored procedure
+	 * @param query  Whether the stored given stored procedure will return query
+	 *               results
+	 * @return
+	 */
+	public ArrayList<Hashtable<String, String>> callQueryProcedure(String call, int argNum, Object[] args) {
+		ArrayList<Hashtable<String, String>> results = new ArrayList<Hashtable<String, String>>();
+		try (CallableStatement cs = database.prepareCall(call)) {
+			for (int i = 0; i < argNum; i++) {
+				cs.setObject(i + 1, args[i]);
+			}
+			ResultSet rs = cs.executeQuery();
+			if (rs.isBeforeFirst()) {
+				int columns = rs.getMetaData().getColumnCount();
+				while (rs.next()) {
+					Hashtable<String, String> h = new Hashtable<String, String>();
+					results.add(h);
+					for (int j = 1; j <= columns; j++) {
+						String columnName = rs.getMetaData().getColumnName(j);
+						h.put(columnName, rs.getString(j));
+					}
+				}
+				return results;
+			}
+			return results;
+		} catch (SQLException e) {
+			String error = e.toString();
+			System.out.println(error);
+			Hashtable<String, String> h = new Hashtable<String, String>();
+			h.put("Error", error);
+			results.add(h);
+			return results;
+		}
+	}
+
 }

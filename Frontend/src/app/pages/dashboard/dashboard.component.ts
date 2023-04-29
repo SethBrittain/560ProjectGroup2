@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit {
     this.GetOrgData();
     this.GetMonthlyTraffic();
     this.GetGrowthData();
+    this.GetGroupData();
   }
 
   RefreshData(start: HTMLInputElement, end: HTMLInputElement) {
@@ -30,6 +31,7 @@ export class DashboardComponent implements OnInit {
     this.GetOrgData();
     this.GetMonthlyTraffic();
     this.GetGrowthData();
+    this.GetGroupData();
   }
 
   GetOrgData() {
