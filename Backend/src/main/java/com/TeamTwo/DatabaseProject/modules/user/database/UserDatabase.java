@@ -511,12 +511,10 @@ public class UserDatabase {
     }
 
 	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(String sinceDateTime, int currentUser, int otherUser) {
-		System.out.println(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime, currentUser, otherUser));
 		return this.sendQuery(String.format("EXEC Application.GetNewDirectMessages \'%1$s\', %2$d, %3$d", sinceDateTime, currentUser, otherUser));
 	}
 
 	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(String sinceDateTime, int channelId) {
-		System.out.println(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 		return this.sendQuery(String.format("EXEC Application.GetNewChannelMessages \'%1$s\', %2$d", sinceDateTime, channelId));
 	}
 

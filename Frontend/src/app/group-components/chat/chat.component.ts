@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from 'src/app/services/chat-service.service';
@@ -8,7 +8,7 @@ import { ChatService } from 'src/app/services/chat-service.service';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewInit{
+export class ChatComponent implements OnInit, AfterViewInit {
 
   title: any;
   channelId: any = '';
@@ -28,11 +28,15 @@ export class ChatComponent implements OnInit, AfterViewInit{
     this.type = this.route.snapshot.paramMap.get('type');
     //this.GetDirectMessages(id);
     console.log("this is the type of the control you just clicked: " + this.type);
-    if (this.type == "channel") {
-      this.GetMessages(id);
+    if (this.type == "channel" && id) {
+      console.log(Number.parseInt(id));
+      this.chat.connectChannel(Number.parseInt(id));
       this.GetChannelName(id);
+      this.GetMessages(id);
     }
-    else {
+    else if (id) {
+      console.log(Number.parseInt(id));
+      this.chat.connectDirect(Number.parseInt(id));
       this.GetDirectMessages(id);
       this.GetUserName(id);
     }

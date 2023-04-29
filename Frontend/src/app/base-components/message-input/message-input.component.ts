@@ -21,7 +21,14 @@ export class MessageInputComponent implements OnInit {
 
   constructor(private api: ApiService, private messenger : ChatService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    console.log(this.type);
+    if (this.type == 'channel') {
+      this.messenger.connectChannel(Number.parseInt(this.channelId));
+    } else {
+      this.messenger.connectDirect(Number.parseInt(this.channelId));
+    }
+  }
 
   GetVal(event: any) {
     this.message = event?.target.value;
@@ -54,7 +61,6 @@ export class MessageInputComponent implements OnInit {
  * @param senderId sender id
  * @param recipientId recipient id 
  */
-  ///NEED TO PASS API KEY TO USERCONTROLLER
   InsertDirectMessage(message: any, recipientId: any): void {
     let form = new FormData();
     form.append("message", message);

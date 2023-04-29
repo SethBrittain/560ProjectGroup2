@@ -28,13 +28,7 @@ export class SearchResultsComponent implements OnInit {
       this.searchResults = results;
     });
     this.search(term);
-<<<<<<< HEAD
-=======
     this.searchUsers(term,1);
-
-
-
->>>>>>> master
   }
 
   search(term: any) {
