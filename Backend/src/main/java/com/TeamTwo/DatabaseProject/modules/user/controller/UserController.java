@@ -30,6 +30,7 @@ public class UserController {
 
 	/**
 	 * Gets the userId that matches the given apiKey
+	 * 
 	 * @param apiKey The apiKey to get the userId for
 	 * @return Int of a userId
 	 */
@@ -52,13 +53,16 @@ public class UserController {
 
 	/**
 	 * Gets all the messages for the given channel
-	 * @param apiKey The apiKey of the user getting the messages
+	 * 
+	 * @param apiKey    The apiKey of the user getting the messages
 	 * @param channelId The channel to get messages for
-	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId, FirstName, LastName, ProfilePhoto, IsMine
+	 * @return ArrayList->Hashtables - MsgId, Message, UpdatedOn, SenderId,
+	 *         FirstName, LastName, ProfilePhoto, IsMine
 	 */
 	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam String apiKey, @RequestParam int channelId) {
+	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam String apiKey,
+			@RequestParam int channelId) {
 		int userId = GetUserId(apiKey);
 		String call = "{call Application.GetAllChannelMessages(?,?)}";
 		Object[] args = { userId, channelId };
@@ -264,10 +268,14 @@ public class UserController {
 
 	/**
 	 * Gets new direct messages after the given date between the given users
-	 * @param apiKey The apiKey of the current user to get direct messages for
-	 * @param userBId The userId of the user to get direct messages with for the current user
+	 * 
+	 * @param apiKey        The apiKey of the current user to get direct messages
+	 *                      for
+	 * @param userBId       The userId of the user to get direct messages with for
+	 *                      the current user
 	 * @param sinceDateTime Date to check for messages after
-	 * @return ArrayList->Hashtable - MsgId, Message, UpdatedOn, CreatedOn, SenderId, RecipientId, FirstName, LastName, ProfilePhoto, IsMine
+	 * @return ArrayList->Hashtable - MsgId, Message, UpdatedOn, CreatedOn,
+	 *         SenderId, RecipientId, FirstName, LastName, ProfilePhoto, IsMine
 	 */
 	@PostMapping("/api/GetNewDirectMessages")
 	public ArrayList<Hashtable<String, String>> GetNewDirectMessages(@RequestParam String apiKey,
@@ -280,9 +288,11 @@ public class UserController {
 
 	/**
 	 * Gets new channel messages after the given date in the given channel
-	 * @param channelId the ID of the channel to get messages for
+	 * 
+	 * @param channelId     the ID of the channel to get messages for
 	 * @param sinceDateTime Date to check for messages after
-	 * @return ArrayList->Hashtable - MsgId, Message, UpdatedOn, CreatedOn, SenderId, FirstName, LastName, ProfilePhoto
+	 * @return ArrayList->Hashtable - MsgId, Message, UpdatedOn, CreatedOn,
+	 *         SenderId, FirstName, LastName, ProfilePhoto
 	 */
 	@PostMapping("/api/GetNewChannelMessages")
 	public ArrayList<Hashtable<String, String>> GetNewChannelMessages(@RequestParam int channelId,
@@ -295,12 +305,12 @@ public class UserController {
 	/**
 	 * Inserts a new user with the given parameters into the database
 	 * 
-	 * @param organizationId        The organization the user is part of
-	 * @param email        The email address of the user
-	 * @param firstName    The first name of the user
-	 * @param lastName     The last name of the user
-	 * @param title        The job title of the user
-	 * @param profilePhoto The profile photo of the user
+	 * @param organizationId The organization the user is part of
+	 * @param email          The email address of the user
+	 * @param firstName      The first name of the user
+	 * @param lastName       The last name of the user
+	 * @param title          The job title of the user
+	 * @param profilePhoto   The profile photo of the user
 	 * @return Boolean - true if the insertion is successful, false otherwise
 	 */
 	@PutMapping("/api/InsertNewUser")
@@ -346,10 +356,12 @@ public class UserController {
 	// Aggregating Query API endpoints
 
 	/**
-	 * Gets usage stats about all the organizations in the database between the given dates
+	 * Gets usage stats about all the organizations in the database between the
+	 * given dates
+	 * 
 	 * @param startDate The date to start getting stats from
-	 * @param endDate The
-	 * @return
+	 * @param endDate   The date to stop getting stats after
+	 * @return ArrayList->Hashtable - Name, ActiveUserCount, MessageCount
 	 */
 	@PostMapping("/api/OrganizationsData")
 	@ResponseBody
@@ -360,6 +372,15 @@ public class UserController {
 		return database.callQueryProcedure(call, 2, args);
 	}
 
+	/**
+	 * Gets activity of all the active groups for the given organization between the
+	 * given dates
+	 * 
+	 * @param organizationId The ID of the organization to get data for
+	 * @param startDate      The date to start getting activity from
+	 * @param endDate        The date to stop getting activity after
+	 * @return ArrayList->Hashtable - GroupId, Name, MessagesSent, HighestSender
+	 */
 	@PostMapping("/api/GetGroupActivity")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetGroupActivity(@RequestParam int organizationId,
@@ -369,6 +390,14 @@ public class UserController {
 		return database.callQueryProcedure(call, 3, args);
 	}
 
+	/**
+	 * Get the traffic, organized into months, of the application based on messages
+	 * sent between the given dates
+	 * 
+	 * @param startDate The date to start getting traffic from
+	 * @param endDate   The date to stop getting traffic from
+	 * @return ArrayList->Hashtable - Month, Year, MessagesSent, Rank
+	 */
 	@PostMapping("/api/GetMonthlyTraffic")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
@@ -378,6 +407,15 @@ public class UserController {
 		return database.callQueryProcedure(call, 1, args);
 	}
 
+	/**
+	 * Gets the growth of the application based on number of messages sent between
+	 * the given dates
+	 * 
+	 * @param startDate The date to start getting traffic from
+	 * @param endDate   The date to stop getting traffic after
+	 * @return ArrayList->Hashtable - NumberOfActiveUsers, NumberOfInactiveUsers,
+	 *         NumberOfActiveOrgs
+	 */
 	@PostMapping("/api/GetAppGrowth")
 	@ResponseBody
 	public ArrayList<Hashtable<String, String>> GetAppGrowth(@RequestParam String startDate,
@@ -404,7 +442,8 @@ public class UserController {
 
 	@PutMapping("/api/CreateUserOrGetKey")
 	@ResponseBody
-	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
+	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress,
+			@RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
 		String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName, "");
 		this.SetUserAuthApiKey(apiKey, authId);
 		Hashtable<String, String> hm = new Hashtable<String, String>();

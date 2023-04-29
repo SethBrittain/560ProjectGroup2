@@ -319,7 +319,7 @@ CREATE OR ALTER PROCEDURE Application.GetMonthlyTraffic
 	@FirstDate DATETIMEOFFSET,
 	@LastDate DATETIMEOFFSET
 AS
-SELECT DATENAME(month, M.CreatedOn) AS [Month], DATENAME(year,M.CreatedOn) AS [Year],
+SELECT DATENAME(month, M.CreatedOn) AS [Month], DATENAME(year, M.CreatedOn) AS [Year],
 	Count(*) AS MessagesSent,
 	RANK() OVER (ORDER BY COUNT(*) DESC) AS Rank
 FROM Application.Messages M
@@ -329,7 +329,6 @@ GROUP BY DATENAME(month, M.CreatedOn), DATENAME(year,M.CreatedOn)
 GO
 
 -- Aggregate Query 4 -- get the growth of users from a given date and over a given number of months
-
 CREATE OR ALTER PROCEDURE Application.GetAppGrowth
 	@StartDate DATETIMEOFFSET,
 	@EndDate   DATETIMEOFFSET
