@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from 'src/app/services/chat-service.service';
@@ -8,18 +8,50 @@ import { ChatService } from 'src/app/services/chat-service.service';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewInit{
 
   title: any;
   channelId: any = '';
-  messages: any[] = [
-
-  ];
+  messages: any[] = [];
   type: any;
   updater : any;
+  @ViewChild('scrollContent') content: any;
 
   constructor(private api: ApiService, private route: ActivatedRoute, private chat : ChatService) { }
 
+  /**
+   * Initializes the component
+   */
+  ngOnInit(): void {
+
+    let id = this.route.snapshot.paramMap.get('id');
+    this.type = this.route.snapshot.paramMap.get('type');
+    //this.GetDirectMessages(id);
+    console.log("this is the type of the control you just clicked: " + this.type);
+    if (this.type == "channel") {
+      this.GetMessages(id);
+      this.GetChannelName(id);
+    }
+    else {
+      this.GetDirectMessages(id);
+      this.GetUserName(id);
+    }
+
+    this.channelId = id;
+    this.updater = setInterval(()=>{this.updateMessages()}, 1000);
+  }
+
+  /**
+   * Scrolls to the bottom of the page upon load
+   */
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+  }
+
+  /**
+   * Updates a message
+   * @returns 
+   */
   updateMessages() {
     if (!this.messages) return;
     let data = new FormData();
@@ -66,6 +98,7 @@ export class ChatComponent implements OnInit {
       }, (error)=>{
         console.log(error);
       }, data);
+      this.scrollToBottom();
     }
 
     // this.messages.push({
@@ -82,27 +115,10 @@ export class ChatComponent implements OnInit {
     // console.log("added");
   }
 
-  ngOnInit(): void {
-
-    let id = this.route.snapshot.paramMap.get('id');
-    this.type = this.route.snapshot.paramMap.get('type');
-    
-    if (this.type == "channel") {
-      this.GetMessages(id);
-      this.GetChannelName(id);
-      if (id) this.chat.connectChannel(Number.parseInt(id));
-    }
-    else {
-      this.GetDirectMessages(id);
-      this.GetUserName(id);
-      if (id) this.chat.connectDirect(Number.parseInt(id));
-    }
-
-    //this.title = this.type + ' ' + id;
-    this.channelId = id;
-    this.updater = setInterval(()=>{this.updateMessages()}, 1000);
-  }
-
+  /**
+   * Gets the messages from a channel
+   * @param id The channel Id
+   */
   GetMessages(id: any) {
     // Gets the messages from a channelId
     let form = new FormData();
@@ -117,8 +133,11 @@ export class ChatComponent implements OnInit {
     );
   }
 
-  // Gets the messages from a userId
-  // THIS QUERY NEEDS FIXING (DEPENDENT ON USERID)
+  /**
+   * Gets messages between the current user
+   * and a specified user
+   * @param userBId The userId of the recipient
+   */
   GetDirectMessages(userBId: any) {
     let form = new FormData();
     form.append("userBId", userBId)
@@ -146,6 +165,10 @@ export class ChatComponent implements OnInit {
     );
   }
 
+  /**
+   * Gets the user name from a specified Id
+   * @param id The user id to get user info
+   */
   GetUserName(id: any) {
     let form = new FormData();
     form.append("userId", id);
@@ -157,6 +180,13 @@ export class ChatComponent implements OnInit {
       form
     );
     this.title = this.type + ' ' + this.channelId;
+  }
+
+  /**
+   * Scrolls to the bottom of the chat frame
+   */
+  scrollToBottom() { 
+    this.content.scrollTop = this.content.scrollHeight;
   }
 }
 

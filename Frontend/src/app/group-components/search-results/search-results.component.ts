@@ -14,6 +14,7 @@ export class SearchResultsComponent implements OnInit {
 
   //searchResults = this.searchService.searchResult$; // gets the results from the service
   searchResults: any;
+  userResults : any;
   title: string | null = ''; // this title shown in the header
   constructor(private searchService: SearchService, private route: ActivatedRoute, private router: Router, private api: ApiService) { }
 
@@ -27,6 +28,13 @@ export class SearchResultsComponent implements OnInit {
       this.searchResults = results;
     });
     this.search(term);
+<<<<<<< HEAD
+=======
+    this.searchUsers(term,1);
+
+
+
+>>>>>>> master
   }
 
   search(term: any) {
@@ -41,6 +49,28 @@ export class SearchResultsComponent implements OnInit {
       form
     );
   }
+
+  
+  searchUsers(term: any, organizationId : any) {
+    console.log(term + '2');
+
+    let form = new FormData();
+    form.append("subString", term);
+    form.append("organizationId", organizationId);
+    console.log(form);
+
+    this.api.post("/SearchUsersInOrganization",
+      (response) => {
+        // console.log("below is the response data");
+        // console.log(response.data);
+        this.userResults = response.data;
+      },
+      (error) => { console.log(error.message); },
+      form
+    );
+  }
+
+  
 
 
 

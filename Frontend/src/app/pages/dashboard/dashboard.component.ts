@@ -8,11 +8,13 @@ import { ApiService } from 'src/app/services/api-service.service';
 })
 export class DashboardComponent implements OnInit {
 
+  orgId: string = '1'; // HARD CODED
   startDate: string = '2022-01-01';
   endDate: string = '2023-01-01';
   orgData: any[] = [];
   traffic: any[] = [];
   growth: any[] = [];
+  groups: any[] = [];
 
   constructor(private api: ApiService) { }
 
@@ -20,6 +22,7 @@ export class DashboardComponent implements OnInit {
     this.GetOrgData();
     this.GetMonthlyTraffic();
     this.GetGrowthData();
+    this.GetGroupData();
   }
 
   RefreshData(start: HTMLInputElement, end: HTMLInputElement) {
@@ -28,6 +31,7 @@ export class DashboardComponent implements OnInit {
     this.GetOrgData();
     this.GetMonthlyTraffic();
     this.GetGrowthData();
+    this.GetGroupData();
   }
 
   GetOrgData() {
@@ -67,6 +71,23 @@ export class DashboardComponent implements OnInit {
     this.api.post("/GetAppGrowth",
       (response) => {
         this.growth = response.data;
+      },
+      (error) => { console.log(error.message); },
+      form
+    );
+  }
+
+  GetGroupData() {
+    let form = new FormData();
+    form.append("organizationId", this.orgId)
+    form.append("startDate", this.startDate);
+    form.append("endDate", this.endDate);
+    console.log(form);
+
+    this.api.post("/GetGroupActivity",
+      (response) => {
+        console.log(response.data);
+        this.groups = response.data;
       },
       (error) => { console.log(error.message); },
       form

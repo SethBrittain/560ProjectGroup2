@@ -33,14 +33,9 @@ public class UserController {
 		return this.database.GetUserId(apiKey);
 	}
 
-	/**
-	 * An example of how to use the API, returns an ArrayList of Hashtables with String-String key-value pairs which are the results of a query to the database
-	 * @return ArrayList->Hashtable - UserId, FirstName, Email
-	 */
 	@GetMapping("/api/Example")
 	public ArrayList<Hashtable<String, String>> TestQuery() {
-		String call = "{call Application.Example}";
-		return database.callProcedure(call, 0, null);
+		return database.TestQuery();
 	}
 
 	/**
@@ -52,8 +47,9 @@ public class UserController {
 	 */
 	@PostMapping("/api/GetAllChannelMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam int channelId) {
-		return database.GetAllChannelMessages(channelId);
+	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(@RequestParam String apiKey,@RequestParam int channelId) {
+		int userId = GetUserId(apiKey);
+		return database.GetAllChannelMessages(userId, channelId);
 	}
 
 	/**
@@ -64,11 +60,13 @@ public class UserController {
 	 * @return ArrayList->Hashtables - MsgId, FirstName, LastName, Message,
 	 *         UpdatedOn, SenderId, ProfilePhoto, IsMine
 	 */
+	//NEED TO ADD REQUEST PARAM FOR APIKEY
 	@PostMapping("/api/GetDirectMessages")
 	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetDirectMessages(@RequestParam int userBId, @RequestParam String apiKey) {
+	public ArrayList<Hashtable<String, String>> GetDirectMessages(	@RequestParam int userBId, @RequestParam String apiKey) {
 		// TODO Replace currentUserId with apiKey in parameters
 		int userAId = this.GetUserId(apiKey);
+		//int userAId = 1065;
 		return database.GetDirectMessages(userAId, userBId);
 	}
 
@@ -138,6 +136,7 @@ public class UserController {
 	public ArrayList<Hashtable<String, String>> SearchChannelMessages(@RequestParam int channelId, @RequestParam String subString, @RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
 		 int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
 		return database.SearchChannelMessages(userId, channelId, subString);
 	}
 
@@ -157,6 +156,7 @@ public class UserController {
 			@RequestParam String subString,@RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
 		int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
 		return database.SearchUserMessages(userId, subString);
 	}
 
@@ -171,6 +171,7 @@ public class UserController {
 	public ArrayList<Hashtable<String, String>> GetAllChannelsOfUser(@RequestParam String apiKey) {
 		// TODO Replace userId with apiKey in parameters
 		int userId = this.GetUserId(apiKey);
+		//int userId = 1065;
 		return database.GetAllChannelsOfUser(userId);
 	}
 
@@ -197,9 +198,6 @@ public class UserController {
 	public ArrayList<Hashtable<String, String>> GetAllUsersInOrganization(@RequestParam int organizationId) {
 		return database.GetAllUsersInOrganization(organizationId);
 	}
-
-
-	// Insertion statement API endpoints
 
 	/**
 	 * Inserts a channel message with the given parameters into the database
@@ -229,21 +227,6 @@ public class UserController {
 	public Boolean InsertDirectMessage( @RequestParam String message, @RequestParam int recipientId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
 		return database.InsertDirectMessage(message, senderId, recipientId);
-	}
-
-	@PostMapping("/api/GetNewDirectMessages")
-	public ArrayList<Hashtable<String,String>> GetNewDirectMessages(@RequestParam String sinceDateTime, @RequestParam String apiKey, @RequestParam String otherUserId)
-	{
-		int currentUser = this.GetUserId(apiKey);
-		int otherUserInt = Integer.parseInt(otherUserId);
-		return this.database.GetNewDirectMessages(sinceDateTime, currentUser, otherUserInt);
-	}
-
-	@PostMapping("/api/GetNewChannelMessages")
-	public ArrayList<Hashtable<String,String>> GetNewChannelMessages(@RequestParam String sinceDateTime, @RequestParam String channelId)
-	{
-		int chanId = Integer.parseInt(channelId);
-		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
 	}
 
 	/**
@@ -290,8 +273,7 @@ public class UserController {
 		return database.UpdateMessage(msgId, message);
 	}
 
-
-	// Aggregating Query API endpoints
+	// Aggregating Queries
 
 	/**
 	 * Gets data about all organizations in the database
@@ -316,22 +298,6 @@ public class UserController {
 		return hm;
 	}
 
-	@PostMapping("/api/GetMonthlyTraffic")
-	@ResponseBody
-	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
-			@RequestParam String endDate) {
-		return database.GetMonthlyTraffic(startDate, endDate);
-	}
-
-	@PostMapping("/api/GetAppGrowth")
-	@ResponseBody
-	public ArrayList<Hashtable<String,String>> GetAppGrowth(@RequestParam String startDate, @RequestParam String endDate){
-		return this.database.GetAppGrowth(startDate, endDate);	
-	}
-
-
-	// API Key methods
-
 	private void SetUserAuthApiKey(String apiKey, String authId)
 	{
 		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
@@ -345,4 +311,43 @@ public class UserController {
 			e.printStackTrace();
 		}
 	}
+
+
+	@PostMapping("/api/GetMonthlyTraffic")
+	@ResponseBody
+	public ArrayList<Hashtable<String, String>> GetMonthlyTraffic(@RequestParam String startDate,
+			@RequestParam String endDate) {
+		return database.GetMonthlyTraffic(startDate, endDate);
+	}
+
+	@PostMapping("/api/GetAppGrowth")
+	@ResponseBody
+	public ArrayList<Hashtable<String,String>> GetAppGrowth(@RequestParam String startDate, @RequestParam String endDate){
+		return this.database.GetAppGrowth(startDate, endDate);	
+	}
+
+	@PostMapping("/api/GetNewDirectMessages")
+	public ArrayList<Hashtable<String,String>> GetNewDirectMessages(@RequestParam String sinceDateTime, @RequestParam String apiKey, @RequestParam String otherUserId)
+	{
+		int currentUser = this.GetUserId(apiKey);
+		int otherUserInt = Integer.parseInt(otherUserId);
+		return this.database.GetNewDirectMessages(sinceDateTime, currentUser, otherUserInt);
+	}
+
+	@PostMapping("/api/GetNewChannelMessages")
+	public ArrayList<Hashtable<String,String>> GetNewChannelMessages(@RequestParam String sinceDateTime, @RequestParam String channelId)
+	{
+		int chanId = Integer.parseInt(channelId);
+		return this.database.GetNewChannelMessages(sinceDateTime, chanId);
+	}
+
+	@PostMapping("/api/GetGroupActivity")
+	@ResponseBody
+	public ArrayList<Hashtable<String, String>> GetGroupActivity(@RequestParam int organizationId,
+			@RequestParam String startDate, @RequestParam String endDate) {
+		String call = "{call Application.GetGroupActivity(?,?,?)}";
+		Object[] args = { organizationId, startDate, endDate };
+		return database.callQueryProcedure(call, 3, args);
+	}
+	
 }

@@ -2,7 +2,7 @@ CREATE TABLE Application.Organizations
 ( 
     OrganizationId INT IDENTITY(1,1) PRIMARY KEY,
     [Name] NVARCHAR(64) NOT NULL,
-    Active BIT NOT NULL,
+    Active BIT NOT NULL DEFAULT 1,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
 
@@ -13,7 +13,7 @@ CREATE TABLE Application.Users
 (
     UserId INT IDENTITY(1,1) PRIMARY KEY,
 	OrganizationId INT NOT NULL FOREIGN KEY REFERENCES Application.Organizations(OrganizationId),
-    Email NVARCHAR(128) NOT NULL,
+    Email NVARCHAR(128) NOT NULL UNIQUE,
 	FirstName NVARCHAR(64) NOT NULL,
     LastName NVARCHAR(64) NOT NULL,
     Title NVARCHAR(64),
@@ -22,8 +22,6 @@ CREATE TABLE Application.Users
     ApiKey VARBINARY(max) DEFAULT (HASHBYTES('SHA2_256', SUBSTRING(CAST (NEWID() AS nvarchar(36)), 1, 32))) NOT NULL,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
-
-    UNIQUE(Email)
 )
 
  CREATE TABLE Application.Groups
@@ -31,7 +29,7 @@ CREATE TABLE Application.Users
     GroupId INT IDENTITY(1,1) PRIMARY KEY,
     OrganizationId INT NOT NULL FOREIGN KEY REFERENCES Application.Organizations(OrganizationId),
 	[Name] NVARCHAR(64) NOT NULL,
-    Active BIT NOT NULL,
+    Active BIT NOT NULL DEFAULT 1,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET())
 
@@ -40,9 +38,9 @@ CREATE TABLE Application.Users
 
 CREATE TABLE Application.Memberships
 (
-    MembershipId INT IDENTITY(1,1) PRIMARY KEY,
     GroupId INT NOT NULL FOREIGN KEY REFERENCES Application.Groups(GroupId),
     UserId INT NOT NULL FOREIGN KEY REFERENCES Application.Users(UserId),
+	CreatedOn DATETIMEOFFSET DEFAULT(SYSDATETIMEOFFSET())
 
     UNIQUE(GroupId, UserId),
 	CONSTRAINT [user_must_not_be_in_group_twice] UNIQUE(GroupId, UserId),
@@ -69,7 +67,8 @@ CREATE TABLE Application.Messages
     [Message] NVARCHAR(512) NOT NULL,
     CreatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
     UpdatedOn DATETIMEOFFSET NOT NULL DEFAULT(SYSDATETIMEOFFSET()),
+	IsDeleted BIT NOT NULL DEFAULT 0,
     
-	CONSTRAINT [check_only_one_recipient] CHECK(
+	CONSTRAINT [must_have_exactly_one_receiver] CHECK(
 		Messages.RecipientId IS NULL AND Messages.ChannelId IS NOT NULL OR Messages.ChannelId IS NULL AND Messages.RecipientId IS NOT NULL)
 )

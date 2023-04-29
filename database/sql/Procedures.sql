@@ -7,8 +7,8 @@ FROM
 		(1, N'Joe', N'Cool', N'joecool@ksu.edu'),
 		(2, N'Jill', N'Cool', N'jillcool@ksu.edu')
 	) E(UserId, FirstName, LastName, Email)
+RETURN 2;
 GO
-
 
 -- Get all the messages in a channel
 CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
@@ -37,7 +37,7 @@ GO
 CREATE OR ALTER PROCEDURE Application.SearchChannelMessages
 	@UserId INT,
 	@ChannelId INT,
-	@Substring NVARCHAR(512)
+	@SubString NVARCHAR(512)
 AS
 SELECT M.MsgId, M.Message, M.SenderId, M.ChannelId, M.RecipientId, M.UpdatedOn, IIF(M.SenderId = @UserId, 1, 0) AS IsMine
 FROM Application.Channels C
@@ -46,8 +46,6 @@ WHERE C.ChannelId = @ChannelId
 	AND M.Message LIKE '%' + @Substring + '%'  
 GO
 
-
--- edit to not have nulls
 -- Get all the messages sent to or from a user that match a given search string
 CREATE OR ALTER PROCEDURE Application.SearchUserMessages
 	@UserId INT,
@@ -79,6 +77,7 @@ FROM AllUserMessagesCte A
 WHERE [Message] LIKE '%' + @Substring + '%'
 ORDER BY UpdatedOn DESC
 GO
+
 -- Get all users who have direct messages with a given user
 CREATE OR ALTER PROCEDURE Application.GetDirectMessageChats
 	@UserId INT
@@ -118,8 +117,8 @@ GO
 
 -- Get all the users in an organization that match a given search string
 CREATE OR ALTER PROCEDURE Application.SearchUsersInOrganization
-	@Substring INT,
-	@OrganizationId INT
+	@OrganizationId INT,
+	@SubString NVARCHAR(128)
 AS
 SELECT U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
 FROM Application.Users U
@@ -162,9 +161,9 @@ GO
 
 -- Insert a channel message
 CREATE OR ALTER PROCEDURE Application.InsertMessageIntoChannel
-	@Message NVARCHAR(128),
 	@SenderId INT,
-	@ChannelId INT
+	@ChannelId INT,
+	@Message NVARCHAR(128)
 AS
 INSERT INTO Application.Messages
 	([Message], SenderId, ChannelId)
@@ -174,9 +173,9 @@ GO
 
 -- Insert a direct message
 CREATE OR ALTER PROCEDURE Application.InsertDirectMessage
-	@Message NVARCHAR(128),
 	@SenderId INT,
-	@RecipientId INT
+	@RecipientId INT,
+	@Message NVARCHAR(128)
 AS
 INSERT INTO Application.Messages
 	([Message], SenderId, RecipientId)
@@ -214,7 +213,11 @@ GO
 CREATE OR ALTER PROCEDURE Application.DeleteMessage
 	@MsgId INT
 AS
-DELETE FROM Application.Messages WHERE MsgId = @MsgId
+SELECT *
+FROM Application.Messages
+UPDATE Application.Messages
+SET [Message] = '', UpdatedOn = SYSDATETIMEOFFSET(), IsDeleted = 1
+WHERE MsgId = @MsgId
 GO
 
 -- Update the given message with the given update string
@@ -242,20 +245,20 @@ GO
 
 -- Aggregate Query 1
 CREATE OR ALTER PROCEDURE Application.GetOrganizationData
-	@FirstDate DATETIMEOFFSET,
-	@LastDate DATETIMEOFFSET
+	@StartDate DATETIMEOFFSET,
+	@EndDate DATETIMEOFFSET
 AS
 SELECT O.Name, Count(DISTINCT IIF(U.Active = 1, U.UserId, NULL)) AS ActiveUserCount, Count(M.MsgId) AS MessageCount
 FROM Application.Organizations O
 	INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
 	LEFT JOIN Application.Messages M ON M.SenderId = U.UserId
-WHERE M.CreatedOn BETWEEN @FirstDate AND @LastDate
+WHERE M.CreatedOn BETWEEN @StartDate AND @EndDate
 GROUP BY O.Name
 GO
 
 -- Aggregate Query 2 -- Get the activity (by number of messages sent in channels) of all the groups in a given organization (excluding DMs) between the given dates
 CREATE OR ALTER PROCEDURE Application.GetGroupActivity
-	@OrganizationId INT,
+	@OrganizationId BIT,
 	@StartDate DATETIMEOFFSET,
 	@EndDate DATETIMEOFFSET
 AS
