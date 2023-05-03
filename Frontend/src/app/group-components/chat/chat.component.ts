@@ -19,30 +19,37 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   constructor(private api: ApiService, private route: ActivatedRoute, private chat : ChatService) { }
 
+  private self = this;
+
   /**
    * Initializes the component
    */
   ngOnInit(): void {
-
     let id = this.route.snapshot.paramMap.get('id');
     this.type = this.route.snapshot.paramMap.get('type');
-    //this.GetDirectMessages(id);
-    console.log("this is the type of the control you just clicked: " + this.type);
+
     if (this.type == "channel" && id) {
       console.log(Number.parseInt(id));
-      this.chat.connectChannel(Number.parseInt(id));
+      this.chat.connectChannel(Number.parseInt(id), (message)=>{this.handleMessage(message)});
       this.GetChannelName(id);
       this.GetMessages(id);
     }
     else if (id) {
       console.log(Number.parseInt(id));
-      this.chat.connectDirect(Number.parseInt(id));
+      this.chat.connectDirect(Number.parseInt(id), this.handleMessage);
       this.GetDirectMessages(id);
       this.GetUserName(id);
     }
 
     this.channelId = id;
-    this.updater = setInterval(()=>{this.updateMessages()}, 1000);
+    this.messages.push({ Message: "ksaljdfhlaskdjfhaslkdjfhaslkdjf", FirstName: "Seth", IsMine: "1", UpdatedOn: "2023-05-03 03:50:50.2756961 -05:00", LastName: "Brittain", SenderId: "1008", ProfilePhoto: "https://lh3.googleusercontent.com/a/AGNmyxZBpOieSYZ82ut6S-weSzCZjv5OrSNL6SnJpOIkAw=s96-c", MsgId: "7821" });
+  }
+
+  handleMessage(message : MessageEvent<any>)
+  {
+    console.log(this.messages);
+    console.log(JSON.parse(message.data));
+    this.messages.push(message);
   }
 
   /**

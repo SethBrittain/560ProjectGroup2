@@ -21,14 +21,7 @@ export class MessageInputComponent implements OnInit {
 
   constructor(private api: ApiService, private messenger : ChatService) { }
 
-  ngOnInit(): void {
-    console.log(this.type);
-    if (this.type == 'channel') {
-      this.messenger.connectChannel(Number.parseInt(this.channelId));
-    } else {
-      this.messenger.connectDirect(Number.parseInt(this.channelId));
-    }
-  }
+  ngOnInit(): void { }
 
   GetVal(event: any) {
     this.message = event?.target.value;

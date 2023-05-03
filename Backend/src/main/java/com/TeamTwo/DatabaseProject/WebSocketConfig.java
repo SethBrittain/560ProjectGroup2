@@ -2,6 +2,7 @@ package com.TeamTwo.DatabaseProject;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.*;
@@ -14,9 +15,19 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
+
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
+
+    private UserDatabase database;
+
+    @Autowired
+    public WebSocketConfig(UserDatabase db)
+    {
+        this.database = db;
+    }
 
     private HandshakeInterceptor DirectMessageInterceptor() {
         return new HandshakeInterceptor() {
@@ -54,12 +65,15 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 WebSocketHandler webSocketHandler,
                 Map<String, Object> map
             ) throws Exception {
-                String path = serverHttpRequest.getURI().getPath();
-                String pathPrefix = "/channel/";
-                
-                String idString = path.substring(path.indexOf(pathPrefix)+pathPrefix.length());
-                int id = Integer.parseInt(idString);
-                map.put("channelId", id);
+                String path = serverHttpRequest.getURI().getPath().substring(1);
+                String[] urlParams = path.split("/");
+                System.out.println(urlParams.length);
+                if (urlParams.length > 2) {
+                    map.put("channelId", Integer.parseInt(urlParams[1]));
+                    map.put("apiKey", urlParams[2]);
+                }
+                System.out.println(map.toString());
+
                 return true;
             }
 
@@ -79,11 +93,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
     @Bean
-    public ChannelMessageHandler channelWebSocketHandler() {
-        return new ChannelMessageHandler();
-    }
-
-    @Bean
     public WebSocketContainerFactoryBean createWebSocketContainer() {
         WebSocketContainerFactoryBean container = new WebSocketContainerFactoryBean();
         container.setMaxTextMessageBufferSize(1024);
@@ -95,9 +104,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(new DirectMessageHandler(), "/direct/{token}")
+        webSocketHandlerRegistry.addHandler(new DirectMessageHandler(), "/direct/{id}/{token}")
             .setAllowedOrigins("*").addInterceptors(DirectMessageInterceptor());
-        webSocketHandlerRegistry.addHandler(new ChannelMessageHandler(), "/channel/{token}")
+        webSocketHandlerRegistry.addHandler(new ChannelMessageHandler(database), "/channel/{id}/{token}")
             .setAllowedOrigins("*").addInterceptors(ChannelMessageInterceptor());
     }
 }

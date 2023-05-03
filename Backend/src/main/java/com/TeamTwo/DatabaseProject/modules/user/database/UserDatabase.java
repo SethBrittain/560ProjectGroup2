@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import microsoft.sql.DateTimeOffset;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.TeamTwo.DatabaseProject.exceptions.ApiException;
@@ -86,7 +88,8 @@ public class UserDatabase {
 	 * FirstName, LastName, ProfilePhoto
 	 */
 	public ArrayList<Hashtable<String, String>> GetAllChannelMessages(int userId, int channelId) {
-		String query = "EXEC Application.GetAllChannelMessages " + channelId;
+		String query = "EXEC Application.GetAllChannelMessages " + userId + ", " + channelId;
+		System.out.println(query);
 		return sendQuery(query);
 	}
 
@@ -268,21 +271,55 @@ public class UserDatabase {
 	 * @param message   The content of the message to insert
 	 * @param senderId  The userId of the sender of the message
 	 * @param channelId The channelId to associate with the message
-	 * @return Boolean - true if insertion was successful, false otherwise
+	 * @return int - id of the inserted message
 	 */
-	public Boolean InsertMessageIntoChannel(String message, int senderId, int channelId) {
-		try (PreparedStatement stmt = this.database
-				.prepareStatement("EXEC Application.InsertMessageIntoChannel ?,?,?")) {
+	public int InsertMessageIntoChannel(String message, int senderId, int channelId) {
+		try {
+			String insert = "INSERT INTO Application.Messages(Message, SenderId, ChannelId) VALUES (?, ?, ?)";
+			PreparedStatement stmt = this.database.prepareStatement(insert, PreparedStatement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, message);
 			stmt.setInt(2, senderId);
 			stmt.setInt(3, channelId);
-			return stmt.execute();
+			stmt.executeUpdate();
+			
+			ResultSet generatedKeys = stmt.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				System.out.println(generatedKeys.getInt(1));
+				return generatedKeys.getInt(1);
+			}
+			else {
+				throw new SQLException("Creating failed, no ID obtained.");
+			}
+			
 		} catch (SQLException e) {
 			String error = e.toString();
 			System.out.println(error);
+			return -1;
 		}
-		return false;
+	}
 
+	public JSONObject GetMessageById(Integer msgId, Integer uid) throws SQLException {
+		try
+		{
+			String call = "{call Application.GetMessageById(?,?)}";
+			Object[] args = { uid.toString(), msgId.toString() };
+
+			Hashtable<String,String> message = this.callQueryProcedure(call, 2, args).get(0);
+			JSONObject result = new JSONObject();
+			
+			result.put("MsgId", message.get("MsgId"));
+			result.put("Message", message.get("Message"));
+			result.put("UpdatedOn", message.get("UpdatedOn"));
+			result.put("SenderId", message.get("SenderId"));
+			result.put("FirstName", message.get("FirstName"));
+			result.put("LastName", message.get("LastName"));
+			result.put("ProfilePhoto", message.get("ProfilePhoto"));
+			result.put("IsMine", message.get("IsMine"));
+			return result;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
@@ -563,5 +600,6 @@ public class UserDatabase {
 			return results;
 		}
 	}
+
 
 }

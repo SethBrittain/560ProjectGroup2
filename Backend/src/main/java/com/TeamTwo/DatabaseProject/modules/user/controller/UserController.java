@@ -211,7 +211,7 @@ public class UserController {
 	@ResponseBody
 	public Boolean InsertMessageIntoChannel(@RequestParam String message, @RequestParam int channelId, @RequestParam String apiKey) {
 		int senderId = this.GetUserId(apiKey);
-		return database.InsertMessageIntoChannel(message, senderId, channelId);
+		return database.InsertMessageIntoChannel(message, senderId, channelId) == -1;
 	}
 
 	/**
