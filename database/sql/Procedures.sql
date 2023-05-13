@@ -233,6 +233,27 @@ SET [Message] = @Message, UpdatedOn = SYSDATETIMEOFFSET()
 WHERE MsgId = @MsgId
 GO
 
+CREATE OR ALTER PROCEDURE [Application].[GetMessageById]
+	@CurrentUserId INT,
+	@MessageId INT
+AS
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
+FROM Application.Messages M
+	INNER JOIN Application.Users U ON M.SenderId = U.UserId
+WHERE M.MsgId = @MessageId 
+AND 
+(
+    M.RecipientId=@CurrentUserId
+    OR
+    @CurrentUserId IN (SELECT Mem.UserId FROM Application.Memberships Mem WHERE Mem.GroupId=(SELECT Mem.GroupId WHERE Mem.UserId=@CurrentUserId))
+    OR 
+    @CurrentUserId=M.SenderId 
+    OR 
+    @CurrentUserId=M.RecipientId
+)--AND M.IsDeleted = 0
+ORDER BY M.CreatedOn ASC
+GO
+
 -- get user id from api key
 CREATE OR ALTER PROCEDURE Application.GetUserIdFromAPIKey
 	@apikey NVARCHAR(MAX)
