@@ -72,7 +72,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     if (this.type == "channel") {
       data.append("sinceDateTime",(latest?.CreatedOn)??'1753-01-01');
       data.append("channelId",this.channelId);
-      this.api.post("/GetNewChannelMessages",(response)=>{
+      /*this.api.post("/GetNewChannelMessages",(response)=>{
         response.data.forEach((element:any)=> {
           if (!element) return;
           else if (!element.CreatedOn) return;
@@ -88,11 +88,11 @@ export class ChatComponent implements OnInit, AfterViewInit {
         });
       }, (error)=>{
         console.log(error);
-      }, data);
+      }, data);*/
     } else {
       data.append("sinceDateTime",(latest?.CreatedOn)??'1753-01-01');
       data.append("otherUserId",this.channelId);
-      this.api.post("/GetNewDirectMessages",(response)=>{
+      /*this.api.post("/GetNewDirectMessages",(response)=>{
         response.data.forEach((element:any)=> {
           if (!element) return;
           else if (!element.CreatedOn) return;
@@ -110,6 +110,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
         console.log(error);
       }, data);
       this.scrollToBottom();
+     */
     }
 
     // this.messages.push({

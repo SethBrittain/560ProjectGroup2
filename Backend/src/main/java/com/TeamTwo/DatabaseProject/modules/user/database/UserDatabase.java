@@ -499,9 +499,7 @@ public class UserDatabase {
 		}
 	}
 
-    public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) {
-		try 
-		{
+    public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) throws Exception {
 			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
 			String apiKey;
@@ -526,17 +524,11 @@ public class UserDatabase {
 			}
 			
 			return apiKey;
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			throw new RuntimeException();
-		}
     }
 
     public int GetUserId(String apiKey) {
 		try {
-			PreparedStatement userIdStatement = this.database.prepareStatement(String.format("EXEC Application.GetUserIdFromAPIKey 0x%s", apiKey));
+			PreparedStatement userIdStatement = this.database.prepareStatement("EXEC Application.GetUserIdFromAPIKey 0x"+apiKey);
 			ResultSet rs = userIdStatement.executeQuery();
 			rs.next();
 			return rs.getInt("UserId");

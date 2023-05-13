@@ -9,7 +9,7 @@ import axios from 'axios' ;
 export class ApiService {
 
   constructor(private auth : AuthService) { 
-    axios.defaults.baseURL = "http://localhost:8080/api"; 
+    axios.defaults.baseURL = "https://pidgin.sethbrittain.dev/api"; 
   }  
 
   public post(endpoint : string, callback : (response : AxiosResponse<any,any>)=>void, onError : (error : AxiosError)=>void, data : FormData = new FormData())
