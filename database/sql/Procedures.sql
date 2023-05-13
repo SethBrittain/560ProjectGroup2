@@ -11,16 +11,16 @@ RETURN 2;
 GO
 
 -- Get all the messages in a channel
-CREATE OR ALTER PROCEDURE Application.GetAllChannelMessages
+CREATE OR ALTER PROCEDURE [Application].[GetAllChannelMessages]
+	@CurrentUserId INT,
 	@ChannelId INT
 AS
-SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto
+SELECT M.MsgId, M.Message, M.UpdatedOn, M.SenderId, U.FirstName, U.LastName, U.ProfilePhoto, IIF(M.SenderId = @CurrentUserId, 1, 0) AS IsMine
 FROM Application.Channels C
 	INNER JOIN Application.Messages M ON M.ChannelId = C.ChannelId
 	INNER JOIN Application.Users U ON M.SenderId = U.UserId
-WHERE C.ChannelId = @ChannelId
+WHERE C.ChannelId = @ChannelId --AND M.IsDeleted = 0
 ORDER BY M.CreatedOn ASC;
-GO
 
 -- Get all direct messages between two given users
 CREATE OR ALTER PROCEDURE Application.GetDirectMessages
@@ -156,7 +156,8 @@ SELECT TOP(10)
 	U.UserId, U.FirstName, U.LastName, U.ProfilePhoto
 FROM Application.Organizations O
 	INNER JOIN Application.Users U ON O.OrganizationId = U.OrganizationId
-WHERE O.OrganizationId = @OrganizationId;
+WHERE O.OrganizationId = @OrganizationId
+ORDER BY U.UserId DESC;
 GO
 
 -- Insert a channel message
@@ -313,3 +314,15 @@ SELECT SUM( IIF(U.Active = 1, 1, 0)) AS NumberOfActiveUsers, SUM(IIF(U.Active = 
 	WHERE O.Active = 0
 ) AS NumberOfInactiveOrgs
 FROM Application.Users U;
+
+CREATE OR ALTER PROCEDURE Application.GetApiKey (
+    @Email NVARCHAR(128),
+    @FirstName NVARCHAR(64),
+    @LastName NVARCHAR(64)
+) AS (
+    SELECT ApiKey
+    FROM Application.Users U
+    WHERE U.Email='20brittains@gmail.com'
+        AND U.FirstName=N'Seth'
+        AND U.LastName=N'Brittain'
+)

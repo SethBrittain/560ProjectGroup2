@@ -42,7 +42,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     }
 
     this.channelId = id;
-    this.messages.push({ Message: "ksaljdfhlaskdjfhaslkdjfhaslkdjf", FirstName: "Seth", IsMine: "1", UpdatedOn: "2023-05-03 03:50:50.2756961 -05:00", LastName: "Brittain", SenderId: "1008", ProfilePhoto: "https://lh3.googleusercontent.com/a/AGNmyxZBpOieSYZ82ut6S-weSzCZjv5OrSNL6SnJpOIkAw=s96-c", MsgId: "7821" });
   }
 
   handleMessage(message : MessageEvent<any>)

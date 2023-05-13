@@ -1,15 +1,16 @@
+// #region Angular Depedencies
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
+// #endregion
 
-import { AppRoutingModule } from './app-routing.module';
+// #region Components
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { MainWindowComponent } from './pages/main-window/main-window.component';
 import { NavMenuComponent } from './group-components/nav-menu/nav-menu.component';
-import { HeaderComponent } from './group-components/header/header.component';
 import { SearchResultsComponent } from './group-components/search-results/search-results.component';
+import { HeaderComponent } from './group-components/header/header.component';
 import { ChatComponent } from './group-components/chat/chat.component';
 import { ResultComponent } from './base-components/result/result.component';
 import { MessageComponent } from './base-components/message/message.component';
@@ -22,13 +23,18 @@ import { DmListItemComponent } from './base-components/dm-list-item/dm-list-item
 import { SearchResultsHeaderComponent } from './base-components/search-results-header/search-results-header.component';
 import { ProfileComponent } from './base-components/profile/profile.component';
 import { SearchComponent } from './base-components/search/search.component';
-import { ApiService } from './services/api-service.service';
-import { GlobalConstants } from './global.config';
-import { AuthModule } from '@auth0/auth0-angular';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardHeaderComponent } from './group-components/dashboard-header/dashboard-header.component';
 import { TableRowComponent } from './base-components/table-row/table-row.component';
-//import { AuthModule } from '@auth0/auth0-angular';
+// #endregion
+
+// #region Misc
+import { AuthModule } from '@auth0/auth0-angular';
+import { AppRoutingModule } from './app-routing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ApiService } from './services/api-service.service';
+import { environment } from 'src/environments/environment';
+//#endregion
 
 @NgModule({
   declarations: [
@@ -60,12 +66,12 @@ import { TableRowComponent } from './base-components/table-row/table-row.compone
     BrowserAnimationsModule,
     MatIconModule,
     AuthModule.forRoot({
-      domain: GlobalConstants.AuthDomain,
-      clientId: GlobalConstants.AuthClientID,
-      useRefreshTokens: GlobalConstants.AuthRefreshToken,
-      cacheLocation: GlobalConstants.AuthCacheLocation,
+      domain: environment.AuthDomain,
+      clientId: environment.AuthClientID,
+      useRefreshTokens: environment.AuthRefreshToken,
+      cacheLocation: environment.AuthCacheLocation,
       authorizationParams: {
-        redirect_uri: "http://localhost:4200/app"
+        redirect_uri: environment.LoggedInUrl
       },
     }),
   ],

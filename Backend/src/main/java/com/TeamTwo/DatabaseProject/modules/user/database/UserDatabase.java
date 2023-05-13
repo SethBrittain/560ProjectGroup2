@@ -500,14 +500,13 @@ public class UserDatabase {
 	}
 
     public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) throws Exception {
-			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?,?");
+			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
 			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
 			String apiKey;
 
 			getUserApiKey.setString(1, email);
 			getUserApiKey.setString(2, firstName);
 			getUserApiKey.setString(3, lastName);
-			getUserApiKey.setString(4, profilePhoto);
 			ResultSet getRS = getUserApiKey.executeQuery();
 			
 			boolean gotKey = getRS.next();

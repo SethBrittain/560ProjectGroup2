@@ -291,11 +291,16 @@ public class UserController {
 	@PutMapping("/api/CreateUserOrGetKey")
 	@ResponseBody
 	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
-		String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName, "");
-		this.SetUserAuthApiKey(apiKey, authId);
-		Hashtable<String, String> hm = new Hashtable<String, String>();
-		hm.put("ApiKey", apiKey);
-		return hm;
+		try {
+			String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName, "");
+			this.SetUserAuthApiKey(apiKey, authId);
+			Hashtable<String, String> hm = new Hashtable<String, String>();
+			hm.put("ApiKey", apiKey);
+			return hm;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new Hashtable<String, String>();
+		}
 	}
 
 	private void SetUserAuthApiKey(String apiKey, String authId)
