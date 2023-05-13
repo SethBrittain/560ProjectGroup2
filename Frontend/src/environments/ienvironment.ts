@@ -6,5 +6,6 @@ export interface IEnvironment {
 	ApiUrl : string,
 	AuthRefreshToken : boolean,
 	AuthCacheLocation : CacheLocation,
-	LoggedInUrl : string
+	LoggedInUrl : string,
+	WebsocketUrl : string
 }

@@ -6,5 +6,6 @@ export const environment : IEnvironment = {
 	"ApiUrl" : "http://localhost:8080/api",
 	"AuthRefreshToken" : true,
 	"AuthCacheLocation" : "localstorage",
-	"LoggedInUrl" : "http://localhost:4200/app"
+	"LoggedInUrl" : "http://localhost:4200/app",
+	"WebsocketUrl" : "ws://localhost:8080/"
 };
