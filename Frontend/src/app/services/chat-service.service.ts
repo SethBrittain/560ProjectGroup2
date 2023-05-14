@@ -29,7 +29,7 @@ export class ChatService {
     connectDirect(directId : number, handler : (message : MessageEvent<any>)=>void) {
         this.auth.idTokenClaims$.subscribe((keyToken)=>{
             if(keyToken && keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]){
-                this.ws = new WebSocket(environment.WebsocketUrl+`ws://localhost:8080/direct/${directId}/${keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]}`);
+                this.ws = new WebSocket(environment.WebsocketUrl+`/direct/${directId}/${keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]}`);
                 this.ws.onmessage = handler;
                 if (this.ws) console.log("Connected!");
             }

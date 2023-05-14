@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 Map<String, Object> map
             ) throws Exception {
                 String path = serverHttpRequest.getURI().getPath();
-                String pathPrefix = "/direct/";
+                String pathPrefix = "/ws/direct/";
                 
                 String idString = path.substring(path.indexOf(pathPrefix)+pathPrefix.length());
                 int id = Integer.parseInt(idString);
@@ -68,9 +68,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 String path = serverHttpRequest.getURI().getPath().substring(1);
                 String[] urlParams = path.split("/");
                 System.out.println(urlParams.length);
-                if (urlParams.length > 2) {
-                    map.put("channelId", Integer.parseInt(urlParams[1]));
-                    map.put("apiKey", urlParams[2]);
+                if (urlParams.length > 3) {
+                    map.put("channelId", Integer.parseInt(urlParams[2]));
+                    map.put("apiKey", urlParams[3]);
                 }
                 System.out.println(map.toString());
 
@@ -104,9 +104,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(new DirectMessageHandler(), "/direct/{id}/{token}")
+        webSocketHandlerRegistry.addHandler(new DirectMessageHandler(), "/ws/direct/{id}/{token}")
             .setAllowedOrigins("*").addInterceptors(DirectMessageInterceptor());
-        webSocketHandlerRegistry.addHandler(new ChannelMessageHandler(database), "/channel/{id}/{token}")
+        webSocketHandlerRegistry.addHandler(new ChannelMessageHandler(database), "/ws/channel/{id}/{token}")
             .setAllowedOrigins("*").addInterceptors(ChannelMessageInterceptor());
     }
 }
