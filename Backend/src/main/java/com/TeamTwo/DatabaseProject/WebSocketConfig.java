@@ -38,12 +38,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 WebSocketHandler webSocketHandler,
                 Map<String, Object> map
             ) throws Exception {
-                /*String path = serverHttpRequest.getURI().getPath();
+                String path = serverHttpRequest.getURI().getPath();
                 String pathPrefix = "/ws/direct/";
                 
                 String idString = path.substring(path.indexOf(pathPrefix)+pathPrefix.length());
                 int id = Integer.parseInt(idString);
-                map.put("directId", id);*/
+                map.put("directId", id);
                 return true;
             }
 
@@ -104,9 +104,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(new DirectMessageHandler(), "/wss")
+        webSocketHandlerRegistry.addHandler(new DirectMessageHandler(), "/wss/direct/{id}/{token}")
             .setAllowedOrigins("*").addInterceptors(DirectMessageInterceptor());
-        webSocketHandlerRegistry.addHandler(new ChannelMessageHandler(database), "/ws/channel/{id}/{token}")
+        webSocketHandlerRegistry.addHandler(new ChannelMessageHandler(database), "/wss/channel/{id}/{token}")
             .setAllowedOrigins("*").addInterceptors(ChannelMessageInterceptor());
     }
 }
