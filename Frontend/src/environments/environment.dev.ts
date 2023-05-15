@@ -7,5 +7,5 @@ export const environment : IEnvironment = {
 	"AuthRefreshToken" : true,
 	"AuthCacheLocation" : "localstorage",
 	"LoggedInUrl" : "http://localhost:4200/app",
-	"WebsocketUrl" : "ws://localhost:8080/"
+	"WebsocketUrl" : "wss://localhost:8080/ws"
 };
