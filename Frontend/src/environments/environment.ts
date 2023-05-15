@@ -7,5 +7,5 @@ export const environment : IEnvironment = {
 	"AuthRefreshToken" : true,
 	"AuthCacheLocation" : "localstorage",
 	"LoggedInUrl" : "https://pidgin.sethbrittain.dev/app",
-	"WebsocketUrl" : "wss://pidgin.sethbrittain.dev/ws"
+	"WebsocketUrl" : "wss://pidgin.sethbrittain.dev/wss"
 };
