@@ -29,7 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
             .allowedOrigins("*")
             .allowedMethods("GET", "PUT", "POST", "DELETE");
-        registry.addMapping("/ws/**")
+        registry.addMapping("/wss/**")
             .allowedOrigins("*")
             .allowedMethods("GET", "PUT", "POST", "DELETE");
     
