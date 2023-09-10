@@ -1,13 +1,9 @@
 package com.TeamTwo.DatabaseProject;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -15,8 +11,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ChannelMessageHandler extends TextWebSocketHandler {
     HashMap<Integer,ArrayList<WebSocketSession>> webSocketSessions = new HashMap<Integer,ArrayList<WebSocketSession>>();

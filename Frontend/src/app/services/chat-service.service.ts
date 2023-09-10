@@ -1,10 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api-service.service';
 import { environment } from 'src/environments/environment';
-
+import { RxStomp } from '@stomp/rx-stomp';
 
 @Injectable({
     providedIn: 'root'

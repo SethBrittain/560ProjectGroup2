@@ -20,13 +20,11 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public class UserController {
 
     private UserDatabase database; 
-    private ApiConfig auth; 
 
     @Autowired
-    public UserController(UserDatabase database, ApiConfig auth)
+    public UserController(UserDatabase database)
     {
         this.database = database;
-		this.auth = auth;
     }
 
 	private int GetUserId(String apiKey) {
@@ -287,36 +285,6 @@ public class UserController {
 			@RequestParam String endDate) {
 		return database.GetOrganizationData(startDate, endDate);
 	}
-
-	@PutMapping("/api/CreateUserOrGetKey")
-	@ResponseBody
-	public Hashtable<String, String> CreateUserOrGetKey(@RequestParam String emailAddress, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String authId) {
-		try {
-			String apiKey = database.CreateUserOrGetKey(emailAddress, firstName, lastName, "");
-			this.SetUserAuthApiKey(apiKey, authId);
-			Hashtable<String, String> hm = new Hashtable<String, String>();
-			hm.put("ApiKey", apiKey);
-			return hm;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return new Hashtable<String, String>();
-		}
-	}
-
-	private void SetUserAuthApiKey(String apiKey, String authId)
-	{
-		String dataBody = String.format("{\"app_metadata\": {\"api_key\": \"%s\"}}", apiKey);
-		try {
-			Unirest.patch(String.format("https://dev-nhscnbma.us.auth0.com/api/v2/users/%s",authId))
-				.header("authorization", String.format("Bearer %s",this.auth.token()))
-				.header("content-type", "application/json")
-				.body(dataBody)
-				.asJson();
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	@PostMapping("/api/GetMonthlyTraffic")
 	@ResponseBody

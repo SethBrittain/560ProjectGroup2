@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@stomp/rx-stomp": "^2.0.0"
+  }
+}

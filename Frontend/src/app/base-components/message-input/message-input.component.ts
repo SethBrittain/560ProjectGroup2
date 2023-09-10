@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 import { ChatService } from 'src/app/services/chat-service.service';
+import { RxStompService } from 'src/app/services/rx-stomp.service';
 
 @Component({
   selector: 'app-message-input',
@@ -19,7 +20,7 @@ export class MessageInputComponent implements OnInit {
 
   @ViewChild('sendInput',{static:false}) inputElement : ElementRef | null = null; 
 
-  constructor(private api: ApiService, private messenger : ChatService) { }
+  constructor(private api: ApiService, private messenger : RxStompService) { }
 
   ngOnInit(): void { }
 

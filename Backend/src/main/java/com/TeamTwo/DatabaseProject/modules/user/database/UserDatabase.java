@@ -499,33 +499,7 @@ public class UserDatabase {
 		}
 	}
 
-    public String CreateUserOrGetKey(String email, String firstName, String lastName, String profilePhoto) throws Exception {
-			PreparedStatement createUser = this.database.prepareStatement("EXEC Application.CreateNewDefaultOrgUser ?,?,?");
-			PreparedStatement getUserApiKey = this.database.prepareStatement("EXEC Application.GetApiKey ?,?,?");
-			String apiKey;
-
-			getUserApiKey.setString(1, email);
-			getUserApiKey.setString(2, firstName);
-			getUserApiKey.setString(3, lastName);
-			ResultSet getRS = getUserApiKey.executeQuery();
-			
-			boolean gotKey = getRS.next();
-			if (gotKey) {
-				apiKey = getRS.getString("ApiKey");
-			} else {
-				createUser.setString(1, email);
-				createUser.setString(2, firstName);
-				createUser.setString(3, lastName);
-				createUser.executeQuery();
-				ResultSet elseGetRS = getUserApiKey.executeQuery();
-				elseGetRS.next();
-				apiKey = elseGetRS.getString(0);
-			}
-			
-			return apiKey;
-    }
-
-    public int GetUserId(String apiKey) {
+    public int GetUserId() {
 		try {
 			PreparedStatement userIdStatement = this.database.prepareStatement("EXEC Application.GetUserIdFromAPIKey 0x"+apiKey);
 			ResultSet rs = userIdStatement.executeQuery();
