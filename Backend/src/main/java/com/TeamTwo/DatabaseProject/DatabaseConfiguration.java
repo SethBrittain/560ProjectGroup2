@@ -24,7 +24,7 @@ public class DatabaseConfiguration {
         ds.setServerName(env.getProperty("database.address"));
         ds.setPortNumber(Integer.parseInt(env.getProperty("database.port")));
         ds.setDatabaseName(env.getProperty("database.name"));
-        ds.setEncrypt(false);
+        ds.setEncrypt("Optional");
         Connection connectionObject = ds.getConnection();
         return connectionObject;
     }

@@ -1,4 +1,4 @@
-package com.TeamTwo.DatabaseProject;
+package com.TeamTwo.DatabaseProject.modules.messaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,14 +10,12 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.TeamTwo.DatabaseProject.modules.user.database.UserDatabase;
-
 public class ChannelMessageHandler extends TextWebSocketHandler {
     HashMap<Integer,ArrayList<WebSocketSession>> webSocketSessions = new HashMap<Integer,ArrayList<WebSocketSession>>();
     
-    private UserDatabase database;
+    private MessagingDatabase database;
 
-	public ChannelMessageHandler(UserDatabase db) {
+	public ChannelMessageHandler(MessagingDatabase db) {
 		this.database = db;
 	}
 
@@ -63,7 +61,7 @@ public class ChannelMessageHandler extends TextWebSocketHandler {
         // Get user id and channel id from connection attributes
         JSONObject attr = new JSONObject(session.getAttributes());
         int channelId = attr.getInt("channelId");
-        int userId = this.database.GetUserId(attr.getString("apiKey"));
+        int userId = this.getUserId();
 
         // Get the message sent as a singular string
         JSONObject msg = new JSONObject(message.getPayload().toString());
@@ -83,5 +81,10 @@ public class ChannelMessageHandler extends TextWebSocketHandler {
 
     private Integer getSessionGroupId(WebSocketSession session) {
         return (Integer)session.getAttributes().get("channelId");
+    }
+
+    // TODO: Change to use sessions
+    private int getUserId() {
+        return 1;
     }
 }
