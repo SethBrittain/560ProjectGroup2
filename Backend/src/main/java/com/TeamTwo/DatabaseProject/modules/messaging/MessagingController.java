@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.TeamTwo.DatabaseProject.ControllerBase;
 
+@RestController
 public class MessagingController extends ControllerBase<MessagingDatabase> {
 
     @Autowired

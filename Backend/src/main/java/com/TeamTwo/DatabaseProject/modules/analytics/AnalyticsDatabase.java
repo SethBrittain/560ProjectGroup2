@@ -6,8 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.springframework.stereotype.Service;
+
 import com.TeamTwo.DatabaseProject.DatabaseBase;
 
+@Service
 public class AnalyticsDatabase extends DatabaseBase {
     /**
 	 * Gets data about all organizations in the database, counts messages for

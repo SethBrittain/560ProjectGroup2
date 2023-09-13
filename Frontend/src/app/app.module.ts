@@ -34,6 +34,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApiService } from './services/api-service.service';
 import { environment } from 'src/environments/environment';
+import { ChatService } from './services/chat-service.service';
+import { chatServiceFactory } from './services/chat-service-factory';
 //#endregion
 
 @NgModule({
@@ -76,7 +78,11 @@ import { environment } from 'src/environments/environment';
     }),
   ],
   providers: [
-    ApiService
+    ApiService,
+    {
+      provide: ChatService,
+      useFactory: chatServiceFactory,
+    },
   ],
   bootstrap: [AppComponent]
 })

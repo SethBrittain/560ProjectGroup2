@@ -1,39 +1,38 @@
 import { Injectable, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { environment } from 'src/environments/environment';
-import { RxStomp } from '@stomp/rx-stomp';
+import { RxStomp, RxStompConfig } from '@stomp/rx-stomp';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ChatService {
-    public ws : WebSocket | null = null;
+export class ChatService extends RxStomp {
 
-    constructor(private auth : AuthService) { 
-        console.log("Constructed!");
+    constructor() { 
+        super();
+        console.log("connecting to ws");
     }
 
     connectChannel(channelId : number, handler : (message : MessageEvent<any>)=>void) {
-        this.auth.idTokenClaims$.subscribe((keyToken)=>{
-            if(keyToken && keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]){
-                this.ws = new WebSocket(environment.WebsocketUrl+`/channel/${channelId}/${keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]}`);
-                this.ws.onmessage = handler;
-                if (this.ws) console.log("Connected!");
-            }
-        });
+        
     }
 
     connectDirect(directId : number, handler : (message : MessageEvent<any>)=>void) {
-        this.auth.idTokenClaims$.subscribe((keyToken)=>{
-            if(keyToken && keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]){
-                this.ws = new WebSocket(environment.WebsocketUrl+`/direct/${directId}/${keyToken["https://pidgin.dev-nhscnbma.com/apiKey"]}`);
-                this.ws.onmessage = handler;
-                if (this.ws) console.log("Connected!");
-            }
-        });
+        
     }
 
     sendMessage(message : string) {
-        this.ws?.send(JSON.stringify({message}));
+        console.log("sent message");
+        this.publish({
+            destination: '',
+            body: message
+        });
     }
+}
+
+export const ChatConfig: RxStompConfig = {
+    brokerURL: environment.WebsocketUrl,
+    heartbeatIncoming: 0,
+    heartbeatOutgoing: 20000,
+    reconnectDelay: 200
 }
