@@ -51,3 +51,5 @@ docs/_build/
 
 dbconfig.txt
 .vscode/
+
+.env

@@ -1,0 +1,33 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:16rc1
+    container_name: ${database_container_name}
+    hostname: ${database_container_name}
+    restart: always
+    environment:
+      - POSTGRES_DB=${database_name}
+      - POSTGRES_USER=${database_user}
+      - POSTGRES_PASSWORD=${database_password}
+    ports:
+      - ${database_port}:${database_port}
+    volumes: 
+      - postgres:/var/lib/postgresql/data
+      - ./Database:/docker-entrypoint-initdb.d
+  app:
+    depends_on:
+      - postgres
+    image: sethbrittain/pidgin:1.0.0
+    container_name: ${app_container_name}
+    hostname: ${app_container_name}
+    restart: always
+    environment:
+      - database_url=jdbc:postgresql://${database_container_name}:${database_port}/${database_name}
+      - database_user=${database_user}
+      - database_password=${database_password}
+      - database_ssl=${database_ssl}
+    ports:
+      - ${app_port}:8080
+volumes:
+  postgres:
+    driver: local
