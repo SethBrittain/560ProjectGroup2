@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-profile',
@@ -11,14 +10,14 @@ export class ProfileComponent implements OnInit{
   @Input() name: string = '';
   @Input() image: string = '';
 
-  constructor(private auth: AuthService){}
+  constructor(){}
 
   ngOnInit(): void {
       
   }
 
   logout(){
-    this.auth.logout();
+    // this.auth.logout();
   }
 
 }

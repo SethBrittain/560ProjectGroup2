@@ -1,5 +1,8 @@
 using System.Text.Json;
+using System.Text.Unicode;
+using System.Text.Encodings.Web;
 using Npgsql;
+using Npgsql.Replication;
 
 namespace pidgin.models;
 
@@ -8,55 +11,55 @@ public class User
     /// <summary>
     /// The unique identifier for the user.
     /// </summary>
-    private int id { get; }
+    public int id { get; private set;}
 
     /// <summary>
     /// The unique identifier for the organization the user belongs to.
     /// </summary>
-    private int organizationId { get; }
+    public int organizationId { get; set;}
 
     /// <summary>
     /// Unique email address for the user.
     /// </summary>
-    private string email { get; }
+    public string email { get; private set;}
 
     /// <summary>
     /// The user's first name.
     /// </summary>
-    private string firstName { get; }
+    public string firstName { get; set;}
 
     /// <summary>
     /// The user's last name.
     /// </summary>
-    private string lastName { get; }
+    public string lastName { get; set;}
 
     /// <summary>
     /// The title of the user
     /// </summary>
-    private string title { get; }
+    public string title { get; set;}
 
     /// <summary>
     /// Whether the user is active or not. Used for soft deletion.
     /// </summary>
-    private bool active { get; }
+    public bool active { get; set;}
 
     /// <summary>
     /// The URL of the user's profile picture.
     /// </summary>
-    private string profilePhotoUrl { get; }
+    public string profilePhotoUrl { get; set;}
 
     /// <summary>
     /// The date the user was created.
     /// </summary>
-    private DateTime createdOn { get; }
+    public DateTime createdOn { get; set;}
 
     /// <summary>
     /// The date the user was last updated.
     /// </summary>
-    private DateTime updatedOn { get; }
+    public DateTime updatedOn { get; set;}
 
-    public User(int id, int organizationId, string email, string firstName, string lastName, string title, bool active, string profilePhotoUrl, DateTime createdOn, DateTime updatedOn)
-    {
+	public User(int id, int organizationId, string email, string firstName, string lastName, string title, bool active, string profilePhotoUrl, DateTime createdOn, DateTime updatedOn)
+	{
         this.id = id;
         this.organizationId = organizationId;
         this.email = email;
@@ -67,10 +70,5 @@ public class User
         this.profilePhotoUrl = profilePhotoUrl;
         this.createdOn = createdOn;
         this.updatedOn = updatedOn;
-    }
-
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(this);
     }
 }

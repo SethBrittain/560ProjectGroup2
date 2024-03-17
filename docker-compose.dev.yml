@@ -14,17 +14,6 @@ services:
     volumes: 
       - postgres:/var/lib/postgresql/data
       - ./Database:/docker-entrypoint-initdb.d
-  app:
-    depends_on:
-      - postgres
-    image: sethbrittain/pidgin:1.0.0
-    container_name: ${app_container_name}
-    hostname: ${app_container_name}
-    restart: always
-    environment:
-      - ASPNETCORE_DATABASE_CONNECTION_STRING=Host=${database_container_name};Username=${database_user};Password=${database_password};Database=${database_name};Port=${database_port};
-    ports:
-      - ${app_port}:5000
 volumes:
   postgres:
     driver: local

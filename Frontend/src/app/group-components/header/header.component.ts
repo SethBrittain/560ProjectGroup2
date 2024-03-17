@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
 import { ApiService } from 'src/app/services/api-service.service';
 
 @Component({
@@ -13,15 +12,11 @@ export class HeaderComponent implements OnInit{
   profilePhoto: string = '';
   name: string = '';
 
-  constructor(private api: ApiService, private auth: AuthService) {}
+  constructor(private api: ApiService) {}
 
   ngOnInit(): void {
-      this.auth.user$.subscribe((user) => {
-        this.profilePhoto = user?.picture ?? '/assets/default-avatar.svg'
-      });
-      this.auth.user$.subscribe((user) => {
-        this.name = user?.name ?? '/assets/default-avatar.svg'
-      });
+	  this.name = "";
+	  this.profilePhoto = "";
   }
 
 }

@@ -1,5 +1,6 @@
 insert into public.organizations (name, active, created_on, updated_on) values ('Yozio', TRUE, '9/16/2022', '1/14/2023');
 
+--insert into public.users (organization_id, email, first_name, last_name, title, profile_photo, active, created_on, updated_on) values (1, 'sbrittain@ksu.edu', 'Seth', 'Brittain', 'Project Manager', 'http://dummyimage.com/910x753.png/5fa2dd/ffffff', TRUE, '5/2/2022', '2/14/2023');
 insert into public.users (organization_id, email, first_name, last_name, title, profile_photo, active, created_on, updated_on) values (1, 'sdenington0@ihg.com', 'Stanislaus', 'Denington', 'Project Manager', 'http://dummyimage.com/910x753.png/5fa2dd/ffffff', TRUE, '5/2/2022', '2/14/2023');
 insert into public.users (organization_id, email, first_name, last_name, title, profile_photo, active, created_on, updated_on) values (1, 'aheball1@timesonline.co.uk', 'Alic', 'Heball', 'Office Assistant IV', 'http://dummyimage.com/587x291.png/dddddd/000000', TRUE, '11/10/2022', '1/8/2023');
 insert into public.users (organization_id, email, first_name, last_name, title, profile_photo, active, created_on, updated_on) values (1, 'spolfer2@tinypic.com', 'Sampson', 'Polfer', 'Administrative Assistant IV', 'http://dummyimage.com/199x873.png/dddddd/000000', TRUE, '12/23/2022', '4/21/2023');

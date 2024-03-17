@@ -1,22 +1,28 @@
+using System.Net.Mime;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using pidgin.models;
+using pidgin.services;
 
 namespace pidgin.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api")]
 public class UserController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UserController(UserService userService)
+    public UserController(IUserService userService)
     {
-        this._userService = userModel;
+        this._userService = userService;
     }
-
-    [HttpGet]
-    public Task<User> Get(int id)
+	
+    [HttpGet("{id}"), Produces(MediaTypeNames.Application.Json)]
+    public async Task<User> Get(int id)
     {
-        return _userService.GetUserById(id);
+        User u = await _userService.GetUserById(id);
+        return u;
     }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ElementRef, ViewChild, AfterViewInit, OnDestr
 import { ApiService } from 'src/app/services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from 'src/app/services/chat-service.service';
+import axios from 'axios';
 
 @Component({
   selector: 'app-chat',
@@ -31,8 +32,11 @@ export class ChatComponent implements OnInit, AfterViewInit {
     if (this.type == "channel" && id) {
       console.log(Number.parseInt(id));
       this.chat.connectChannel(Number.parseInt(id), (message)=>{this.handleMessage(message)});
-      this.GetChannelName(id);
-      this.GetMessages(id);
+
+      axios.get("/api/channel/1").then((response)=>{
+        this.title = response.data.name;
+        this.messages = response.data.messages;
+      }).catch((error)=>{});
     }
     else if (id) {
       console.log(Number.parseInt(id));

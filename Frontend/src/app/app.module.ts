@@ -29,11 +29,9 @@ import { TableRowComponent } from './base-components/table-row/table-row.compone
 // #endregion
 
 // #region Misc
-import { AuthModule } from '@auth0/auth0-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApiService } from './services/api-service.service';
-import { environment } from 'src/environments/environment';
 import { ChatService } from './services/chat-service.service';
 import { chatServiceFactory } from './services/chat-service-factory';
 //#endregion
@@ -66,16 +64,7 @@ import { chatServiceFactory } from './services/chat-service-factory';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatIconModule,
-    AuthModule.forRoot({
-      domain: environment.AuthDomain,
-      clientId: environment.AuthClientID,
-      useRefreshTokens: environment.AuthRefreshToken,
-      cacheLocation: environment.AuthCacheLocation,
-      authorizationParams: {
-        redirect_uri: environment.LoggedInUrl
-      },
-    }),
+    MatIconModule
   ],
   providers: [
     ApiService,

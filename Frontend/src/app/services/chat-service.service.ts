@@ -1,6 +1,4 @@
 import { Injectable, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import { environment } from 'src/environments/environment';
 import { RxStomp, RxStompConfig } from '@stomp/rx-stomp';
 
 @Injectable({
@@ -14,7 +12,7 @@ export class ChatService extends RxStomp {
     }
 
     connectChannel(channelId : number, handler : (message : MessageEvent<any>)=>void) {
-        
+        this.activate()
     }
 
     connectDirect(directId : number, handler : (message : MessageEvent<any>)=>void) {
@@ -24,14 +22,14 @@ export class ChatService extends RxStomp {
     sendMessage(message : string) {
         console.log("sent message");
         this.publish({
-            destination: '',
+            destination: 'ws',
             body: message
         });
     }
 }
 
 export const ChatConfig: RxStompConfig = {
-    brokerURL: environment.WebsocketUrl,
+    brokerURL: "localhost/ws",
     heartbeatIncoming: 0,
     heartbeatOutgoing: 20000,
     reconnectDelay: 200

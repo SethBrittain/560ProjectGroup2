@@ -5,8 +5,6 @@ import { MainWindowComponent } from './pages/main-window/main-window.component';
 import { ChatComponent } from './group-components/chat/chat.component';
 import { SearchResultsComponent } from './group-components/search-results/search-results.component';
 import { EmptyStateComponent } from './group-components/empty-state/empty-state.component';
-import { AuthService } from '@auth0/auth0-angular';
-import { take } from 'rxjs';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 // Import modules before adding them to routing like: import { moduleName } from 'module/path/string';
@@ -14,7 +12,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 // Add routes here in the form of { path: 'pagepath', component: PageComponent } 
 // more documentation can be found here: https://angular.io/tutorial/tour-of-heroes/toh-pt5
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+//   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LogInComponent },
   { path: 'dashboard', component: DashboardComponent },
   {  path: 'app', component: MainWindowComponent,
@@ -24,7 +22,7 @@ const routes: Routes = [
       { path: 'search/:terms', component: SearchResultsComponent }
     ]
   },
-  { path: '**', redirectTo: 'app' },
+//   { path: '**', redirectTo: 'app' },
 ];
 
 @NgModule({
