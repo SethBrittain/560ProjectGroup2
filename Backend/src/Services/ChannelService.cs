@@ -3,6 +3,7 @@ using Npgsql;
 using pidgin.models;
 
 namespace pidgin.services;
+
 public sealed class ChannelService : IChannelService
 {
     private readonly NpgsqlDataSource _dataSource;
