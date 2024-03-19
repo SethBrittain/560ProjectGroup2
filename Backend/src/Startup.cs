@@ -20,13 +20,13 @@ public class Startup
 
         // Add database connection services
         string connString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTION_STRING")
-            ?? "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=conferenceplanner";
+            ?? "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=pidgin";
 
         NpgsqlDataSource conn = NpgsqlDataSource.Create(connString);
         services.AddSingleton(conn);
 
         // Add custom services
-
+		services.AddScoped<IDashboardService, DashboardService>();
 
         // Configure identity settings
         //services.Configure<IdentityOptions>(options =>

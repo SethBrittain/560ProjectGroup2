@@ -11,7 +11,15 @@ export class DashboardComponent implements OnInit {
   orgId: string = '1'; // HARD CODED
   startDate: string = '2022-01-01';
   endDate: string = '2023-01-01';
-  orgData: any[] = [];
+  
+//   type OrgDataType = { 
+// 	name: string; 
+// 	activeUserCount: number;
+// 	messageCount: number;
+//   };
+
+  orgData: any;
+  
   traffic: any[] = [];
   growth: any[] = [];
   groups: any[] = [];
@@ -34,25 +42,23 @@ export class DashboardComponent implements OnInit {
     this.GetGroupData();
   }
 
-  GetOrgData() {
+  GetOrgData = async () => {
     let form = new FormData();
     form.append("startDate", this.startDate);
     form.append("endDate", this.endDate);
 
-    this.api.post("/OrganizationsData",
-      (response) => {
-        this.orgData = response.data;
-      },
-      (error) => { console.log(error.message); },
-      form
-    );
+	await fetch("/api/OrganizationsData", {
+    	"method": "POST",
+		body: form
+	})
+	.then(response => this.orgData = response.json())
+	.catch(error => console.log(error.message));
   }
 
   GetMonthlyTraffic() {
     let form = new FormData();
     form.append("startDate", this.startDate);
     form.append("endDate", this.endDate);
-    console.log(form);
 
     this.api.post("/GetMonthlyTraffic",
       (response) => {
@@ -82,7 +88,6 @@ export class DashboardComponent implements OnInit {
     form.append("organizationId", this.orgId)
     form.append("startDate", this.startDate);
     form.append("endDate", this.endDate);
-    console.log(form);
 
     this.api.post("/GetGroupActivity",
       (response) => {
