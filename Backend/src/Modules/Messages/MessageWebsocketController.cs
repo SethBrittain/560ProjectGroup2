@@ -1,57 +1,66 @@
 using System.CodeDom.Compiler;
+using System.Net;
 using System.Net.Mime;
 using System.Net.WebSockets;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using pidgin.models;
 using pidgin.services;
+using Pidgin.Services;
 
 namespace pidgin.Controllers;
 
+[Route("/ws")]
+[Controller]
 public class MessageWebsocketController : ControllerBase
 {
     private readonly IMessageService _messageService;
+	private IWebSocketService webSocketService;
 
-    public MessageWebsocketController(IMessageService messageService)
+    public MessageWebsocketController(IMessageService messageService, IWebSocketService webSocketService)
     {
         this._messageService = messageService;
+		this.webSocketService = webSocketService;
     }
 	
-	[HttpGet("/ws")]
-	public async Task Connect()
-	{
-		if (HttpContext.WebSockets.IsWebSocketRequest)
-		{
-			using WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-			await Echo(webSocket);
-		}
-		else
-		{
-			HttpContext.Response.StatusCode = 400;
-		}
-	}
+	[HttpGet("channel")]
+    [Authorize(AuthenticationSchemes = "Cookies")]
+    public async Task<IActionResult> HandleChannelConnection(int id)
+    {
+        int uid = int.Parse(HttpContext.User.FindFirst("uid")?.Value ?? "-1");
+        if (HttpContext.WebSockets.IsWebSocketRequest)
+        {
+            Console.WriteLine("Incoming websocket connection");
+            Console.WriteLine($"User {uid} connected to channel {id}");
 
-	private static async Task Echo(WebSocket ws)
-	{
-		var buffer = new byte[1024 * 4];
-		var receiveResult = await ws.ReceiveAsync(
-			new ArraySegment<byte>(buffer), 
-			CancellationToken.None
-		);
+            IPAddress? ip = HttpContext.Connection.RemoteIpAddress;
+            if (ip != null) Console.WriteLine($"Client connected from: {ip}");
 
-		while (!receiveResult.CloseStatus.HasValue)
-		{
-			await ws.SendAsync(
-				new ArraySegment<byte>(buffer, 0, receiveResult.Count),
-				receiveResult.MessageType,
-				receiveResult.EndOfMessage,
-				CancellationToken.None
-			);
+            WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            await this.webSocketService.HandleWebsocketConnection(webSocket);
+            return new EmptyResult();
+        }
+        return new BadRequestResult();
+    }
 
-			receiveResult = await ws.ReceiveAsync(
-				new ArraySegment<byte>(buffer),
-				CancellationToken.None
-			);
-		}
-	}
+    [HttpGet("direct")]
+    [Authorize(AuthenticationSchemes = "Cookies")]
+    public async Task<IActionResult> HandleDirectConnection(int id)
+    {
+        int uid = int.Parse(HttpContext.User.FindFirst("uid")?.Value ?? "-1");
+        if (HttpContext.WebSockets.IsWebSocketRequest)
+        {
+            Console.WriteLine("Incoming websocket connection");
+            Console.WriteLine($"User {uid} connected to direct {id}");
+
+            IPAddress? ip = HttpContext.Connection.RemoteIpAddress;
+            if (ip != null) Console.WriteLine($"Client connected from: {ip}");
+
+            WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            await this.webSocketService.HandleWebsocketConnection(webSocket);
+            return new EmptyResult();
+        }
+        return new BadRequestResult();
+    }
 }

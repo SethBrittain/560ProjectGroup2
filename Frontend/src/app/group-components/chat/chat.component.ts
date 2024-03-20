@@ -4,6 +4,16 @@ import { ActivatedRoute } from '@angular/router';
 import { ChatService } from 'src/app/services/chat-service.service';
 import axios from 'axios';
 
+type Message = {
+  messageId : number,
+  profilePhoto : string,
+  firstName : string,
+  lastName : string,
+  updatedOn : Date,
+  message : string,
+  isMine : boolean
+}
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -16,36 +26,34 @@ export class ChatComponent implements OnInit, AfterViewInit {
   messages: any[] = [];
   type: any;
   updater : any;
+
   @ViewChild('scrollContent') content: any;
 
   constructor(private api: ApiService, private route: ActivatedRoute, private chat : ChatService) { }
-
-  private self = this;
 
   /**
    * Initializes the component
    */
   ngOnInit(): void {
     let id = this.route.snapshot.paramMap.get('id');
-    this.type = this.route.snapshot.paramMap.get('type');
+    let type  = this.route.snapshot.paramMap.get('type');
 
-    if (this.type == "channel" && id) {
-      console.log(Number.parseInt(id));
-      this.chat.connectChannel(Number.parseInt(id), (message)=>{this.handleMessage(message)});
+    if (id == null || id == undefined || this.type == null || this.type == undefined) return;
+    this.type = type;
 
-      axios.get("/api/channel/1").then((response)=>{
-        this.title = response.data.name;
-        this.messages = response.data.messages;
-      }).catch((error)=>{});
+    if (this.type == "channel" )
+    {
+      this.GetMessages(id);
+      this.GetChannelName(id);
+      this.chat.connectChannel(Number.parseInt(id), this.handleMessage);
     }
-    else if (id) {
+    else
+    {
       console.log(Number.parseInt(id));
-      this.chat.connectDirect(Number.parseInt(id), this.handleMessage);
       this.GetDirectMessages(id);
       this.GetUserName(id);
+      this.chat.connectDirect(Number.parseInt(id), this.handleMessage);
     }
-
-    this.channelId = id;
   }
 
   handleMessage(message : MessageEvent<any>)
@@ -204,8 +212,3 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.content.scrollTop = this.content.scrollHeight;
   }
 }
-
-
-
-
-

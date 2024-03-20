@@ -35,22 +35,24 @@ public class Message
     /// <summary>
     /// The date the message was created.
     /// </summary>
-    public DateTime createdOn { get; private set; }
+    public DateTime? createdOn { get; private set; }
 
     /// <summary>
     /// The date the message was last updated.
     /// </summary>
-    public DateTime updatedOn { get; private set; }
+    public DateTime? updatedOn { get; private set; }
 
     /// <summary>
     /// Whether the message has been deleted or not. Used for soft deletion.
     /// </summary>
     public bool isDeleted { get; private set; }
 
+    public bool isChannelMessage => channelId != null;
+
     /// <summary>
     /// Constructor for a direct message
     /// </summary>
-    public Message(int messageId, User sender, User recipient, string message, DateTime createdOn, DateTime updatedOn, bool isDeleted)
+    public Message(int messageId, User sender, User recipient, string message, bool isDeleted, DateTime? createdOn = null, DateTime? updatedOn = null)
     {
         this.messageId = messageId;
         this.sender = sender;
@@ -65,7 +67,7 @@ public class Message
     /// <summary>
     /// Constructor for a channel message
     /// </summary>
-    public Message(int messageId, User sender, int channelId, string message, DateTime createdOn, DateTime updatedOn, bool isDeleted)
+    public Message(int messageId, User sender, int channelId, string message, bool isDeleted, DateTime? createdOn = null, DateTime? updatedOn = null)
     {
         this.messageId = messageId;
         this.sender = sender;

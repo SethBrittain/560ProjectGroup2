@@ -3,10 +3,9 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using pidgin.models;
 using pidgin.services;
 
-namespace pidgin.Controllers;
+namespace Pidgin.Modules.Messaging.Channels;
 
 [ApiController]
 [Route("api/")]
@@ -16,7 +15,7 @@ public class ChannelController : ControllerBase
 
     public ChannelController(IChannelService channelService)
     {
-        this._channelService = channelService;
+        _channelService = channelService;
     }
 
     [HttpGet("{id}"), Produces(MediaTypeNames.Application.Json)]
@@ -26,14 +25,14 @@ public class ChannelController : ControllerBase
         return c;
     }
 
-	[HttpPost("GetAllChannelsOfUser"), Produces(MediaTypeNames.Application.Json)]
-	[Authorize(AuthenticationSchemes = "Cookies")]
-	public async Task<List<Channel>> GetAllChannelsOfUser()
-	{
-		ClaimsPrincipal u = HttpContext.User;
-		Console.WriteLine("claims:");
-		Console.WriteLine(u.FindFirstValue("uid"));
-		List<Channel> channels = await _channelService.GetAllChannelsOfUser(int.Parse(u.FindFirstValue("uid")));
-		return channels;
-	}
+    [HttpPost("GetAllChannelsOfUser"), Produces(MediaTypeNames.Application.Json)]
+    [Authorize(AuthenticationSchemes = "Cookies")]
+    public async Task<List<Channel>> GetAllChannelsOfUser()
+    {
+        ClaimsPrincipal u = HttpContext.User;
+        Console.WriteLine("claims:");
+        Console.WriteLine(u.FindFirstValue("uid"));
+        List<Channel> channels = await _channelService.GetAllChannelsOfUser(int.Parse(u.FindFirstValue("uid")));
+        return channels;
+    }
 }

@@ -128,8 +128,40 @@ public sealed class MessageService : IMessageService
         throw new NotImplementedException();
     }
 
-    public int CreateMessage(Message m)
+    public async Task<Message> CreateChannelMessage(Message m)
     {
-        throw new NotImplementedException();
+        if (m.channelId == null || m.updatedOn != null || m.createdOn != null) 
+            throw new Exception("Message was either direct or already created");
+
+        string sql = @"
+            INSERT INTO messages
+                (message, sender_id, channel_id)
+            VALUES
+                (@Message, @SenderId, @ChannelId)
+            RETURNING *;
+        ";
+
+        await using (NpgsqlCommand cmd = this._dataSource.CreateCommand(sql))
+        {
+            cmd.Parameters.AddWithValue("Message", m.message);
+            cmd.Parameters.AddWithValue("SenderId", m.sender.id);
+            cmd.Parameters.AddWithValue("ChannelId", m.channelId);
+
+            await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleResult))
+            {
+                if (!reader.HasRows) throw new Exception("Failed to create message");
+                await reader.ReadAsync();
+                
+                return new Message(
+                    messageId: reader.GetInt32(0),
+                    sender: m.sender,
+                    channelId: reader.GetInt32(2),
+                    message: reader.GetString(4),
+                    createdOn: reader.GetDateTime(5),
+                    updatedOn: reader.GetDateTime(6),
+                    isDeleted: reader.GetBoolean(7)
+                );
+            }
+        }
     }
 }

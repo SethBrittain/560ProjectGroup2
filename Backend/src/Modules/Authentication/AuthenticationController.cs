@@ -15,7 +15,7 @@ namespace pidgin.Controllers;
 [Route("auth")]
 public class AuthenticationController : ControllerBase
 {
-    const string AUTH_SERVICE_HOST = "http://localhost/auth/cas/";
+    const string AUTH_SERVICE_HOST = "http://localhost:4200/auth/cas/";
     const string AUTH_CAS_HOST = "https://signin.k-state.edu/WebISO/";
 
     private IUserService _userService;
@@ -42,7 +42,7 @@ public class AuthenticationController : ControllerBase
 
 	[AllowAnonymous]
     [Route("cas/ticket")]
-    public async Task<IActionResult> Ticket(string ticket)
+    public async Task<IActionResult> Ticket([FromQuery] string ticket)
     {
         string url = $"{AUTH_CAS_HOST}serviceValidate?ticket={ticket}&service={Uri.EscapeDataString(AUTH_SERVICE_HOST)}ticket";
         
@@ -67,7 +67,7 @@ public class AuthenticationController : ControllerBase
 						{
 							u = await this._userService.GetUserByEmail(email);
 						} catch (UserNotFoundException) {
-							u = await this._userService.RegisterUser(1, email, "test", "user", "student", "");
+							u = await this._userService.RegisterUser(1, email, "test", "user", "student", $"api.dicebear.com/7.x/lorelei/svg?seed={email}");
 						}
 						
                         List<Claim> userClaims = new() {

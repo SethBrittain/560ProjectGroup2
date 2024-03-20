@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Npgsql;
 using pidgin.services;
+using Pidgin.Services;
 
 namespace Pidgin;
 
@@ -27,45 +28,53 @@ public class Startup
 
         // Add custom services
 		services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IOrganizationService, OrganizationService>();
+        services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IChannelService, ChannelService>();
+        services.AddScoped<IWebSocketService, WebsocketService>();
 
         // Configure identity settings
-        //services.Configure<IdentityOptions>(options =>
-        //{
-        //    // Password settings.
-        //    options.Password.RequireDigit = true;
-        //    options.Password.RequireLowercase = true;
-        //    options.Password.RequireNonAlphanumeric = true;
-        //    options.Password.RequireUppercase = true;
-        //    options.Password.RequiredLength = 8;
-        //    options.Password.RequiredUniqueChars = 1;
+        services.Configure<IdentityOptions>(options =>
+        {
+            // Password settings.
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 1;
 
-        //    // Lockout settings.
-        //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-        //    options.Lockout.MaxFailedAccessAttempts = 5;
-        //    options.Lockout.AllowedForNewUsers = true;
+            // Lockout settings.
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.AllowedForNewUsers = true;
 
-        //    // User settings.
-        //    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-        //    options.User.RequireUniqueEmail = true;
-        //});
+            // User settings.
+            options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+            options.User.RequireUniqueEmail = true;
+        });
 
         // Configure cookie settings
-        //services.ConfigureApplicationCookie(options =>
-        //{
-        //    options.Cookie.HttpOnly = true;
-        //    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 
-        //    options.LoginPath = "/authcas/login";
-        //    options.AccessDeniedPath = "/error";
-        //    options.SlidingExpiration = true;
-        //});
+            options.LoginPath = "/authcas/login";
+            options.AccessDeniedPath = "/error";
+            options.SlidingExpiration = true;
+        });
 
         // Add cookie authentication scheme
-        //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie("Cookies");
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie("Cookies");
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        // Allow websocket connection
+        app.UseWebSockets();
+
         // Allow serving static files from wwwroot
         app.UseStaticFiles();
 

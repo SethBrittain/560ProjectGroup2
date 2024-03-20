@@ -1,5 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
+import axios from 'axios';
+
+type OrgDataType = { 
+  name: string; 
+  activeUserCount: number;
+  messageCount: number;
+};
+
+type TrafficType = {
+  month: string;
+  year: string;
+  messagesSent: number;
+  rank: number;
+};
+
+type GrowthType = {
+  numberOfActiveUsers : number,
+  numberOfInactiveUsers : number,
+  numberOfActiveOrgs : number,
+  numberOfInactiveOrgs : number
+};
+
+type GroupActivityType = {
+  groupId : number,
+  name : string,
+  messagesSent : number,
+  highestSender : string
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -12,21 +40,15 @@ export class DashboardComponent implements OnInit {
   startDate: string = '2022-01-01';
   endDate: string = '2023-01-01';
   
-//   type OrgDataType = { 
-// 	name: string; 
-// 	activeUserCount: number;
-// 	messageCount: number;
-//   };
+  // orgData: OrgDataType = undefined;
+  orgData: OrgDataType | undefined;
+  traffic: TrafficType[] | undefined;
+  growth: GrowthType | undefined;
+  groups: GroupActivityType[] | undefined;
 
-  orgData: any;
-  
-  traffic: any[] = [];
-  growth: any[] = [];
-  groups: any[] = [];
+  constructor(private api: ApiService) {}
 
-  constructor(private api: ApiService) { }
-
-  ngOnInit(): void {
+  ngOnInit() : void {
     this.GetOrgData();
     this.GetMonthlyTraffic();
     this.GetGrowthData();
@@ -42,17 +64,34 @@ export class DashboardComponent implements OnInit {
     this.GetGroupData();
   }
 
-  GetOrgData = async () => {
-    let form = new FormData();
-    form.append("startDate", this.startDate);
-    form.append("endDate", this.endDate);
+  GetOrgData = () => {
+    let data = new FormData();
+    data.append("startDate", this.startDate);
+    data.append("endDate", this.endDate);
+    
+    fetch("/api/OrganizationsData", {
+      "method": "POST",
+      "body": data
+    })
+    .then(response => response.json())
+    .then(data => this.orgData = data)
+    .catch(error => console.log(error.message));
+    // let form = new FormData();
+    // form.append("startDate", this.startDate);
+    // form.append("endDate", this.endDate);
 
-	await fetch("/api/OrganizationsData", {
-    	"method": "POST",
-		body: form
-	})
-	.then(response => this.orgData = response.json())
-	.catch(error => console.log(error.message));
+    // fetch("/api/OrganizationsData", {
+    //   "method": "POST",
+    //   body: form
+    // })
+    // .then(async (response : Response)=>{
+    //   let data = await response.json();
+    //   orgData.name = data.name;
+    //   orgData.activeUserCount = data.activeUserCount;
+    //   orgData.messageCount = data.messageCount;
+    // })
+    // .catch(error => console.log(error.message));;
+    // console.log(orgData);
   }
 
   GetMonthlyTraffic() {
@@ -98,7 +137,4 @@ export class DashboardComponent implements OnInit {
       form
     );
   }
-
-
-
 }

@@ -78,7 +78,7 @@ public class DashboardController : Controller
 		{
 			start = DateTime.Parse(startDate, format);
 			end = DateTime.Parse(endDate, format);
-			object result = await _dashboardService.GetGroupActivity(organizationId, start, end);
+			List<object> result = await _dashboardService.GetGroupActivity(organizationId, start, end);
 			return Ok(result);
 		}
 		catch (FormatException)

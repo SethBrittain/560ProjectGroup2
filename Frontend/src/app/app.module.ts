@@ -26,6 +26,7 @@ import { SearchComponent } from './base-components/search/search.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardHeaderComponent } from './group-components/dashboard-header/dashboard-header.component';
 import { TableRowComponent } from './base-components/table-row/table-row.component';
+import { LoaderComponent } from './base-components/loader/loader.component';
 // #endregion
 
 // #region Misc
@@ -33,7 +34,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApiService } from './services/api-service.service';
 import { ChatService } from './services/chat-service.service';
-import { chatServiceFactory } from './services/chat-service-factory';
 //#endregion
 
 @NgModule({
@@ -59,6 +59,7 @@ import { chatServiceFactory } from './services/chat-service-factory';
     DashboardComponent,
     DashboardHeaderComponent,
     TableRowComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,
@@ -69,8 +70,7 @@ import { chatServiceFactory } from './services/chat-service-factory';
   providers: [
     ApiService,
     {
-      provide: ChatService,
-      useFactory: chatServiceFactory,
+      provide: ChatService
     },
   ],
   bootstrap: [AppComponent]

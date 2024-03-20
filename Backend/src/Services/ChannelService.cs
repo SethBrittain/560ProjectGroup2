@@ -1,6 +1,7 @@
 using System.Data;
 using Npgsql;
 using pidgin.models;
+using Pidgin.Modules.Messaging.Channels;
 
 namespace pidgin.services;
 
@@ -26,7 +27,7 @@ public sealed class ChannelService : IChannelService
         throw new NotImplementedException();
     }
 
-	public async Task<List<Channel>> GetAllChannelsOfUser(int userId)
+	public async Task<IEnumerable<Channel>> GetAllChannelsOfUser(int userId)
 	{
 		List<Channel> result = new();
         

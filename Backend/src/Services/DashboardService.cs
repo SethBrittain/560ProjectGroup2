@@ -35,7 +35,7 @@ public class DashboardService : IDashboardService
 			command.Parameters.AddWithValue("StartDate", start);
 			command.Parameters.AddWithValue("EndDate", end);
 
-			await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync(CommandBehavior.Default))
+			await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync(CommandBehavior.SingleRow))
 			{
 				if (!reader.HasRows) throw new Exception("No data found");
 				await reader.ReadAsync();
@@ -51,7 +51,9 @@ public class DashboardService : IDashboardService
 
 	public async Task<List<object>> GetMonthlyTraffic(DateTime start, DateTime end)
 	{
-		string sql = @"
+		Console.WriteLine(start);
+		Console.WriteLine(end);
+        string sql = @"
 			SELECT 
 				TO_CHAR(M.created_on, 'Month') AS month, 
 				TO_CHAR(M.created_on, 'YYYY') AS year,
@@ -70,17 +72,16 @@ public class DashboardService : IDashboardService
 		{
 			command.Parameters.AddWithValue("FirstDate", start);
 			command.Parameters.AddWithValue("LastDate", end);
-			Console.WriteLine(start);
-			Console.WriteLine(end);
+
 			await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync(CommandBehavior.Default))
 			{
 				if (!reader.HasRows) throw new Exception("No data found");
-				await reader.ReadAsync();
-				
+
 				List<object> result = new List<object>();
-				while (reader.HasRows)
+				while (await reader.ReadAsync())
 				{
-					result.Add(new {
+                    result.Add(new
+					{
 						Month = reader.GetString(0),
 						Year = reader.GetString(1),
 						MessagesSent = reader.GetInt32(2),
@@ -127,7 +128,10 @@ public class DashboardService : IDashboardService
 
 	public async Task<List<object>> GetGroupActivity(int organizationId, DateTime start, DateTime end)
 	{
-		string sql = @"
+		Console.WriteLine(organizationId);
+		Console.WriteLine(start);
+		Console.WriteLine(end);
+        string sql = @"
 			SELECT 
 				G.group_id, 
 				G.name, 
@@ -171,9 +175,9 @@ public class DashboardService : IDashboardService
 			{
 				if (!reader.HasRows) throw new Exception("No data found");
 				List<object> result = new List<object>();
-				while (reader.HasRows)
+
+                while (await reader.ReadAsync())
 				{
-					await reader.ReadAsync();
 					result.Add(new {
 						GroupId = reader.GetInt32(0),
 						Name = reader.GetString(1),
