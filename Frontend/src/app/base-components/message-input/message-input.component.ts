@@ -24,29 +24,16 @@ export class MessageInputComponent implements OnInit {
   ngOnInit(): void { }
 
   GetVal(event: any) {
+    console.log(event?.target.value);
     this.message = event?.target.value;
   }
 
   SendMessageHandler() {
-    this.messenger.sendMessage(this.message);
+    console.log("sending");
+    if (this.message.length > 0) 
+      this.messenger.sendMessage(this.message);
     if (this.inputElement) this.inputElement.nativeElement.value='';
   }
-
-  /**
-   * Insert Message into channel
-   * @param message Message to insert
-   * @param senderId sender id
-   * @param channelId recipient id
-   */
-  InsertMessageIntoChannel(message: string, channelId: string): void {
-    let form = new FormData();
-    form.append("message", message);
-    form.append("channelId", channelId);
-    this.api.put("/InsertMessageIntoChannel", (response) => { }, (error) => { console.log(error.message); },
-      form);
-  }
-
-
 
   /**
  * Insert direct message

@@ -26,14 +26,14 @@ public class AuthenticationController : ControllerBase
     }
 
     [AllowAnonymous]
-	[Route("cas/login")]
-    public IActionResult Login(string returnUrl)
+	[HttpGet("cas/login")]
+    public IActionResult CasLogin(string returnUrl)
     {
         string url = $"{AUTH_CAS_HOST}/login?service={Uri.EscapeDataString(AUTH_SERVICE_HOST)}ticket";
         return Redirect(url);           
     }
 
-    [Route("logout")]
+    [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -41,7 +41,7 @@ public class AuthenticationController : ControllerBase
     }
 
 	[AllowAnonymous]
-    [Route("cas/ticket")]
+    [HttpGet("cas/ticket")]
     public async Task<IActionResult> Ticket([FromQuery] string ticket)
     {
         string url = $"{AUTH_CAS_HOST}serviceValidate?ticket={ticket}&service={Uri.EscapeDataString(AUTH_SERVICE_HOST)}ticket";
@@ -67,7 +67,7 @@ public class AuthenticationController : ControllerBase
 						{
 							u = await this._userService.GetUserByEmail(email);
 						} catch (UserNotFoundException) {
-							u = await this._userService.RegisterUser(1, email, "test", "user", "student", $"api.dicebear.com/7.x/lorelei/svg?seed={email}");
+                            u = await this._userService.RegisterUser(1, email, eid, " ", "student", $"api.dicebear.com/7.x/lorelei/svg?seed={email}"); ;
 						}
 						
                         List<Claim> userClaims = new() {

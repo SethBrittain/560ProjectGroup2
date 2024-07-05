@@ -1,9 +1,9 @@
 <div class="h-full">
     <app-chat-header [title]=title></app-chat-header>
-    <ul #scrollContent class="flex flex-col justify-end pt-36 px-6 pb-20">
+    <div #scrollMe class="pt-36 px-6 pb-20 relative top-0 bottom-0 left-0 w-full overflow-scroll">
         <div class="w-full" *ngFor="let message of messages">
-            <app-message msgId="{{message.MsgId}}" image= "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.UpdatedOn}}" message="{{message.Message}}" isMine="{{message.IsMine}}"></app-message>
+            <app-message msgId="{{message.msgId}}" image= "{{message.profilePhoto}}" firstName="{{message.firstName}}" lastName="{{message.lastName}}" dateSent="{{message.updatedOn}}" message="{{message.message}}" isMine="{{message.isMine}}"></app-message>
         </div>
-    </ul>
+    </div>
     <app-message-input [channelId]=channelId [type]=type></app-message-input>
 </div>

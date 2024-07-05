@@ -6,5 +6,9 @@
     "/auth": {
         "target": "http://localhost:5000",
         "secure": false
+    },
+    "/unauthorized" : {
+        "target": "http://localhost:5000",
+        "secure": false
     }
 }

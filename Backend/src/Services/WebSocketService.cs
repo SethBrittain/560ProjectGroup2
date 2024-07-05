@@ -34,7 +34,6 @@ public class WebsocketService : IWebSocketService
             {
                 case WebSocketMessageType.Text:
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Message
                     await websock.SendAsync(Encoding.UTF8.GetBytes(message), WebSocketMessageType.Text, true, CancellationToken.None);
                     break;
                 case WebSocketMessageType.Binary:
@@ -45,6 +44,11 @@ public class WebsocketService : IWebSocketService
                     break;
             }
         }
+    }
+
+    public Task HandleWebsocketConnection(WebSocket websock)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task HandleWebsocketDirectConnection(WebSocket websock, int recipientId)
@@ -60,8 +64,8 @@ public class WebsocketService : IWebSocketService
             {
                 case WebSocketMessageType.Text:
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    JsonSerializer.Serialize<Message>(message);
-                    await websock.SendAsync(Encoding.UTF8.GetBytes(message), WebSocketMessageType.Text, true, CancellationToken.None);
+                    //JsonSerializer.Serialize<Message>(message);
+                    await websock.SendAsync(Encoding.UTF8.GetBytes("DEBUG"), WebSocketMessageType.Text, true, CancellationToken.None);
                     break;
                 case WebSocketMessageType.Binary:
                     break;

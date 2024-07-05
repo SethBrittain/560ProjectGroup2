@@ -14,7 +14,7 @@ public class OrganizationService : IOrganizationService
 		this._dataSource = dataSource;
 	}
 
-	public async Task<List<User>> GetAllUsersInOrganization(Organization org, int limit = 10)
+	public async Task<List<User>> GetAllUsersInOrganization(int orgId, int limit = 10)
 	{
 		string sql = @"
 			SELECT 
@@ -34,7 +34,7 @@ public class OrganizationService : IOrganizationService
 		";
 		await using (NpgsqlCommand command = _dataSource.CreateCommand(sql))
 		{
-			command.Parameters.AddWithValue("id", org.organizationId);
+			command.Parameters.AddWithValue("id", orgId);
 			command.Parameters.AddWithValue("limit", limit);
 
 			await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())

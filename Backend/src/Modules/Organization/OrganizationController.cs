@@ -28,8 +28,7 @@ public class OrganizationController : ControllerBase
 	{
 		int uid = int.Parse(HttpContext.User.FindFirstValue("uid"));
 		User u = await _userService.GetUserById(uid);
-		Organization org = await _organizationService.GetOrganizationById(u.organizationId);
-		List<User> users = await _organizationService.GetAllUsersInOrganization(org);
+		List<User> users = await _organizationService.GetAllUsersInOrganization(u.organizationId);
 		return users;
 	}
 }

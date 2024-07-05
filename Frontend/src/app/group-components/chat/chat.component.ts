@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ViewChild, AfterViewInit, OnDestroy, AfterViewChecked, AfterContentChecked } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from 'src/app/services/chat-service.service';
+
 import axios from 'axios';
 
 type Message = {
@@ -19,7 +20,8 @@ type Message = {
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewInit {
+export class ChatComponent implements OnInit  {
+  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
   title: any;
   channelId: any = '';
@@ -27,116 +29,60 @@ export class ChatComponent implements OnInit, AfterViewInit {
   type: any;
   updater : any;
 
-  @ViewChild('scrollContent') content: any;
-
-  constructor(private api: ApiService, private route: ActivatedRoute, private chat : ChatService) { }
-
+  constructor(private api: ApiService, private route: ActivatedRoute, private chat : ChatService) {
+  }
+  
   /**
    * Initializes the component
    */
   ngOnInit(): void {
+    console.log('test');
     let id = this.route.snapshot.paramMap.get('id');
-    let type  = this.route.snapshot.paramMap.get('type');
+    let type  = window.location.href.includes("channel") ? "channel" : "direct";
+    let self = this;
 
-    if (id == null || id == undefined || this.type == null || this.type == undefined) return;
+    if (id == null || id == undefined || type == null || type == undefined) return;
     this.type = type;
 
     if (this.type == "channel" )
     {
       this.GetMessages(id);
       this.GetChannelName(id);
-      this.chat.connectChannel(Number.parseInt(id), this.handleMessage);
+      this.chat.connectChannel(Number.parseInt(id), (message : MessageEvent<any>)=>{
+        self.messages.push(JSON.parse(message.data));
+        this.scrollToBottom();
+      });
     }
     else
     {
       console.log(Number.parseInt(id));
       this.GetDirectMessages(id);
       this.GetUserName(id);
-      this.chat.connectDirect(Number.parseInt(id), this.handleMessage);
+      this.chat.connectDirect(Number.parseInt(id), (message : MessageEvent<any>)=>{
+        self.messages.push(JSON.parse(message.data));
+        this.scrollToBottom();
+      });
     }
   }
 
-  handleMessage(message : MessageEvent<any>)
-  {
-    console.log(this.messages);
-    console.log(JSON.parse(message.data));
-    this.messages.push(message);
+  scrollToBottom(): void {
+    console.log("Scrolling to bottom");
+    console.log(document.documentElement.scrollHeight)
+    console.log(this.myScrollContainer.nativeElement.scrollHeight);
+    try {
+      setTimeout(() => {
+      window.scroll({
+        top: document.documentElement.scrollHeight + this.myScrollContainer.nativeElement.scrollHeight,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }, 0);
+    } catch(err) {
+      console.error("Failed to scroll to bottom");
+    }                 
   }
 
-  /**
-   * Scrolls to the bottom of the page upon load
-   */
-  ngAfterViewInit(): void {
-    this.scrollToBottom();
-  }
-
-  /**
-   * Updates a message
-   * @returns 
-   */
-  updateMessages() {
-    if (!this.messages) return;
-    let data = new FormData();
-    let latest = this.messages[this.messages.length-1];
-
-
-    if (this.type == "channel") {
-      data.append("sinceDateTime",(latest?.CreatedOn)??'1753-01-01');
-      data.append("channelId",this.channelId);
-      /*this.api.post("/GetNewChannelMessages",(response)=>{
-        response.data.forEach((element:any)=> {
-          if (!element) return;
-          else if (!element.CreatedOn) return;
-
-          if (!latest) {
-            this.messages.push(element);
-            window.scrollTo(0, document.body.scrollHeight);
-          }
-          else if (element.CreatedOn!=latest.CreatedOn) {
-            this.messages.push(element);
-            window.scrollTo(0, document.body.scrollHeight);
-          }
-        });
-      }, (error)=>{
-        console.log(error);
-      }, data);*/
-    } else {
-      data.append("sinceDateTime",(latest?.CreatedOn)??'1753-01-01');
-      data.append("otherUserId",this.channelId);
-      /*this.api.post("/GetNewDirectMessages",(response)=>{
-        response.data.forEach((element:any)=> {
-          if (!element) return;
-          else if (!element.CreatedOn) return;
-
-          if (!latest) {
-            this.messages.push(element);
-            window.scrollTo(0, document.body.scrollHeight);
-          }
-          else if (element.CreatedOn!=latest.CreatedOn) {
-            this.messages.push(element);
-            window.scrollTo(0, document.body.scrollHeight);
-          }
-        });
-      }, (error)=>{
-        console.log(error);
-      }, data);
-      this.scrollToBottom();
-     */
-    }
-
-    // this.messages.push({
-    //   "ProfilePhoto":"https://lh3.googleusercontent.com/a/AGNmyxY38W8aDtBM_BT-wkqP2KybvYWu1vDF3wlu-4M73w=s96-c",
-    //   "IsMine":"0",
-    //   "SenderId":"1065",
-    //   "LastName":"Haynes",
-    //   "Message":"hey seth",
-    //   "FirstName":"Sam",
-    //   "UpdatedOn":"2023-04-26 01:33:43.1595796 -05:00",
-    //   "RecipientId":"1008",
-    //   "MsgId":"5106"
-    // });
-    // console.log("added");
-  }
+  
 
   /**
    * Gets the messages from a channel
@@ -150,6 +96,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.api.post("/GetAllChannelMessages",
       (response) => {
         this.messages = response.data;
+        this.scrollToBottom();
       },
       (error) => { console.log(error.message); },
       form
@@ -205,10 +152,4 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.title = this.type + ' ' + this.channelId;
   }
 
-  /**
-   * Scrolls to the bottom of the chat frame
-   */
-  scrollToBottom() { 
-    this.content.scrollTop = this.content.scrollHeight;
-  }
 }

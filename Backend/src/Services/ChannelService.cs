@@ -9,12 +9,9 @@ public sealed class ChannelService : IChannelService
 {
     private readonly NpgsqlDataSource _dataSource;
 
-    private readonly IMessageService _messageService;
-
-    public ChannelService(NpgsqlDataSource dataSource, IMessageService messageService)
+    public ChannelService(NpgsqlDataSource dataSource)
     {
         _dataSource = dataSource;
-        _messageService = messageService;
     }
 
     public int CreateChannel(Channel channel)
@@ -65,7 +62,7 @@ public sealed class ChannelService : IChannelService
 			));
 		}
         
-        if (result == null) throw new Exception("No channels not found");
+        if (result == null) throw new Exception("Channels not found");
         return result;
 	}
 
@@ -91,7 +88,7 @@ public sealed class ChannelService : IChannelService
         
         if (!reader.HasRows) throw new Exception("Channel not found");
         
-        List<Message> messages = await this._messageService.GetMessagesByChannelId(id);
+        IEnumerable<Message> messages = new List<Message>(); //= await this._channelService.GetMessagesByChannelId(id);
 
         result = new Channel
         (

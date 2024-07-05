@@ -12,13 +12,14 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 // Add routes here in the form of { path: 'pagepath', component: PageComponent } 
 // more documentation can be found here: https://angular.io/tutorial/tour-of-heroes/toh-pt5
 const routes: Routes = [
-//   { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'app', pathMatch: 'full' },
   { path: 'login', component: LogInComponent },
   { path: 'dashboard', component: DashboardComponent },
   {  path: 'app', component: MainWindowComponent,
     children: [
       { path: '', component: EmptyStateComponent },
-      { path: '-/:type/:id', component: ChatComponent },
+      { path: 'channel/:id', component: ChatComponent },
+      { path: 'direct/:id', component: ChatComponent },
       { path: 'search/:terms', component: SearchResultsComponent }
     ]
   },

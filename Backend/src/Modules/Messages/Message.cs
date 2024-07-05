@@ -15,7 +15,7 @@ public class Message
     /// <summary>
     /// The User who sent the message.
     /// </summary>
-    public User sender { get; private set; }
+    public int senderId { get; private set; }
 
     /// <summary>
     /// The unique identifier of the channel the message was sent in. Null if the message was sent directly to a user.
@@ -25,7 +25,7 @@ public class Message
     /// <summary>
     /// The user who received the message. Null if the message was sent in a channel.
     /// </summary>
-    public User? recipient { get; private set; }
+    public int? recipientId { get; private set; }
 
     /// <summary>
     /// The message content.
@@ -50,28 +50,13 @@ public class Message
     public bool isChannelMessage => channelId != null;
 
     /// <summary>
-    /// Constructor for a direct message
-    /// </summary>
-    public Message(int messageId, User sender, User recipient, string message, bool isDeleted, DateTime? createdOn = null, DateTime? updatedOn = null)
-    {
-        this.messageId = messageId;
-        this.sender = sender;
-        this.channelId = null;
-        this.recipient = recipient;
-        this.message = message;
-        this.createdOn = createdOn;
-        this.updatedOn = updatedOn;
-        this.isDeleted = isDeleted;
-    }
-    
-    /// <summary>
     /// Constructor for a channel message
     /// </summary>
-    public Message(int messageId, User sender, int channelId, string message, bool isDeleted, DateTime? createdOn = null, DateTime? updatedOn = null)
+    public Message(int messageId, int senderId, int? channelId, int? recipientId, string message, bool isDeleted, DateTime? createdOn = null, DateTime? updatedOn = null)
     {
         this.messageId = messageId;
-        this.sender = sender;
-        this.recipient = null;
+        this.senderId = senderId;
+        this.recipientId = recipientId;
         this.channelId = channelId;
         this.message = message;
         this.createdOn = createdOn;

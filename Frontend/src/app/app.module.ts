@@ -71,7 +71,7 @@ import { ChatService } from './services/chat-service.service';
     ApiService,
     {
       provide: ChatService
-    },
+    }
   ],
   bootstrap: [AppComponent]
 })
