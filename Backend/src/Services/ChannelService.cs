@@ -1,7 +1,7 @@
 using System.Data;
 using Npgsql;
 using pidgin.models;
-using Pidgin.Modules.Messaging.Channels;
+using Pidgin.Modules.Channels;
 
 namespace pidgin.services;
 

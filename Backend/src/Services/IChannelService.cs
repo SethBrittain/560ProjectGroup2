@@ -1,4 +1,4 @@
-using Pidgin.Modules.Messaging.Channels;
+using Pidgin.Modules.Channels;
 
 namespace pidgin.services
 {

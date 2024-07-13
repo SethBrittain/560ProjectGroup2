@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Unicode;
 using Npgsql;
 
-namespace Pidgin.Modules.Messaging.Channels;
+namespace Pidgin.Modules.Channels;
 
 public class Channel
 {

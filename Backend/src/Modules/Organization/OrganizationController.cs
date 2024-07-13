@@ -24,11 +24,14 @@ public class OrganizationController : ControllerBase
 	
 	[Authorize(AuthenticationSchemes = "Cookies")]
 	[HttpPost("GetAllUsersInOrganization"), Produces(MediaTypeNames.Application.Json)]
-	public async Task<List<User>> GetAllUsersInOrganization()
+	public async Task<IActionResult> GetAllUsersInOrganization()
 	{
-		int uid = int.Parse(HttpContext.User.FindFirstValue("uid"));
-		User u = await _userService.GetUserById(uid);
+        string? uidClaim = HttpContext.User.FindFirstValue("uid");
+        if (!int.TryParse(uidClaim, out int uid))
+            return Unauthorized("User id claim is not a valid integer");
+
+        User u = await _userService.GetUserById(uid);
 		List<User> users = await _organizationService.GetAllUsersInOrganization(u.organizationId);
-		return users;
+		return Ok(users);
 	}
 }

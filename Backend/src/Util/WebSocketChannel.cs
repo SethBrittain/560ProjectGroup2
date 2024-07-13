@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace Pidgin.Services;
+namespace Pidgin.Util;
 
 /// <summary>
 /// Class for handling WebSocket connections and messages
@@ -47,56 +47,67 @@ public class WebSocketChannel
     /// <returns></returns>
     public async Task Broadcast(SendableMessage messageToSend)
     {
-        string message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
-        Console.WriteLine(message);
-
-        // Buffer to load broadcast message into
-        byte[] sendBuffer = new byte[message.Length];
-
-        // Fill buffer with message
-        Array.Clear(sendBuffer, 0, sendBuffer.Length);
-        Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
-
-        // Send message to all clients in channel with channelId
         foreach (KeyValuePair<int, WebSocket> pair in _clients)
         {
-            if (pair.Value.State != WebSocketState.Open)
-            {
-                Console.WriteLine(pair.Value.State.ToString());
-                pair.Value.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by server", CancellationToken.None);
-                continue;
-            }
-            if (messageToSend.senderId == pair.Key)
-            {
-                messageToSend.isSender = true;
-                message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
-                // Buffer to load broadcast message into
-                sendBuffer = new byte[message.Length];
-                Array.Clear(sendBuffer, 0, sendBuffer.Length);
-
-                // Fill buffer with message
-                Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
-            }
-            else if (messageToSend.isSender)
-            {
-                messageToSend.isSender = false;
-                message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
-
-                // Buffer to load broadcast message into
-                sendBuffer = new byte[message.Length];
-                Array.Clear(sendBuffer, 0, sendBuffer.Length);
-
-                // Fill buffer with message
-                Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
-            }
-
+            messageToSend.isSender = messageToSend.senderId == pair.Key;
             await pair.Value.SendAsync(
-                new ArraySegment<byte>(sendBuffer, 0, message.Length),
+                new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(messageToSend))),
                 WebSocketMessageType.Text,
-                false,
+                true,
                 CancellationToken.None
             );
         }
+
+        //string message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
+        //Console.WriteLine(message);
+
+        //// Buffer to load broadcast message into
+        //byte[] sendBuffer = new byte[message.Length];
+
+        //// Fill buffer with message
+        //Array.Clear(sendBuffer, 0, sendBuffer.Length);
+        //Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
+
+        //await _clients[messageToSend.senderId].SendAsync(
+        //    new ArraySegment<byte>(sendBuffer, 0, sendBuffer.Length),
+        //    WebSocketMessageType.Text,
+        //    false,
+        //    CancellationToken.None
+        //);
+
+        //// Send message to all clients in channel with channelId
+        //foreach (KeyValuePair<int, WebSocket> pair in _clients)
+        //{
+        //    if (messageToSend.senderId == pair.Key)
+        //    {
+        //        messageToSend.isSender = true;
+        //        message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
+        //        // Buffer to load broadcast message into
+        //        sendBuffer = new byte[message.Length];
+
+        //        // Fill buffer with message
+        //        Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
+        //    }
+        //    else if (messageToSend.isSender)
+        //    {
+        //        messageToSend.isSender = false;
+        //        message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
+
+        //        // Buffer to load broadcast message into
+        //        sendBuffer = new byte[message.Length];
+        //        Array.Clear(sendBuffer, 0, sendBuffer.Length);
+
+        //        // Fill buffer with message
+        //        Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
+        //    }
+
+        //    await pair.Value.SendAsync(
+        //        new ArraySegment<byte>(sendBuffer, 0, message.Length),
+        //        WebSocketMessageType.Text,
+        //        false,
+        //        CancellationToken.None
+        //    );
+        //}
     }
 
     /// <summary>

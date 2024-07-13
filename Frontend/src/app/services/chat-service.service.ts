@@ -1,4 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+
+interface Chat {
+    id: Number,
+    type: "channel" | "direct"
+}
 
 @Injectable({
     providedIn: 'root'
@@ -9,9 +15,9 @@ export class ChatService {
     private host : string = "localhost";
     private port : number = 5000;
 
-    private getChannelURL(channelId : number) {
+    private getChannelURL(channelId : Number) {
         let protocol = this.useSSL ? "wss" : "ws";
-        return `${protocol}://${this.host}:${this.port}/api/Channels/${channelId}/ws`;
+        return `${protocol}://${this.host}:${this.port}/chat?type=channel&id=${channelId}`;
     }
     private getDirectURL(directId : number) {
         let protocol = this.useSSL ? "wss" : "ws";
@@ -22,18 +28,15 @@ export class ChatService {
 
     constructor() { }
 
-    connectChannel(channelId : number, handler : (message : MessageEvent<any>)=>void) {
+    getChat(chatId : Number, chatType : "channel" | "direct") : Observable<Chat> {
+        return of({id: chatId, type: chatType});
+    }
+
+    connectChannel(channelId : Number, handler : (message : MessageEvent<any>)=>void) {
         if (this.ws)
             this.ws.close();
         
         this.ws = new WebSocket(this.getChannelURL(channelId));
-        
-        setInterval(() => {
-            if (this.ws)
-                if (this.ws.readyState === WebSocket.OPEN) {
-                    this.ws.send('');
-                }
-          }, 30000);
         this.ws.onmessage = handler;
         this.ws.onerror = (error) => {
             console.log(error);
@@ -53,5 +56,10 @@ export class ChatService {
         if (this.ws == null) return;
         console.log(message.length);
         this.ws.send(message);
+    }
+
+    disconnect() {
+        if (this.ws == null) return;
+        this.ws.close();
     }
 }

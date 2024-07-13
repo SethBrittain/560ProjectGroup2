@@ -21,8 +21,10 @@ public class MessageController : ControllerBase
 	[HttpPost("GetAllChannelMessages")]
 	public async Task<IActionResult> GetAllChannelMessages([FromForm] int channelId)
     {
-        ClaimsPrincipal u = HttpContext.User;
-        int uid = int.Parse(u.FindFirstValue("uid"));
+        string? uidClaim = HttpContext.User.FindFirstValue("uid");
+        if (!int.TryParse(uidClaim, out int uid))
+            return Unauthorized("User id claim is not a valid integer");
+
         List<object> messages = await _messageService.GetAllChannelMessages(channelId, uid);
         return Ok(messages);
 	}

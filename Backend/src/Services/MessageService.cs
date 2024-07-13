@@ -2,7 +2,7 @@ using System.Data;
 using Microsoft.VisualBasic;
 using Npgsql;
 using pidgin.models;
-using Pidgin.Services;
+using Pidgin.Util;
 
 namespace pidgin.services;
 public sealed class MessageService : IMessageService
@@ -205,6 +205,79 @@ public sealed class MessageService : IMessageService
                 m.message_id, 
 	            m.sender_id, 
 	            m.channel_id, 
+	            m.message, 
+	            m.created_on, 
+	            m.updated_on,
+	            u.first_name,
+	            u.last_name,
+	            u.profile_photo
+            FROM
+                messages m
+            LEFT JOIN users u
+	            ON m.sender_id=u.user_id
+            WHERE
+                m.message_id=@messageId";
+
+        await using (NpgsqlCommand cmd = this._dataSource.CreateCommand(sql2))
+        {
+            cmd.Parameters.AddWithValue("messageId", messageId);
+            await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    return new SendableMessage(
+                        reader.GetInt32(0),
+                        reader.GetInt32(1),
+                        reader.GetInt32(2),
+                        reader.GetString(3),
+                        reader.GetDateTime(4),
+                        reader.GetDateTime(5),
+                        reader.GetString(6),
+                        reader.GetString(7),
+                        reader.GetString(8),
+                        false
+                    );
+                }
+                throw new Exception();
+            }
+        }
+    }
+
+    public async Task<SendableMessage> CreateDirectMessageReturningSendable(Message m)
+    {
+        if (m.recipientId == null || m.channelId == null || m.createdOn == null || m.updatedOn == null)
+            throw new Exception("Direct message was not formatted properly");
+
+        string sql = @"
+            INSERT INTO messages
+                (message, sender_id, recipient_id)
+            VALUES
+                (@Message, @SenderId, @RecipientId)
+            RETURNING message_id;
+        ";
+
+        int messageId;
+
+        await using (NpgsqlCommand cmd = this._dataSource.CreateCommand(sql))
+        {
+            cmd.Parameters.AddWithValue("Message", m.message);
+            cmd.Parameters.AddWithValue("SenderId", m.senderId);
+            cmd.Parameters.AddWithValue("RecipientId", m.recipientId);
+
+            await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+            {
+                if (await reader.ReadAsync())
+                    messageId = reader.GetInt32(0);
+                else
+                    throw new Exception("Failed to insert direct message");
+            }
+        }
+
+        string sql2 = @"
+            SELECT 
+                m.message_id, 
+	            m.sender_id, 
+	            m.recipient_id, 
 	            m.message, 
 	            m.created_on, 
 	            m.updated_on,
