@@ -1,0 +1,18 @@
+<div class="pl-64 h-screen">
+<div class="h-full">
+    <app-chat-header [title]="title"></app-chat-header>
+	<app-nav-menu></app-nav-menu>
+    <div #scrollMe class="pt-36 px-6 pb-20 relative top-0 bottom-0 left-0 w-full overflow-scroll" *ngIf="title">
+		<div *ngFor="let message of messages">
+			<app-direct-message *ngIf="type" [message]="message" [isMine]="message.sender.id==currentUser.id"></app-direct-message>
+			<app-channel-message *ngIf="!type" [message]="message" [isMine]="message.sender.id==currentUser.id"></app-channel-message>
+		</div>
+		<app-message-input></app-message-input>
+    </div>
+	<div class="w-full flex items-center justify-center h-screen" *ngIf="!title">
+		<div>
+			<p class="space-y-2 px-2 py-1 font-medium tracking-tight text-lg text-gray-700 dark:text-gray-200 leading-6">Click on a chat to get started!</p>
+		</div>
+	</div>
+</div>
+</div>

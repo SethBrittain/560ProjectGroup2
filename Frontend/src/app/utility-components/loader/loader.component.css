@@ -1,0 +1,11 @@
+
+.loader-wrapper {
+	width: 64px;
+	height: 64px;
+}
+.loader {
+	filter: invert(0.5);
+}
+.loader > img {
+	animation: spin 2s linear infinite !important;
+}

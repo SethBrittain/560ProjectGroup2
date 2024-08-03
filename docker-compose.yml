@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16rc1
+    container_name: ${database_container_name}
+    hostname: ${database_container_name}
+    restart: always
+    environment:
+      - POSTGRES_DB=${database_name}
+      - POSTGRES_USER=${database_user}
+      - POSTGRES_PASSWORD=${database_password}
+    ports:
+      - ${database_port}:${database_port}
+    volumes: 
+      - postgres:/var/lib/postgresql/data
+      - ./Database:/docker-entrypoint-initdb.d
+  app:
+    depends_on:
+      - postgres
+    image: sethbrittain/pidgin:latest
+    container_name: ${app_container_name}
+    hostname: ${app_container_name}
+    restart: always
+    environment:
+      - ASPNETCORE_CONNECTION_STRING=Host=${database_container_name};Username=${database_user};Password=${database_password};Database=${database_name};Port=${database_port};
+      - ASPNETCORE_AUTH_SERVICE_HOST=${public_protocol}${public_host}${auth_service_host_ex}
+      - ASPNETCORE_AUTH_CAS_HOST=${auth_cas_host}
+    ports:
+      - ${docker_app_port}:${internal_app_port}
+volumes:
+  postgres:
+    driver: local

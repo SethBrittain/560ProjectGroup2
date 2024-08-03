@@ -14,4 +14,5 @@ export class SearchResultsHeaderComponent implements OnInit{
   ngOnInit(): void {
       
   }
+
 }

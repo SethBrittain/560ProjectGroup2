@@ -1,104 +1,147 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service.service';
+import axios from 'axios';
+import { FormControl } from '@angular/forms';
+
+type OrgDataType = {
+	name: string;
+	activeUserCount: number;
+	messageCount: number;
+};
+
+type TrafficType = {
+	month: string;
+	year: string;
+	messagesSent: number;
+	rank: number;
+};
+
+type GrowthType = {
+	numberOfActiveUsers: number,
+	numberOfInactiveUsers: number,
+	numberOfActiveOrgs: number,
+	numberOfInactiveOrgs: number
+};
+
+type GroupActivityType = {
+	groupId: number,
+	name: string,
+	messagesSent: number,
+	highestSender: string
+}
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+	selector: 'app-dashboard',
+	templateUrl: './dashboard.component.html',
+	styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
 
-  orgId: string = '1'; // HARD CODED
-  startDate: string = '2022-01-01';
-  endDate: string = '2023-01-01';
-  orgData: any[] = [];
-  traffic: any[] = [];
-  growth: any[] = [];
-  groups: any[] = [];
+	orgId: number = 1; // HARD CODED
+	endDate: FormControl = new FormControl<string>(new Date().toISOString().split('T')[0]);
+	startDate: FormControl = new FormControl<string>(
+		new Date(new Date().setDate(new Date().getDate() - 365 * 4)).toISOString().split('T')[0]
+	);
 
-  constructor(private api: ApiService) { }
+	// orgData: OrgDataType = undefined;
+	orgData: OrgDataType | undefined;
+	traffic: TrafficType[] | undefined;
+	growth: GrowthType | undefined;
+	groups: GroupActivityType[] | undefined;
 
-  ngOnInit(): void {
-    this.GetOrgData();
-    this.GetMonthlyTraffic();
-    this.GetGrowthData();
-    this.GetGroupData();
-  }
+	constructor(private api: ApiService) { }
 
-  RefreshData(start: HTMLInputElement, end: HTMLInputElement) {
-    this.startDate = start.value;
-    this.endDate = end.value;
-    this.GetOrgData();
-    this.GetMonthlyTraffic();
-    this.GetGrowthData();
-    this.GetGroupData();
-  }
+	ngOnInit(): void {
+		this.RefreshData();
+	}
 
-  GetOrgData() {
-    let form = new FormData();
-    form.append("startDate", this.startDate);
-    form.append("endDate", this.endDate);
-    console.log(form);
+	RefreshData(event: any = null) {
+		console.log("start: ", this.startDate.value);
+		console.log("end: ", this.endDate.value);
 
-    this.api.post("/OrganizationsData",
-      (response) => {
-        console.log(response.data);
-        this.orgData = response.data;
-      },
-      (error) => { console.log(error.message); },
-      form
-    );
-  }
+		const start: Date = new Date(Date.parse(this.startDate.value)) ?? new Date();
+		const end: Date = new Date(Date.parse(this.endDate.value)) ?? new Date();
 
-  GetMonthlyTraffic() {
-    let form = new FormData();
-    form.append("startDate", this.startDate);
-    form.append("endDate", this.endDate);
-    console.log(form);
+		this.GetOrgData(start, end);
+		this.GetMonthlyTraffic(start, end);
+		this.GetGrowthData(start, end);
+		this.GetGroupData(start, end);
+	}
 
-    this.api.post("/GetMonthlyTraffic",
-      (response) => {
-        console.log(response.data);
-        this.traffic = response.data;
-      },
-      (error) => { console.log(error.message); },
-      form
-    );
-  }
+	GetOrgData = (start: Date, end: Date) => {
+		axios.get('/api/Analytics/OrganizationsData', {
+			params: {
+				startDate: this.startDate.value,
+				endDate: this.endDate.value
+			}
+		})
+			.then((res) => {
+				this.orgData = res.data;
+			})
+			.catch((error) => {
+				if (error.response)
+					if (error.response.status === 401 || error.response.status === 403)
+						window.location.href = '/login';
+					else if (error.response.status === 404)
+						this.orgData = undefined;
+			});
+	}
 
-  GetGrowthData() {
-    let form = new FormData();
-    form.append("startDate", this.startDate);
-    form.append("endDate", this.endDate);
-    console.log(form);
+	GetMonthlyTraffic(start: Date, end: Date) {
+		axios.get('/api/Analytics/MonthlyTraffic', {
+			params: {
+				startDate: this.startDate.value,
+				endDate: this.endDate.value
+			}
+		})
+		.then((res)=>{
+			this.traffic = res.data;
+		})
+		.catch(error=>{
+			if (error.response)
+				if (error.response.status === 401 || error.response.status === 403)
+					window.location.href = '/login';
+				else if (error.response.status === 404)
+					this.groups = undefined;
+		});
+	}
 
-    this.api.post("/GetAppGrowth",
-      (response) => {
-        console.log(response.data);
-        this.growth = response.data;
-      },
-      (error) => { console.log(error.message); },
-      form
-    );
-  }
+	GetGrowthData(start: Date, end: Date) {
+		axios.get('/api/Analytics/AppGrowth', {
+			params: {
+				startDate: this.startDate.value,
+				endDate: this.endDate.value
+			}
+		})
+		.then((res)=>{
+			this.growth = res.data;
+		})
+		.catch(error=>{
+			if (error.response)
+				if (error.response.status === 401 || error.response.status === 403)
+					window.location.href = '/login';
+				else if (error.response.status === 404)
+					this.groups = undefined;
+		});
+	}
 
-  GetGroupData() {
-    let form = new FormData();
-    form.append("organizationId", this.orgId)
-    form.append("startDate", this.startDate);
-    form.append("endDate", this.endDate);
-    console.log(form);
-
-    this.api.post("/GetGroupActivity",
-      (response) => {
-        console.log(response.data);
-        this.groups = response.data;
-      },
-      (error) => { console.log(error.message); },
-      form
-    );
-  }
-
-
-
+	GetGroupData(start: Date, end: Date) {
+		axios.get('/api/Analytics/GroupActivity', {
+			params: {
+				orgId: this.orgId,
+				startDate: this.startDate.value,
+				endDate: this.endDate.value
+			}
+		})
+		.then((res)=>{
+			this.groups = res.data;
+		})
+		.catch(error=>{
+			if (error.response)
+				if (error.response.status === 401 || error.response.status === 403)
+					window.location.href = '/login';
+				else if (error.response.status === 404)
+					this.groups = undefined;
+		});
+	}
 }

@@ -5,38 +5,105 @@
     <div class="flex justify-between flex-row px-4">
         <h1 class="text-3xl text-semibold text-gray-700 dark:text-gray-200 pb-2">Dashboard</h1>
         <div>
-            <div class="flex gap-2 grow max-w-sm">   
+            <div class="flex gap-2 grow w-auto">   
                 <label for="start-date" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter the start date</label>
-                <input datepicker datepicker-format="yyyy/mm/dd" type="text" value={{startDate}} #start senderId="1" id="start-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="Start Date" required>
+                <input 
+					id="1"
+					type="date" 
+					[formControl]="startDate"
+					class="
+						block 
+						w-full 
+						py-2 
+						px-4
+						text-sm 
+						text-gray-900 
+						border 
+						border-slate-300 
+						rounded-lg 
+						bg-slate-50 
+						focus:ring-indigo-500 
+						focus:border-indigo-500 
+						dark:bg-gray-800 
+						dark:border-gray-700 
+						dark:placeholder-gray-400 
+						dark:text-white 
+						dark:focus:ring-indigo-500 
+						dark:focus:border-indigo-500 
+						hover:bg-white 
+						dark:hover:bg-gray-700 
+						transition 
+						ease-in-out
+					" 
+					(change)="RefreshData($event)"
+					placeholder="Start Date"
+					required
+				>
                 <label type="date" for="end-date" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter the end date</label>
-                <input datepicker datepicker-format="yyyy/mm/dd" type="text" value={{endDate}} #end senderId="1" id="end-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="End Date" required>
-                <button (click)="RefreshData(start, end)" class="transition ease-in-out text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2">Refresh</button>
+                <input 
+					id="2"
+					type="date" 
+					[formControl]="endDate"
+					class="
+						block
+						w-full
+						py-2
+						px-4
+						text-sm
+						text-gray-900
+						border
+						border-slate-300
+						rounded-lg
+						bg-slate-50
+						focus:ring-indigo-500
+						focus:border-indigo-500
+						dark:bg-gray-800
+						dark:border-gray-700
+						dark:placeholder-gray-400
+						dark:text-white
+						dark:focus:ring-indigo-500
+						dark:focus:border-indigo-500
+						hover:bg-white
+						dark:hover:bg-gray-700
+						transition
+						ease-in-out
+					"
+					(change)="RefreshData($event)"
+					placeholder="End Date" 
+					required
+				>
+                <button (click)="RefreshData($event)" class="transition ease-in-out text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2">Refresh</button>
             </div>
         </div>
     </div>
 
     <!--Top Row-->
-    <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+    <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl" *ngIf="growth; else growthElse">
         <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide pb-6">Pidgin growth over time</p>
         <div class="md:grid md:grid-cols-4 md:grid-rows-1 gap-4 px-auto py-auto grow">
             <div>
                 <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Users</p>
-                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfActiveUsers}}</p>
+                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth.numberOfActiveUsers}}</p>
             </div>
             <div>
-                <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Count</p>
-                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfInactiveUsers}}</p>
+                <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Users</p>
+                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth.numberOfInactiveUsers}}</p>
             </div>
             <div>
                 <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Organizations</p>
-                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfActiveOrgs}}</p>
+                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth.numberOfActiveOrgs}}</p>
             </div>
             <div>
                 <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Organizations</p>
-                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth[0].NumberOfInactiveOrgs}}</p>
+                <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth.numberOfInactiveOrgs}}</p>
             </div>
         </div>
     </div>
+    <ng-template #growthElse>
+        <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl flex justify-center items-center">
+            <loader></loader>
+        </div>
+    </ng-template>
 
     <!--Main Grid-->
     <div class="md:grid md:grid-cols-2 md:grid-rows-1 px-auto py-auto grow">
@@ -45,25 +112,30 @@
         <div class="flex flex-col">
 
             <!--Top Card-->
-            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl" *ngIf="orgData; else orgDataElse">
                 <p class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide">Organization</p>
-                <h3 class="text-5xl font-light text-gray-700 dark:text-gray-200 pl-2 pt-2 pb-6">{{orgData[0].Name}}</h3>
+                <h3 class="text-5xl font-light text-gray-700 dark:text-gray-200 pl-2 pt-2 pb-6">{{orgData.name}}</h3>
                 <div class="pt-4 border-t border-slate-300 dark:border-slate-600">
                     <div class="md:grid md:grid-cols-2 md:grid-rows-1 gap-4 px-auto py-auto grow">
                         <div>
                             <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Active Users</p>
-                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].ActiveUserCount}}</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData.activeUserCount}}</p>
                         </div>
                         <div>
                             <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Message Count</p>
-                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData[0].MessageCount}}</p>
+                            <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{orgData.messageCount}}</p>
                         </div>
                     </div>
                 </div>
             </div>
+            <ng-template #orgDataElse>
+                <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl flex justify-center items-center">
+                    <loader></loader>
+                </div>
+            </ng-template>
 
             <!--Bottom Card-->
-            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl" *ngIf="traffic; else trafficElse">
                 <h3 class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide pb-4">Monthly traffic ranked</h3>
                 <div class="md:grid md:grid-cols-3 md:grid-rows-1 grow py-0.5">
                     <p class="text-gray-600 dark:text-gray-300 py-1 text-base">Month</p>
@@ -71,13 +143,18 @@
                     <p class="text-gray-600 dark:text-gray-300 py-1 text-base">Rank</p>
                 </div>
                 <div class="w-full" *ngFor="let result of traffic">
-                    <app-table-row row1="{{result.MONTH}} {{result.YEAR}}" row2="{{result.MessagesSent}}" row3="{{result.Rank}}"></app-table-row>            
+                    <app-table-row row1="{{result.month}} {{result.year}}" row2="{{result.messagesSent}}" row3="{{result.rank}}"></app-table-row>            
                 </div>            
             </div>
+            <ng-template #trafficElse>
+                <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl flex justify-center items-center">
+                    <loader></loader>
+                </div>
+            </ng-template>
         </div>
 
         <!--Right side of grid-->
-        <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl">
+        <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl" *ngIf="groups; else groupElse">
             <h3 class="text-gray-600 dark:text-gray-400 py-1 text-base font-semibold uppercase tracking-wide pb-4">Group activity</h3>
             <div class="md:grid md:grid-cols-3 md:grid-rows-1 grow py-0.5">
                 <p class="text-gray-600 dark:text-gray-300 py-1 text-base">Group Name</p>
@@ -85,8 +162,13 @@
                 <p class="text-gray-600 dark:text-gray-300 py-1 text-base">Highest Sender</p>
             </div>
             <div class="w-full" *ngFor="let result of groups">
-                <app-table-row row1="{{result.Name}}" row2="{{result.MessagesSent}}" row3="{{result.HighestSender}}"></app-table-row>            
+                <app-table-row row1="{{result.name}}" row2="{{result.messagesSent}}" row3="{{result.highestSender}}"></app-table-row>            
             </div>            
         </div>
+        <ng-template #groupElse>
+            <div class="h-auto bg-slate-200 dark:bg-slate-800 m-3 p-8 rounded-2xl flex justify-center items-center">
+                <loader></loader>
+            </div>
+        </ng-template>
     </div>
 </div>

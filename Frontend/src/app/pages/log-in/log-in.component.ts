@@ -1,24 +1,41 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import axios from 'axios';
+import { response } from 'express';
 import { ApiService } from 'src/app/services/api-service.service';
-import { AuthService } from '@auth0/auth0-angular';
+
 @Component({
-  selector: 'app-log-in',
-  templateUrl: './log-in.component.html',
-  styleUrls: ['./log-in.component.css']
+	selector: 'app-log-in',
+	templateUrl: './log-in.component.html',
+	styleUrls: ['./log-in.component.css']
 })
 
-export class LogInComponent implements OnInit{
+export class LogInComponent {
 
-  userId: string = '12345';
+	emailControl: FormControl = new FormControl('');
+	passwordControl: FormControl = new FormControl('');
 
-  constructor(private api: ApiService, private auth : AuthService){}
+	constructor(private router: Router) { }
 
-  ngOnInit(): void { 
-    if(this.auth.isAuthenticated$){console.log("Logged In!");}
-    //this.auth.loginWithRedirect();
-  }
+	login() {
+		let form = new FormData();
+		form.append('email', this.emailControl.value);
+		form.append('password', this.passwordControl.value);
+		axios.post('/auth/login', form)
+			.then(response => {
+				if (response && response.status === 200)
+					this.router.navigate(['/app']);
+			})
+			.catch(error => {
+				if (error && error.response && error.response.status === 403) {
+					this.passwordControl.setValue('');
+					alert('Invalid email or password');
+				}
+			})
+	}
 
-  login() {
-    this.auth.loginWithRedirect({appState:{target:"/app"}});
-  }
+	loginWithCAS() {
+
+	}
 }

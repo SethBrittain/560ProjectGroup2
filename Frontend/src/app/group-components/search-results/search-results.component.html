@@ -1,13 +1,39 @@
 <div class="w-full pb-6">
-    <app-search-results-header [title]=title></app-search-results-header>
+    <app-search-results-header title="{{ title }}"></app-search-results-header>
     <ul class="px-6 pt-36">
-        <p _ngcontent-xhu-c10="" class="space-y-2 px-2 py-4 font-medium tracking-tight text-lg text-gray-700 dark:text-slate-100 leading-6">Messages</p>
-        <li *ngFor="let result of searchResults">
-            <app-result name="{{result.Name}}"  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Message}}" type="{{result.Type}}" id="{{result.Id}}"  ></app-result>
-        </li>
-        <p _ngcontent-xhu-c10="" class="space-y-2 px-2 py-4 font-medium tracking-tight text-lg text-gray-700 dark:text-slate-100 leading-6">Users</p>
-        <li *ngFor="let result of userResults ">
-            <app-result name="{{result.Name}}"  image = "{{result.ProfilePhoto}}" firstName="{{result.FirstName}}" lastName="{{result.LastName}}" dateSent="{{result.UpdatedOn}}" message="{{result.Title}}" type="{{result.Type}}" id="{{result.UserId}}"  ></app-result>
-        </li>
+        <p *ngIf="directMessageResults.length || channelMessageResults.length" class="space-y-2 px-2 py-2 font-medium tracking-tight text-2xl text-gray-700 dark:text-slate-100 leading-6">Messages</p>
+			<p *ngIf="directMessageResults.length" class="space-y-2 px-4 py-4 font-medium tracking-tight text-lg text-gray-700 dark:text-slate-100 leading-6">Direct</p>
+			<li *ngFor="let result of directMessageResults">
+				<app-result 
+					title="{{result.recipient.firstName + ' ' + result.recipient.lastName}}"
+					dateSent="{{ result.createdOn }}"
+					[sender]="result.sender"
+					message="{{ result.message }}"
+				/>
+			</li>
+			<p *ngIf="channelMessageResults.length" class="space-y-2 px-4 py-4 font-medium tracking-tight text-lg text-gray-700 dark:text-slate-100 leading-6">Channel</p>
+			<li *ngFor="let result of channelMessageResults">
+				<app-result 
+					title="{{result.channel.name}}"
+					dateSent="{{ result.createdOn }}"
+					[sender]="result.sender"
+					message="{{ result.message }}"
+				/>
+			</li>
+		<p *ngIf="userResults.length" class="space-y-2 px-2 py-4 font-medium tracking-tight text-2xl text-gray-700 dark:text-slate-100 leading-6">Users</p>
+			<li *ngFor="let result of userResults">
+				<app-result 
+					title="{{result.firstName + ' ' + result.lastName}}"
+					dateSent=""
+					[sender]="result"
+					message="Joined: {{ result.createdOn | date }}"
+				/>
+			</li>
+		<p 
+			*ngIf="!userResults.length && !directMessageResults.length && !channelMessageResults.length"
+			class="space-y-2 px-2 py-4 font-medium tracking-tight text-2xl text-gray-700 dark:text-slate-100 text-center leading-6"
+		>
+			No Results Found
+		</p>
     </ul>
 </div>

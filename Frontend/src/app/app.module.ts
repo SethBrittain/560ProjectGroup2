@@ -1,34 +1,46 @@
+// #region Angular Depedencies
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
+// #endregion
 
-import { AppRoutingModule } from './app-routing.module';
+// #region Components
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { MainWindowComponent } from './pages/main-window/main-window.component';
 import { NavMenuComponent } from './group-components/nav-menu/nav-menu.component';
-import { HeaderComponent } from './group-components/header/header.component';
 import { SearchResultsComponent } from './group-components/search-results/search-results.component';
-import { ChatComponent } from './group-components/chat/chat.component';
-import { ResultComponent } from './base-components/result/result.component';
-import { MessageComponent } from './base-components/message/message.component';
-import { ChatHeaderComponent } from './base-components/chat-header/chat-header.component';
-import { MessageInputComponent } from './base-components/message-input/message-input.component';
-import { ChannelListComponent } from './base-components/channel-list/channel-list.component';
-import { DmListComponent } from './base-components/dm-list/dm-list.component';
-import { ChannelListItemComponent } from './base-components/channel-list-item/channel-list-item.component';
-import { DmListItemComponent } from './base-components/dm-list-item/dm-list-item.component';
+import { HeaderComponent } from './group-components/header/header.component';
+import { ChatComponent } from './chat-components/chat/chat.component';
+import { ResultComponent } from './base-components/search/result/result.component';
+import { ChatHeaderComponent } from './chat-components/chat-header/chat-header.component';
+import { MessageInputComponent } from './chat-components/message-input/message-input.component';
+import { ChannelListComponent } from './chat-components/channel-list/channel-list.component';
+import { DmListComponent } from './chat-components/dm-list/dm-list.component';
+import { ChannelListItemComponent } from './chat-components/channel-list/channel-list-item/channel-list-item.component';
+import { DmListItemComponent } from './chat-components/dm-list/dm-list-item/dm-list-item.component';
 import { SearchResultsHeaderComponent } from './base-components/search-results-header/search-results-header.component';
 import { ProfileComponent } from './base-components/profile/profile.component';
 import { SearchComponent } from './base-components/search/search.component';
-import { ApiService } from './services/api-service.service';
-import { GlobalConstants } from './global.config';
-import { AuthModule } from '@auth0/auth0-angular';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardHeaderComponent } from './group-components/dashboard-header/dashboard-header.component';
 import { TableRowComponent } from './base-components/table-row/table-row.component';
-//import { AuthModule } from '@auth0/auth0-angular';
+import { LoaderComponent } from './utility-components/loader/loader.component';
+// #endregion
+
+// #region Misc
+import { AppRoutingModule } from './app-routing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ApiService } from './services/api-service.service';
+import { ChatService } from './services/chat-service.service';
+import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
+import { ConfirmInputComponent } from './base-components/confirm-input/confirm-input.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ChangeProfilePictureModalComponent } from './pages/profile-page/change-profile-picture-modal/change-profile-picture-modal.component';
+import { DirectMessageComponent } from './chat-components/message/direct-message.component';
+import { ChannelMessageComponent } from './chat-components/message/channel-message.component';
+import { SignUpComponent } from './pages/sign-up/sign-up.component';
+//#endregion
 
 @NgModule({
   declarations: [
@@ -40,7 +52,6 @@ import { TableRowComponent } from './base-components/table-row/table-row.compone
     SearchResultsComponent,
     ChatComponent,
     ResultComponent,
-    MessageComponent,
     ChatHeaderComponent,
     MessageInputComponent,
     ChannelListComponent,
@@ -53,24 +64,26 @@ import { TableRowComponent } from './base-components/table-row/table-row.compone
     DashboardComponent,
     DashboardHeaderComponent,
     TableRowComponent,
+    LoaderComponent,
+    ProfilePageComponent,
+    ConfirmInputComponent,
+    ChangeProfilePictureModalComponent,
+	DirectMessageComponent,
+	ChannelMessageComponent,
+ SignUpComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatIconModule,
-    AuthModule.forRoot({
-      domain: GlobalConstants.AuthDomain,
-      clientId: GlobalConstants.AuthClientID,
-      useRefreshTokens: GlobalConstants.AuthRefreshToken,
-      cacheLocation: GlobalConstants.AuthCacheLocation,
-      authorizationParams: {
-        redirect_uri: "http://localhost:4200/app"
-      },
-    }),
+	ReactiveFormsModule
   ],
   providers: [
-    ApiService
+    ApiService,
+    {
+      provide: ChatService
+    }
   ],
   bootstrap: [AppComponent]
 })
