@@ -2,22 +2,101 @@
 <!-- TODO: Query if the user is a user in the database, if not, show error, if so, go to client view-->
 
 <div class="flex flex-col justify-center px-6 pt-48 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <img class="mx-auto h-12 w-auto" src="../../../assets/pidgin-mark.svg" alt="Your Company">
-      <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-gray-100">Sign in</h2>
-    </div>
-  
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <div class="space-y-6">
-        <div>
-          <label for="email" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300">Email address</label>
-          <div class="mt-2">
-            <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-lg border-0 px-3 py-3 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 transition ease-in-out hover:bg-gray-white dark:hover:bg-gray-700">
-          </div>
-        </div>
-        <div> <!--Fix this -->
-          <button (click)="login()" class="flex w-full justify-center rounded-lg bg-indigo-600 px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition ease-in-out">Sign In</button>
-        </div>
-      </div>
-    </div>
+	<div class="sm:mx-auto sm:w-full sm:max-w-sm">
+		<img class="mx-auto h-12 w-auto" src="../../../static/pidgin-mark.svg" alt="Your Company">
+		<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-gray-100">Sign
+			in</h2>
+	</div>
+
+	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+		<div class="space-y-6">
+			<div>
+				<label for="email" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300">Email address</label>
+				<input 
+					required
+					id="email" 
+					type="email" 
+					autocomplete="email" 
+					class="mt-2 block w-full rounded-lg border-0 px-3 py-3 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 transition ease-in-out hover:bg-gray-white dark:hover:bg-gray-700"
+					[formControl]="emailControl"
+				/>
+
+				<label for="password" class="mt-2 block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300">Password</label>
+				<input 
+					required
+					id="password" 
+					type="password" 
+					autocomplete="password" 
+					class="mt-2 block w-full rounded-lg border-0 px-3 py-3 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 transition ease-in-out hover:bg-gray-white dark:hover:bg-gray-700"
+					[formControl]="passwordControl"
+					(keyup.enter)="login()"
+				/>
+			</div>
+			<div class="text-center text-black dark:text-white">Don't have an account? <a class="text-blue-300 underline" [routerLink]="['/signup']">Sign Up</a></div>
+			<div>
+				<button 
+				(click)="login()"
+				class="
+					min-h-[64px]
+					flex 
+					w-full 
+					justify-center 
+					items-center
+					rounded-lg 
+					bg-indigo-600 
+					p-4
+					my-2
+					text-[1rem]
+					font-semibold 
+					leading-6 
+					text-white 
+					shadow-sm 
+					hover:bg-indigo-500 
+					focus-visible:outline 
+					focus-visible:outline-2 
+					focus-visible:outline-offset-2 
+					focus-visible:outline-indigo-600 
+					transition ease-in-out
+				">
+					<div>Sign In</div>
+				</button>
+				<button 
+				(click)="login()"
+				class="
+					min-h-[64px]
+					flex 
+					w-full
+					justify-center
+					items-center
+					rounded-lg
+					bg-[#512888] 
+					p-4
+					my-2
+					text-[1rem]
+					font-semibold
+					leading-6
+					text-white
+					shadow-sm 
+					hover:bg-[#663c9c]
+					focus-visible:outline 
+					focus-visible:outline-2 
+					focus-visible:outline-offset-2 
+					focus-visible:outline-[#512888] 
+					transition ease-in-out
+				">
+					<svg height="32px" width="32px">
+						<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#powercat">
+							<symbol id="powercat" xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 222.84">
+								<title>Powercat</title>
+								<path fill="currentColor"
+									d="M299.82 58.88c-5 16-13.15 30.68-23.6 44.37-3.31-.23-6.62-1-9.92-1.46-2.62 5.85-6.15 11.61-11.62 16.15a1.15 1.15 0 01-1.38-.23c-1.31-1.85.46-4 .62-6a21.07 21.07 0 00-4.46-18.07 22.56 22.56 0 00-9.92-5.64c-15.54-3-29.76 5.26-38.45 17.94-26.61-8.38-59.14-15.3-88.82-11.68-40.76 5.84-81.51 18.14-106.81 54.82A105.5 105.5 0 000 158.39v-139c11.15-4.49 22.76-7.72 34.6-10.64C46.91 24.28 63.83 34.58 82.43 37c13.92 1.81 27.57-4.19 33.92-16.8A30.9 30.9 0 00119.42.82a268.58 268.58 0 0157.75 1.77A175.28 175.28 0 01208.39 10a130.16 130.16 0 0115.38 6.22c.62.3 1.08.62 1 1.31s-.3 1.32-.92 1.31c-6.63-.17-12.84-.46-19.3-.77a1.85 1.85 0 00-1.85.85c-.28.43.48.69.93.76a342.15 342.15 0 0145.21 9.85 153.28 153.28 0 0148.75 24.6c1.41 1.06 2.93 2.68 2.23 4.75zM77.13 29.81c8.23 2.16 18.45 1.54 25.45-3.07 7.77-5 12-16.23 10.76-25.45H37.22C47.37 15.05 61 26.51 77.13 29.81zm29.14 181.1c-12.07-15.23-14.38-39.3-5.38-56.75 8.84-20 29.84-30.07 50-32.68 14.38-2.16 29.46-.46 43.37 2.15a59.86 59.86 0 013.23-12.84c-6.61-1.54-13.15-3.46-19.84-4.77-19.37-3.77-40-6.38-60.36-4.23-19.69 2.08-38.45 7.08-55.06 16.92-12.38 6.69-24.91 17.92-29.84 31.22-2.15 5.84-4.07 11.84-4.07 18.45.23 19.92 13.46 39.07 31.76 47.37 11.45 5.85 25.14 8.85 38.75 6 4.69-1 9.39-2 13.38-4.31a69.83 69.83 0 01-5.94-6.53zM239.3 152c2.54-5.61 4.77-11.79 5.08-18.25-.23-.77-1-.84-1.69-.92-5.38 7.46-12.71 13.93-21.22 16.53-3.77 1.15-9.43 1.94-13.23.85-8.31-2.39-13.77-11.23-15-19.31a58.7 58.7 0 00-9.53-1.76c-20.3-2.08-40.91 3.15-52.52 20.76-7.46 11.84-6.2 28.85.38 41.52a26.08 26.08 0 009.92 10.46c1.69-5.15 5.46-9.84 9.92-13.38a34.65 34.65 0 0118-5.84c11.76-.39 22.68 6.61 28 17.22 15-6.84 29.76-16.62 41.6-29.37a66.59 66.59 0 008.3-10.31 76.48 76.48 0 00-8.01-8.2z">
+								</path>
+							</symbol>
+						</use>
+					</svg>
+					<div class="mx-auto px-2">Sign in with K-State</div>
+				</button>
+			</div>
+		</div>
+	</div>
 </div>

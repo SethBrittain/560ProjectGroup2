@@ -1,14 +1,29 @@
+<div class="relative" (click)="$event.stopPropagation()">
+	<button *ngIf="user"
+		class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 hover:ring-4 hover:ring-gray-300 dark:hover:ring-gray-600"
+		(click)="toggleShow()">
+		<span class="sr-only">Open user menu</span>
+		<img class="w-8 h-8 rounded-full bg-indigo-500"
+			src="{{ user.profilePhotoUrl }}"
+			(error)="pfpError($event)"
+			alt="user photo">
+	</button>
 
-
-<button id="dropdownUserAvatarButton" data-dropdown-toggle="dropdownAvatar" class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
-    <span class="sr-only">Open user menu</span>
-    <img class="w-8 h-8 rounded-full bg-indigo-500" src="{{ image }}" alt="user photo">
-</button>
-
-<!-- Dropdown menu -->
-<div id="dropdown-user" class="z-100 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600 top-0 right-4">
-    <p class="px-4 py-3 text-gray-900 dark:text-white">{{ name }}</p>
-    <div class="py-2">
-      <a (click)="logout()" class="curser-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Log out</a>
-    </div>
+	<!-- Dropdown menu -->
+	<div *ngIf="show && user"
+		class="absolute top-[135%] right-[-25%] z-100 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600 top-0 right-4">
+		<p class="px-4 py-3 text-gray-900 dark:text-white">{{ user.firstName }} {{ user.lastName }}</p>
+		<button class="py-2 w-full text-left" [routerLink]="['/profile']">
+			<span
+				class="curser-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+				My Profile
+			</span>
+		</button>
+		<button class="py-2 w-full text-left">
+			<span (click)="logout()"
+				class="curser-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+				Log out
+			</span>
+		</button>
+	</div>
 </div>

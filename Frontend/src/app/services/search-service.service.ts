@@ -1,48 +1,82 @@
-import { Injectable, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api-service.service';
+import { Injectable } from '@angular/core';
+import axios from 'axios';
+import { Subject } from 'rxjs';
+import { ChannelMessage, DirectMessage, User } from 'src/util';
 
 
 @Injectable({
     providedIn: 'root'
 })
-export class SearchService implements OnInit{
+export class SearchService {
+	// Search results for direct messages matching the search term
+	public directMessageResults: Subject<DirectMessage[]> = new Subject();
 
-    channelId: string = '446'; // FOR TESTING ONLY
-    private searchSubject = new Subject<string>();
-    searchResult$: Observable<any>;
+	// Search results for direct messages matching the search term
+	public channelMessageResults: Subject<ChannelMessage[]> = new Subject();
 
-    constructor(private api: ApiService) {
-        this.searchResult$ = this.searchSubject.pipe(
-            debounceTime(300), // wait 300ms after each keystroke before calling the api
-            distinctUntilChanged(), // ignore the same search terms
-            switchMap((term: string) => this.search(term)) // cancels previous searches
-        )
-    }
-
-    ngOnInit(): void { }
+	// Search results for users matching the search term
+	public userResults: Subject<User[]> = new Subject();
+	
+	// Subject for the search term
+	public searchTermSubject: Subject<string> = new Subject();
 
     // asking for string and channel id. 
     // can we just ask for a substring?
-    search(term: string): Observable<any> {
-
-        let form = new FormData();
-        form.append("subString", term);
-
-        this.api.post("/SearchUserMessages", 
-            (response) => {
-                this.searchResult$ = response.data;
-                 }, 
-            (error) => { console.log(error.message); },
-            form
-        );
-
-        return this.searchResult$; // fix this. This should return the api result
+    public search(term: string) : void {
+		this.searchTermSubject.next(term);
+		this.searchDirectMessages(term);
+		this.searchChannelMessages(term);
+		this.searchUsers(term);
     }
 
-    // triggers the searchResult$ observable and emits the result of the search
-    searchFor(term: string): void {
-        this.searchSubject.next(term);
-    }
+	// Search for direct messages matching the search term
+	private searchDirectMessages(term: string) {
+		axios.get('/api/DirectMessage', {
+			params: {
+				query: term,
+				limit: 10
+			}})
+		.then(response => response.data)
+		.then(data => this.directMessageResults.next(data))
+		.catch(error => {
+			if (error.response)
+				if (error.response.status === 401 || error.response.status === 403)
+					window.location.href = '/login';
+			this.directMessageResults.next([]);
+		});
+	}
+
+	// Search for channel messages matching the search term
+	private searchChannelMessages(term: string) {
+		axios.get('/api/ChannelMessage', {
+			params: {
+				message: term,
+				limit: 10
+			}})
+		.then(response => response.data)
+		.then(data => this.channelMessageResults.next(data))
+		.catch(error => {
+			if (error.response)
+				if (error.response.status === 401 || error.response.status === 403)
+					window.location.href = '/login';
+			this.channelMessageResults.next([]);
+		});
+	}
+
+	// Search for users matching the search term
+	private searchUsers(term: string) {
+		axios.get('/api/User', {
+			params: {
+				query: term,
+				limit: 10
+			}})
+		.then(response => response.data)
+		.then(data => this.userResults.next(data))
+		.catch(error => {
+			if (error.response)
+				if (error.response.status === 401 || error.response.status === 403)
+					window.location.href = '/login';
+			this.userResults.next([]);
+		});
+	}
 }

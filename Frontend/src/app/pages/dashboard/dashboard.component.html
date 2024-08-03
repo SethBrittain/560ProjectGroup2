@@ -5,12 +5,74 @@
     <div class="flex justify-between flex-row px-4">
         <h1 class="text-3xl text-semibold text-gray-700 dark:text-gray-200 pb-2">Dashboard</h1>
         <div>
-            <div class="flex gap-2 grow max-w-sm">   
+            <div class="flex gap-2 grow w-auto">   
                 <label for="start-date" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter the start date</label>
-                <input datepicker datepicker-format="yyyy/mm/dd" type="text" value={{startDate}} #start senderId="1" id="start-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="Start Date" required>
+                <input 
+					id="1"
+					type="date" 
+					[formControl]="startDate"
+					class="
+						block 
+						w-full 
+						py-2 
+						px-4
+						text-sm 
+						text-gray-900 
+						border 
+						border-slate-300 
+						rounded-lg 
+						bg-slate-50 
+						focus:ring-indigo-500 
+						focus:border-indigo-500 
+						dark:bg-gray-800 
+						dark:border-gray-700 
+						dark:placeholder-gray-400 
+						dark:text-white 
+						dark:focus:ring-indigo-500 
+						dark:focus:border-indigo-500 
+						hover:bg-white 
+						dark:hover:bg-gray-700 
+						transition 
+						ease-in-out
+					" 
+					(change)="RefreshData($event)"
+					placeholder="Start Date"
+					required
+				>
                 <label type="date" for="end-date" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Enter the end date</label>
-                <input datepicker datepicker-format="yyyy/mm/dd" type="text" value={{endDate}} #end senderId="1" id="end-date" class="block w-full py-2 px-4 text-sm text-gray-900 border border-slate-300 rounded-lg bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 hover:bg-white dark:hover:bg-gray-700 transition ease-in-out" placeholder="End Date" required>
-                <button (click)="RefreshData(start, end)" class="transition ease-in-out text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2">Refresh</button>
+                <input 
+					id="2"
+					type="date" 
+					[formControl]="endDate"
+					class="
+						block
+						w-full
+						py-2
+						px-4
+						text-sm
+						text-gray-900
+						border
+						border-slate-300
+						rounded-lg
+						bg-slate-50
+						focus:ring-indigo-500
+						focus:border-indigo-500
+						dark:bg-gray-800
+						dark:border-gray-700
+						dark:placeholder-gray-400
+						dark:text-white
+						dark:focus:ring-indigo-500
+						dark:focus:border-indigo-500
+						hover:bg-white
+						dark:hover:bg-gray-700
+						transition
+						ease-in-out
+					"
+					(change)="RefreshData($event)"
+					placeholder="End Date" 
+					required
+				>
+                <button (click)="RefreshData($event)" class="transition ease-in-out text-white bg-indigo-500 hover:bg-indigo-400 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2">Refresh</button>
             </div>
         </div>
     </div>
@@ -24,7 +86,7 @@
                 <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth.numberOfActiveUsers}}</p>
             </div>
             <div>
-                <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Count</p>
+                <p class="text-gray-600 dark:text-gray-400 py-1 text-base">Inactive Users</p>
                 <p class="text-4xl font-light text-gray-700 dark:text-gray-200 pt-1">{{growth.numberOfInactiveUsers}}</p>
             </div>
             <div>

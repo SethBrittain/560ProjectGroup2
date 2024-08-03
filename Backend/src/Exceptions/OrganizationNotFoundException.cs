@@ -1,4 +1,4 @@
-namespace pidgin.Exceptions;
+namespace Pidgin.Exceptions;
 
 public sealed class OrganizationNotFoundException : Exception
 {

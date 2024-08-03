@@ -1,0 +1,32 @@
+<div class="flex flex-col align-items-center pt-24 sm:pb-8 sm:px-8 px-4 pb-0 min-h-full bg-slate-100 dark:bg-slate-900">
+    <!--Page Title-->
+    <div class="flex justify-between flex-row px-4">
+		<h1 class="text-3xl text-semibold text-gray-700 dark:text-gray-200 pb-2">My Profile</h1>
+    </div>
+
+	<div class="bg-slate-200 dark:bg-slate-800 rounded-2xl mx-auto w-full lg:w-3/5 dark:text-white text-3xl text-semibold p-4 sm:p-8 bg-slate-200 dark:bg-slate-800 rounded-2xl dark:text-white text-3xl text-semibold">
+		<h1 class="pb-4">User Details</h1>
+		<div class="flex flex-col md:flex-row-reverse align-items-center">
+			<div class="w-full grid grid-cols-1 md:grid-cols-2">
+				<label class="text-middle text-[1.4rem] text-slate-900 dark:text-white">Email</label>
+				<app-confirm-input placeholder="Email" [formInput]="emailFormControl"></app-confirm-input>
+				<label class="text-middle text-[1.4rem] text-slate-900 dark:text-white">Password</label>
+				<app-confirm-input placeholder="Password" [formInput]="passwordFormControl" [type]="'password'"></app-confirm-input>
+				<label class="text-middle text-[1.4rem] text-slate-900 dark:text-white">Confirm Password</label>
+				<app-confirm-input placeholder="Password" [formInput]="confirmPasswordFormControl" [type]="'password'"></app-confirm-input>
+				<label class="text-middle text-[1.4rem] text-slate-900 dark:text-white">First Name</label>
+				<app-confirm-input placeholder="First Name" [formInput]="firstNameFormControl"></app-confirm-input>
+				<label class="text-middle text-[1.4rem] text-slate-900 dark:text-white">Last Name</label>
+				<app-confirm-input placeholder="Last Name" [formInput]="lastNameFormControl"></app-confirm-input>
+			</div>
+		</div>
+		<button 
+			class="text-[1.2rem] py-2 px-4 m-2 float-left bg-blue-500 text-slate-100 rounded" 
+			type="button"
+			(click)="signUp()"
+			>
+			Sign Up
+		</button>
+		<span class="text-red-400 text-sm float-right h-full inline">{{ errorText }}</span>
+	</div>
+</div>

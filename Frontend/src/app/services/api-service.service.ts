@@ -13,7 +13,7 @@ export class ApiService {
 		axios.post("/api"+endpoint, data).then(callback).catch(e => {
 			if (e.response)
 				if (e.response.status === 403)
-					window.location.href = "/auth/cas/login";
+					window.location.href = "/login";
 		})
 	}
 
@@ -21,7 +21,7 @@ export class ApiService {
 		axios.put("/api"+endpoint, data).then(callback).catch(e => {
 			if (e.response)
 				if (e.response.status === 403)
-					window.location.href = "/auth/cas/login";
+					window.location.href = "/login";
 		})
 	}
 }

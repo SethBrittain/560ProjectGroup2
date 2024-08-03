@@ -1,4 +1,3 @@
-version: "3"
 services:
   postgres:
     image: postgres:16rc1
@@ -17,14 +16,16 @@ services:
   app:
     depends_on:
       - postgres
-    image: sethbrittain/pidgin:1.0.0
+    image: sethbrittain/pidgin:latest
     container_name: ${app_container_name}
     hostname: ${app_container_name}
     restart: always
     environment:
-      - ASPNETCORE_DATABASE_CONNECTION_STRING=Host=${database_container_name};Username=${database_user};Password=${database_password};Database=${database_name};Port=${database_port};
+      - ASPNETCORE_CONNECTION_STRING=Host=${database_container_name};Username=${database_user};Password=${database_password};Database=${database_name};Port=${database_port};
+      - ASPNETCORE_AUTH_SERVICE_HOST=${public_protocol}${public_host}${auth_service_host_ex}
+      - ASPNETCORE_AUTH_CAS_HOST=${auth_cas_host}
     ports:
-      - ${app_port}:5000
+      - ${docker_app_port}:${internal_app_port}
 volumes:
   postgres:
     driver: local

@@ -1,6 +1,7 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using Pidgin.Model;
 
 namespace Pidgin.Util;
 
@@ -12,13 +13,14 @@ public class WebSocketChannel
     /// <summary>
     /// Unique identifier for this channel
     /// </summary>
-    public int ChannelId { get; private set; }
+    public int ChannelId { get; set; }
 
     /// <summary>
     /// Event handler for when the channel is emptied after all clients disconnect
     /// </summary>
     public delegate void ChannelEmptyHandler();
     public ChannelEmptyHandler _disposal;
+
 
     /// <summary>
     /// Clients connected to this channel
@@ -45,69 +47,17 @@ public class WebSocketChannel
     /// </summary>
     /// <param name="message">Message to broadcast. Has known max length from manager's const value</param>
     /// <returns></returns>
-    public async Task Broadcast(SendableMessage messageToSend)
-    {
+    public async Task Broadcast(ChannelMessage cm)
+    {		
         foreach (KeyValuePair<int, WebSocket> pair in _clients)
         {
-            messageToSend.isSender = messageToSend.senderId == pair.Key;
             await pair.Value.SendAsync(
-                new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(messageToSend))),
+				new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(cm))),
                 WebSocketMessageType.Text,
                 true,
                 CancellationToken.None
             );
         }
-
-        //string message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
-        //Console.WriteLine(message);
-
-        //// Buffer to load broadcast message into
-        //byte[] sendBuffer = new byte[message.Length];
-
-        //// Fill buffer with message
-        //Array.Clear(sendBuffer, 0, sendBuffer.Length);
-        //Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
-
-        //await _clients[messageToSend.senderId].SendAsync(
-        //    new ArraySegment<byte>(sendBuffer, 0, sendBuffer.Length),
-        //    WebSocketMessageType.Text,
-        //    false,
-        //    CancellationToken.None
-        //);
-
-        //// Send message to all clients in channel with channelId
-        //foreach (KeyValuePair<int, WebSocket> pair in _clients)
-        //{
-        //    if (messageToSend.senderId == pair.Key)
-        //    {
-        //        messageToSend.isSender = true;
-        //        message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
-        //        // Buffer to load broadcast message into
-        //        sendBuffer = new byte[message.Length];
-
-        //        // Fill buffer with message
-        //        Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
-        //    }
-        //    else if (messageToSend.isSender)
-        //    {
-        //        messageToSend.isSender = false;
-        //        message = JsonSerializer.Serialize<SendableMessage>(messageToSend);
-
-        //        // Buffer to load broadcast message into
-        //        sendBuffer = new byte[message.Length];
-        //        Array.Clear(sendBuffer, 0, sendBuffer.Length);
-
-        //        // Fill buffer with message
-        //        Encoding.UTF8.GetBytes(message, 0, sendBuffer.Length, sendBuffer, 0);
-        //    }
-
-        //    await pair.Value.SendAsync(
-        //        new ArraySegment<byte>(sendBuffer, 0, message.Length),
-        //        WebSocketMessageType.Text,
-        //        false,
-        //        CancellationToken.None
-        //    );
-        //}
     }
 
     /// <summary>
@@ -131,7 +81,8 @@ public class WebSocketChannel
     {
         if (_clients.ContainsKey(uid))
         {
-            await _clients[uid].CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by client", CancellationToken.None);
+            try { await _clients[uid].CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by client", CancellationToken.None); }
+			catch (Exception e) { Console.WriteLine(e.Message); Console.WriteLine(e.StackTrace); }
             _clients.Remove(uid);
             if (ClientCount == 0) _disposal.Invoke();
         }
