@@ -1,9 +1,0 @@
-<div class="h-full">
-    <app-chat-header [title]=title></app-chat-header>
-    <ul #scrollContent class="flex flex-col justify-end pt-36 px-6 pb-20">
-        <div class="w-full" *ngFor="let message of messages">
-            <app-message msgId="{{message.MsgId}}" image= "{{message.ProfilePhoto}}" firstName="{{message.FirstName}}" lastName="{{message.LastName}}" dateSent="{{message.UpdatedOn}}" message="{{message.Message}}" isMine="{{message.IsMine}}"></app-message>
-        </div>
-    </ul>
-    <app-message-input [channelId]=channelId [type]=type></app-message-input>
-</div>
